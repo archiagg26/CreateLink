@@ -1,0 +1,50 @@
+[
+  {
+    "id": "brand-1",
+    "userId": "user-b1",
+    "companyName": "TechCorp Industries",
+    "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=TC",
+    "industry": "Consumer Electronics",
+    "description": "We build smart devices that integrate seamlessly into your lifestyle.",
+    "brandScore": 87,
+    "brandScorePartialData": false,
+    "isNewToPlatform": false,
+    "completedCollaborations": 14,
+    "averageCreatorRating": 4.6,
+    "averageResponseTimeHours": 6,
+    "campaigns": ["camp-1", "camp-2"],
+    "verificationStatus": "verified"
+  },
+  {
+    "id": "brand-2",
+    "userId": "user-b2",
+    "companyName": "FreshBrand Co.",
+    "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=FB",
+    "industry": "Health & Wellness",
+    "description": "Clean, sustainable wellness products for the modern lifestyle.",
+    "brandScore": 0,
+    "brandScorePartialData": true,
+    "isNewToPlatform": true,
+    "completedCollaborations": 0,
+    "averageCreatorRating": 0,
+    "averageResponseTimeHours": 0,
+    "campaigns": ["camp-3", "camp-4"],
+    "verificationStatus": "unverified"
+  },
+  {
+    "id": "brand-3",
+    "userId": "user-b3",
+    "companyName": "Dot & Key Skincare",
+    "logoUrl": "https://api.dicebear.com/7.x/initials/svg?seed=DK",
+    "industry": "Beauty & Personal Care",
+    "description": "Fun, fruity, and effective skincare products designed for your everyday skin concerns.",
+    "brandScore": 92,
+    "brandScorePartialData": false,
+    "isNewToPlatform": false,
+    "completedCollaborations": 24,
+    "averageCreatorRating": 4.8,
+    "averageResponseTimeHours": 2,
+    "campaigns": ["camp-5"],
+    "verificationStatus": "verified"
+  }
+]

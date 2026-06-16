@@ -1,0 +1,110 @@
+[
+  {
+    "id": "creator-1",
+    "userId": "user-c1",
+    "displayName": "Maya Chen",
+    "bio": "Lifestyle & tech content creator with 5 years of brand collaboration experience.",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=maya",
+    "contentCategories": ["lifestyle", "tech", "beauty"],
+    "socialAccounts": [
+      { "platform": "instagram", "handle": "@mayachen", "followerCount": 85000, "connected": true },
+      { "platform": "youtube", "handle": "MayaChenCreates", "followerCount": 42000, "connected": true }
+    ],
+    "trustScore": 82,
+    "trustScorePartialData": false,
+    "portfolio": [
+      {
+        "id": "pi-1",
+        "creatorId": "creator-1",
+        "title": "TechGadget X Launch Campaign",
+        "description": "Unboxing and 30-day review campaign for TechGadget X smartwatch.",
+        "category": "tech",
+        "mediaUrl": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+        "fileSizeBytes": 2048000,
+        "campaignId": "camp-1",
+        "metrics": { "views": 120000, "likes": 8500, "comments": 640, "shares": 1200, "engagementRate": 0.086 },
+        "createdAt": "2024-03-15T10:00:00Z"
+      },
+      {
+        "id": "pi-2",
+        "creatorId": "creator-1",
+        "title": "GlowSkin Skincare Review",
+        "description": "60-day skincare routine featuring GlowSkin Vitamin C serum.",
+        "category": "beauty",
+        "mediaUrl": "https://images.unsplash.com/photo-1556228578-8c89e6adf883?w=400",
+        "fileSizeBytes": 1536000,
+        "campaignId": null,
+        "metrics": { "views": 95000, "likes": 7200, "comments": 890, "shares": 560, "engagementRate": 0.091 },
+        "createdAt": "2024-04-20T14:00:00Z"
+      },
+      {
+        "id": "pi-3",
+        "creatorId": "creator-1",
+        "title": "Morning Routine Lifestyle Vlog",
+        "description": "Authentic morning routine showcasing productivity tools and lifestyle habits.",
+        "category": "lifestyle",
+        "mediaUrl": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400",
+        "fileSizeBytes": 3072000,
+        "campaignId": null,
+        "metrics": { "views": 210000, "likes": 18900, "comments": 2100, "shares": 3400, "engagementRate": 0.115 },
+        "createdAt": "2024-05-10T09:00:00Z"
+      }
+    ],
+    "collaborationHistory": [
+      { "campaignId": "camp-1", "brandId": "brand-1", "status": "completed", "startDate": "2024-03-01T00:00:00Z", "endDate": "2024-03-31T00:00:00Z" }
+    ],
+    "insights": {
+      "audienceDemographics": {
+        "ageGroups": { "18-24": 0.35, "25-34": 0.42, "35-44": 0.15, "45+": 0.08 },
+        "topCountries": ["United States", "United Kingdom", "Canada", "Australia"],
+        "genderSplit": { "male": 0.32, "female": 0.63, "other": 0.05 }
+      },
+      "primaryCategories": ["lifestyle", "tech"],
+      "averageEngagementRate": 0.097,
+      "collaborationCount": 1,
+      "successRate": 1.0
+    },
+    "verificationStatus": "verified"
+  },
+  {
+    "id": "creator-2",
+    "userId": "user-c2",
+    "displayName": "Alex Rivera",
+    "bio": "Fitness & nutrition creator helping people build sustainable habits.",
+    "avatarUrl": "https://api.dicebear.com/7.x/avataaars/svg?seed=alex",
+    "contentCategories": ["fitness", "food", "lifestyle"],
+    "socialAccounts": [
+      { "platform": "instagram", "handle": "@alexfitlife", "followerCount": 32000, "connected": false },
+      { "platform": "tiktok", "handle": "@alexrivera_fit", "followerCount": 78000, "connected": false }
+    ],
+    "trustScore": 61,
+    "trustScorePartialData": true,
+    "portfolio": [
+      {
+        "id": "pi-4",
+        "creatorId": "creator-2",
+        "title": "30-Day Protein Challenge Results",
+        "description": "Documentary-style series tracking fitness transformation with NutriBrand protein.",
+        "category": "fitness",
+        "mediaUrl": "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400",
+        "fileSizeBytes": 4096000,
+        "campaignId": null,
+        "metrics": { "views": 55000, "likes": 4800, "comments": 720, "shares": 390, "engagementRate": 0.108 },
+        "createdAt": "2024-06-01T11:00:00Z"
+      }
+    ],
+    "collaborationHistory": [],
+    "insights": {
+      "audienceDemographics": {
+        "ageGroups": { "18-24": 0.48, "25-34": 0.38, "35-44": 0.10, "45+": 0.04 },
+        "topCountries": ["United States", "Mexico", "Spain", "Argentina"],
+        "genderSplit": { "male": 0.61, "female": 0.36, "other": 0.03 }
+      },
+      "primaryCategories": ["fitness", "food"],
+      "averageEngagementRate": 0.108,
+      "collaborationCount": 0,
+      "successRate": 0.0
+    },
+    "verificationStatus": "unverified"
+  }
+]

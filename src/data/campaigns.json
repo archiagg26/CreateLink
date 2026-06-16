@@ -1,0 +1,72 @@
+[
+  {
+    "id": "camp-1",
+    "brandId": "brand-1",
+    "title": "SmartWatch X — Lifestyle Creators",
+    "description": "Seeking authentic lifestyle creators to showcase the SmartWatch X in their daily routines.",
+    "requirements": "Create 2 Instagram posts and 1 YouTube review. Show the watch in real-life use cases — fitness, productivity, sleep tracking.",
+    "contentCategories": ["lifestyle", "tech", "fitness"],
+    "compensationType": "paid",
+    "compensationAmount": 2500,
+    "deadline": "2025-08-31T23:59:59Z",
+    "status": "active",
+    "publishedAt": "2025-07-01T09:00:00Z",
+    "applicantCount": 12
+  },
+  {
+    "id": "camp-2",
+    "brandId": "brand-1",
+    "title": "TechCorp App — UGC Campaign",
+    "description": "Looking for creators to produce UGC content showing our productivity app in action.",
+    "requirements": "1 TikTok video (60–90 seconds) showing 3 key features. Must be authentic, no scripted reads.",
+    "contentCategories": ["tech", "education"],
+    "compensationType": "paid",
+    "compensationAmount": 800,
+    "deadline": "2025-09-15T23:59:59Z",
+    "status": "active",
+    "publishedAt": "2025-07-05T10:00:00Z",
+    "applicantCount": 7
+  },
+  {
+    "id": "camp-3",
+    "brandId": "brand-2",
+    "title": "FreshBrand Wellness Kit Launch",
+    "description": "Gifted collaboration for our new wellness starter kit. We're looking for creators in the health & wellness space.",
+    "requirements": "Unboxing + 2-week trial review. Post 3 Instagram stories and 1 feed post with honest review.",
+    "contentCategories": ["fitness", "food", "lifestyle"],
+    "compensationType": "gifted",
+    "compensationAmount": null,
+    "deadline": "2025-08-20T23:59:59Z",
+    "status": "active",
+    "publishedAt": "2025-07-08T08:00:00Z",
+    "applicantCount": 3
+  },
+  {
+    "id": "camp-4",
+    "brandId": "brand-2",
+    "title": "Nutrition Blog Series — Finance Creators",
+    "description": "Unusual crossover: we want personal finance creators to talk about investing in your health.",
+    "requirements": "1 long-form blog post or YouTube video connecting financial wellness with physical wellness.",
+    "contentCategories": ["finance", "lifestyle"],
+    "compensationType": "commission",
+    "compensationAmount": 15,
+    "deadline": "2025-10-01T23:59:59Z",
+    "status": "active",
+    "publishedAt": "2025-07-10T11:00:00Z",
+    "applicantCount": 1
+  },
+  {
+    "id": "camp-5",
+    "brandId": "brand-3",
+    "title": "Fruity Summer Glow Campaign",
+    "description": "Showcase our Vitamin C Glow Moisturizer! We want a fun, quirky, and colorful reel and one aesthetic post. Highlight the fruit-infused textures and instant glowing skin!",
+    "requirements": "1 Instagram Reel (funky, upbeat transition video) and 1 high-quality static aesthetic Grid Post.",
+    "contentCategories": ["beauty", "lifestyle"],
+    "compensationType": "paid",
+    "compensationAmount": 10000,
+    "deadline": "2025-09-30T23:59:59Z",
+    "status": "active",
+    "publishedAt": "2025-07-15T12:00:00Z",
+    "applicantCount": 18
+  }
+]

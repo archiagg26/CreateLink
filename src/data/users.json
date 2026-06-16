@@ -1,0 +1,6 @@
+[
+  { "id": "user-c1", "email": "maya@example.com", "passwordHash": "$2b$10$mockHashCreator1", "role": "creator", "verificationStatus": "verified", "emailVerified": true, "createdAt": "2024-01-10T10:00:00Z", "failedLoginAttempts": 0, "lockedUntil": null },
+  { "id": "user-c2", "email": "alex@example.com", "passwordHash": "$2b$10$mockHashCreator2", "role": "creator", "verificationStatus": "unverified", "emailVerified": true, "createdAt": "2024-02-15T08:30:00Z", "failedLoginAttempts": 0, "lockedUntil": null },
+  { "id": "user-b1", "email": "brand@techcorp.com", "passwordHash": "$2b$10$mockHashBrand1", "role": "brand", "verificationStatus": "verified", "emailVerified": true, "createdAt": "2024-01-05T09:00:00Z", "failedLoginAttempts": 0, "lockedUntil": null },
+  { "id": "user-b2", "email": "hello@freshbrand.com", "passwordHash": "$2b$10$mockHashBrand2", "role": "brand", "verificationStatus": "unverified", "emailVerified": true, "createdAt": "2024-03-01T12:00:00Z", "failedLoginAttempts": 0, "lockedUntil": null }
+]
