@@ -8,10 +8,15 @@ export function AuthGuard() {
 
 export function RoleGuard({ role }: { role: 'creator' | 'brand' }) {
   const { currentUser } = useAuthStore();
-  return currentUser?.role === role ? <Outlet /> : <Navigate to="/feed" replace />;
+  if (!currentUser) return <Navigate to="/login" replace />;
+  if (currentUser.role === role) return <Outlet />;
+  // redirect to the correct dashboard for the logged-in user
+  return currentUser.role === 'brand' ? <Navigate to="/brand/dashboard" replace /> : <Navigate to="/feed" replace />;
 }
 
 export function PublicOnlyGuard({ children }: { children: React.ReactNode }) {
-  const { isAuthenticated } = useAuthStore();
-  return isAuthenticated ? <Navigate to="/feed" replace /> : <>{children}</>;
+  const { isAuthenticated, currentUser } = useAuthStore();
+  if (!isAuthenticated) return <>{children}</>;
+  // if authenticated, redirect based on role
+  return currentUser?.role === 'brand' ? <Navigate to="/brand/dashboard" replace /> : <Navigate to="/feed" replace />;
 }

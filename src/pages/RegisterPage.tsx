@@ -6,6 +6,16 @@ export default function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'creator' | 'brand'>('creator');
+  // creator-specific
+  const [name, setName] = useState('');
+  const [niche, setNiche] = useState('');
+  const [platforms, setPlatforms] = useState('instagram');
+  const [audienceSize, setAudienceSize] = useState('');
+  // brand-specific
+  const [companyName, setCompanyName] = useState('');
+  const [industry, setIndustry] = useState('');
+  const [companySize, setCompanySize] = useState('');
+  const [website, setWebsite] = useState('');
   const [error, setError] = useState('');
   const { register } = useAuthStore();
   const navigate = useNavigate();
@@ -14,9 +24,11 @@ export default function RegisterPage() {
     e.preventDefault();
     setError('');
     try {
-      await register(email, password, role);
+      const profile = role === 'brand' ? { companyName, industry, companySize, website } : { name, niche, platforms, audienceSize };
+      const user = await register(email, password, role, profile);
       alert('Registration successful! Check your email to verify your account.');
-      navigate('/login');
+      if (role === 'brand') navigate('/brand/dashboard');
+      else navigate('/feed');
     } catch (err) {
       setError((err as Error).message || 'Registration failed');
     }
@@ -87,6 +99,33 @@ export default function RegisterPage() {
               Min 12 chars, uppercase, lowercase, digit, special char
             </p>
           </div>
+
+          {/* Role specific fields */}
+          {role === 'creator' && (
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Name</label>
+              <input value={name} onChange={(e) => setName(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Content Niche</label>
+              <input value={niche} onChange={(e) => setNiche(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Platforms (comma separated)</label>
+              <input value={platforms} onChange={(e) => setPlatforms(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Audience Size</label>
+              <input value={audienceSize} onChange={(e) => setAudienceSize(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+            </div>
+          )}
+
+          {role === 'brand' && (
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Company Name</label>
+              <input value={companyName} onChange={(e) => setCompanyName(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Industry</label>
+              <input value={industry} onChange={(e) => setIndustry(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Company Size</label>
+              <input value={companySize} onChange={(e) => setCompanySize(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65]">Website</label>
+              <input value={website} onChange={(e) => setWebsite(e.target.value)} className="w-full px-4 py-3 border border-[#E7E1D8] rounded-xl" />
+            </div>
+          )}
           {error && (
             <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] px-4 py-3 rounded-xl text-xs font-semibold text-center">
               {error}

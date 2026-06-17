@@ -29,7 +29,14 @@ export function AppLayout() {
 
   const isActive = (path: string) => location.pathname.startsWith(path);
 
-  const navItems = [
+  // Role-aware navigation
+  const navItems = currentUser?.role === 'brand' ? [
+    { to: '/brand/dashboard', icon: <DiscoverIcon />, label: 'Dashboard' },
+    { to: '/creators',        icon: <PeopleIcon />,   label: 'Discover Creators' },
+    { to: '/campaigns',       icon: <CampaignIcon />, label: 'Campaigns' },
+    { to: '/messages',        icon: <MessageIcon />,  label: 'Messages', badge: unreadCount },
+    { to: '/analytics',       icon: <AnalyticsIcon />,label: 'Analytics' },
+  ] : [
     { to: '/feed',          icon: <DiscoverIcon />, label: 'Discover' },
     { to: '/creators',      icon: <PeopleIcon />,   label: 'Creators' },
     { to: '/campaigns',     icon: <CampaignIcon />, label: 'Campaigns' },
@@ -129,13 +136,13 @@ export function AppLayout() {
 
         {/* Bottom Section - fixed */}
         <div className="shrink-0 border-t border-[#E7E1D8] flex flex-col space-y-3 px-3 py-3">
-          {/* Find creator CTA */}
-          {!sidebarCollapsed && (
+          {/* Find creator CTA (only shown to brands) */}
+          {!sidebarCollapsed && currentUser?.role === 'brand' && (
             <div className="bg-[#F8EFF3] border border-[#E7E1D8] rounded-2xl p-4">
               <p className="text-xs font-bold text-[#1F1F1F] leading-snug mb-3">
                 Find the perfect creator for your next campaign
               </p>
-              <Link to="/campaigns"
+              <Link to="/brand/me/campaigns/new"
                 className="block text-center w-full py-2 bg-[#1F1F1F] text-white text-xs font-black rounded-xl hover:opacity-90 transition-opacity"
               >
                 Create Campaign
@@ -145,21 +152,8 @@ export function AppLayout() {
             </div>
           )}
 
-          {/* Switch role button */}
-          <button
-            className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-2'} px-3 py-2 rounded-xl text-xs font-semibold text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors`}
-            onClick={() => alert('Role switching coming soon!')}
-            title={sidebarCollapsed ? `Switch to ${currentUser?.role === 'creator' ? 'Brand' : 'Creator'}` : undefined}
-          >
-            <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
-            </svg>
-            {!sidebarCollapsed && (
-              <span>
-                Switch to {currentUser?.role === 'creator' ? 'Brand' : 'Creator'}
-              </span>
-            )}
-          </button>
+          {/* Placeholder for spacing — keep bottom layout consistent */}
+          <div className="h-2" />
 
           {/* User profile */}
           <div className={`flex items-center ${sidebarCollapsed ? 'justify-center' : 'gap-2'} px-3 py-2`}>

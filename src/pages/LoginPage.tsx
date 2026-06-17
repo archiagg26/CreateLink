@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 
 export default function LoginPage() {
@@ -9,14 +9,30 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const { login } = useAuthStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [role, setRole] = useState<'creator' | 'brand' | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const forced = params.get('role');
+    if (forced === 'brand' || forced === 'creator') setRole(forced as any);
+  }, [location.search]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      await login(email, password);
-      navigate('/feed');
+      const user = await login(email, password);
+      // if role was forced via query or user role dictates, redirect appropriately
+      const params = new URLSearchParams(location.search);
+      const forcedRole = params.get('role');
+      if (forcedRole === 'brand' || user.role === 'brand') {
+        navigate('/brand/dashboard');
+      } else {
+        navigate('/feed');
+      }
     } catch (err) {
       setError((err as Error).message || 'Login failed');
     } finally {
@@ -69,8 +85,12 @@ export default function LoginPage() {
             </span>
           </div>
 
-          <h2 className="text-2xl font-black text-[#1F1F1F] mb-1">Welcome back 👋</h2>
-          <p className="text-[#6E6A65] text-sm mb-8">Log in to your CreatorLink account</p>
+          <h2 className="text-2xl font-black text-[#1F1F1F] mb-1">
+            {role === 'brand' ? 'Brand Sign in' : role === 'creator' ? 'Creator Sign in' : 'Welcome back 👋'}
+          </h2>
+          <p className="text-[#6E6A65] text-sm mb-8">{
+            role === 'brand' ? 'Log in to your Brand account' : role === 'creator' ? 'Log in to your Creator account' : 'Log in to your CreatorLink account'
+          }</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>

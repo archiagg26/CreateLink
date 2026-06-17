@@ -1,4 +1,4 @@
-import type { User, UserRole } from '../types/index';
+import type { User, UserRole, Brand } from '../types/index';
 import { getStore } from './store';
 import { generateId, nowISO, simulateLatency } from './mockUtils';
 import { validatePassword } from '../lib/validation';
@@ -15,7 +15,7 @@ export class AuthError extends Error {
   }
 }
 
-export async function register(email: string, password: string, role: UserRole): Promise<User> {
+export async function register(email: string, password: string, role: UserRole, profile?: any): Promise<User> {
   await simulateLatency(300, 800);
   const store = getStore();
 
@@ -37,6 +37,27 @@ export async function register(email: string, password: string, role: UserRole):
     lockedUntil: null,
   };
   store.users.set(user.id, user);
+  // If registering a brand, also create a brand profile linked to this user
+  if (role === 'brand' && profile) {
+    const brand: Brand = {
+      id: `brand-${generateId()}`,
+      userId: user.id,
+      companyName: profile.companyName || profile.name || 'Brand',
+      logoUrl: profile.logoUrl || '',
+      industry: profile.industry || '',
+      description: profile.description || '',
+      brandScore: 0,
+      brandScorePartialData: true,
+      isNewToPlatform: true,
+      completedCollaborations: 0,
+      averageCreatorRating: 0,
+      averageResponseTimeHours: 48,
+      campaigns: [],
+      verificationStatus: 'unverified',
+    };
+    store.brands.set(brand.id, brand);
+    // link campaigns array or other initial data if provided
+  }
   await sendVerificationEmail(user.id);
   return user;
 }

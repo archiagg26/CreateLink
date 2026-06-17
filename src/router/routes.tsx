@@ -19,6 +19,8 @@ const SwipeReviewPage = lazy(() => import('../pages/SwipeReviewPage'));
 const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 const VerificationFlowPage = lazy(() => import('../pages/VerificationFlowPage'));
+const BrandDashboardPage = lazy(() => import('../pages/BrandDashboardPage'));
+const RoleSelectPage = lazy(() => import('../pages/RoleSelectPage'));
 
 function LoadingFallback() {
   return (
@@ -37,7 +39,11 @@ function LoadingFallback() {
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <Navigate to="/login" replace />,
+    element: <RoleSelectPage />,
+  },
+  {
+    path: '/role',
+    element: <RoleSelectPage />,
   },
   {
     path: '/login',
@@ -204,6 +210,14 @@ const router = createBrowserRouter([
                 element: (
                   <Suspense fallback={<LoadingFallback />}>
                     <VerificationFlowPage />
+                  </Suspense>
+                ),
+              },
+              {
+                path: '/brand/dashboard',
+                element: (
+                  <Suspense fallback={<LoadingFallback />}>
+                    <BrandDashboardPage />
                   </Suspense>
                 ),
               },
