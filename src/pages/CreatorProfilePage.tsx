@@ -1,8 +1,172 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useCreatorStore } from '../stores/creatorStore';
 import VerificationBadge from '../components/shared/VerificationBadge';
+
+// ── Reel type ─────────────────────────────────────────────────────────────────
+interface Reel {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  metrics: { views: number; likes: number; comments: number; engagementRate: number };
+  createdAt: string;
+  campaignId: string | null;
+}
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+function lockBody() {
+  document.body.style.overflow = 'hidden';
+  document.body.style.paddingRight = `${window.innerWidth - document.documentElement.clientWidth}px`;
+}
+function unlockBody() {
+  document.body.style.overflow = '';
+  document.body.style.paddingRight = '';
+}
+
+// ── Portrait Video Modal ──────────────────────────────────────────────────────
+function VideoModal({ reel, onClose }: { reel: Reel; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [muted, setMuted]   = useState(false);
+  const [showControls, setShowControls] = useState(true);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // lock scroll + ESC close
+  useEffect(() => {
+    lockBody();
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', handler);
+    return () => { unlockBody(); window.removeEventListener('keydown', handler); };
+  }, [onClose]);
+
+  // auto-play on open
+  useEffect(() => {
+    videoRef.current?.play().catch(() => {});
+    scheduleHide();
+  }, []);
+
+  const scheduleHide = () => {
+    if (hideTimer.current) clearTimeout(hideTimer.current);
+    setShowControls(true);
+    hideTimer.current = setTimeout(() => setShowControls(false), 2500);
+  };
+
+  const togglePlay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    scheduleHide();
+    if (v.paused) { v.play(); setPlaying(true); }
+    else          { v.pause(); setPlaying(false); }
+  };
+
+  const toggleMute = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    scheduleHide();
+    const v = videoRef.current;
+    if (!v) return;
+    v.muted = !v.muted;
+    setMuted(v.muted);
+  };
+
+  const goFullscreen = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    videoRef.current?.requestFullscreen?.();
+  };
+
+  const modal = (
+  <div
+    style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(0,0,0,0.92)', zIndex: 99999 }}
+    onClick={onClose}
+  >
+      {/* Portrait container — video fills everything, no white header */}
+      <div
+        className="relative rounded-3xl overflow-hidden shadow-2xl"
+        style={{
+          width: 'min(380px, 88vw)',
+          height: 'min(calc(100dvh - 3rem), calc(min(380px, 88vw) * 16 / 9))',
+          background: '#000',
+          lineHeight: 0,
+          fontSize: 0,
+        }}
+        onClick={e => e.stopPropagation()}
+        onMouseMove={scheduleHide}
+        onTouchStart={scheduleHide}
+      >
+        {/* Video fills the entire modal — no letterboxing */}
+        <video
+          ref={videoRef}
+          src={reel.videoUrl}
+          poster={reel.thumbnailUrl || undefined}
+          style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+          loop
+          playsInline
+          onClick={togglePlay}
+          onPlay={() => setPlaying(true)}
+          onPause={() => setPlaying(false)}
+        />
+       
+        {/* Top overlay: title + close — purely floating, no background box */}
+        <div className={`absolute top-0 left-0 right-0 z-10 px-4 pt-4 pb-8 bg-gradient-to-b from-black/75 via-black/30 to-transparent flex items-start justify-between transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="flex-1 min-w-0">
+            <p className="text-white font-bold text-sm leading-snug drop-shadow truncate">{reel.title}</p>
+            <span className="text-white/60 text-[11px] capitalize drop-shadow">{reel.category}</span>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-3 w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm text-white flex items-center justify-center hover:bg-black/80 transition-colors shrink-0"
+            aria-label="Close"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Center play/pause indicator (flash on tap) */}
+        <div
+          className={`absolute inset-0 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${!playing && showControls ? 'opacity-100' : 'opacity-0'}`}
+        >
+          <div className="w-16 h-16 rounded-full bg-black/50 flex items-center justify-center">
+            <svg className="w-8 h-8 text-white ml-1" fill="currentColor" viewBox="0 0 24 24">
+              <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Bottom overlay: mute + fullscreen */}
+        <div className={`absolute bottom-0 left-0 right-0 px-4 py-5 bg-gradient-to-t from-black/70 to-transparent flex items-end justify-between transition-opacity duration-300 ${showControls ? 'opacity-100' : 'opacity-0'}`}>
+          <div className="flex items-center gap-2 text-white/70 text-xs">
+            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+              <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41Z" clipRule="evenodd" />
+            </svg>
+            <span className="font-bold text-white">{fmtNum(reel.metrics.views)}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button onClick={toggleMute} className="w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/70 transition-colors">
+              {muted
+                ? <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM17.78 9.22a.75.75 0 1 0-1.06 1.06L18.44 12l-1.72 1.72a.75.75 0 1 0 1.06 1.06L19.5 13.06l1.72 1.72a.75.75 0 1 0 1.06-1.06L20.56 12l1.72-1.72a.75.75 0 1 0-1.06-1.06L19.5 10.94l-1.72-1.72Z" /></svg>
+                : <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M13.5 4.06c0-1.336-1.616-2.005-2.56-1.06l-4.5 4.5H4.508c-1.141 0-2.318.664-2.66 1.905A9.76 9.76 0 0 0 1.5 12c0 .898.121 1.768.35 2.595.341 1.24 1.518 1.905 2.659 1.905h1.93l4.5 4.5c.945.945 2.561.276 2.561-1.06V4.06ZM18.584 5.106a.75.75 0 0 1 1.06 0c3.808 3.807 3.808 9.98 0 13.788a.75.75 0 0 1-1.06-1.06 8.25 8.25 0 0 0 0-11.668.75.75 0 0 1 0-1.06Z" /></svg>
+              }
+            </button>
+            <button onClick={goFullscreen} className="w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center hover:bg-black/70 transition-colors">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  return createPortal(modal, document.body);
+}
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 function fmtNum(n: number): string {
@@ -120,6 +284,446 @@ function ScoreBar({ label, score, max, color }: { label: string; score: number; 
   );
 }
 
+// ── CONTENT CATEGORIES ────────────────────────────────────────────────────────
+const ALL_CATEGORIES = [
+  'beauty', 'fitness', 'tech', 'food', 'travel',
+  'gaming', 'lifestyle', 'finance', 'education', 'fashion',
+] as const;
+
+// ── Upload Metadata Modal ─────────────────────────────────────────────────────
+interface UploadModalProps {
+  file: File;
+  defaultCategory: string;
+  onConfirm: (meta: { title: string; description: string; category: string; thumbnailUrl: string }) => void;
+  onCancel: () => void;
+}
+
+function UploadModal({ file, defaultCategory, onConfirm, onCancel }: UploadModalProps) {
+  const [title, setTitle] = useState(file.name.replace(/\.[^.]+$/, ''));
+  const [description, setDescription] = useState('');
+  const [category, setCategory] = useState(defaultCategory);
+  const [thumbnailUrl, setThumbnailUrl] = useState('');
+  const [frameTime, setFrameTime] = useState(0);
+  const [videoDuration, setVideoDuration] = useState(0);
+  const [showFramePicker, setShowFramePicker] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const frameVideoRef = useRef<HTMLVideoElement>(null);
+  const thumbInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState('');
+  useEffect(() => {
+  const url = URL.createObjectURL(file);
+
+  setPreviewUrl(url);
+
+  return () => {
+    URL.revokeObjectURL(url);
+  };
+}, [file]);
+  const [frames, setFrames] = useState<string[]>([]);
+
+  useEffect(() => {
+    lockBody();
+    const handler = (e: KeyboardEvent) => { if (e.key === 'Escape') onCancel(); };
+    window.addEventListener('keydown', handler);
+    return () => { unlockBody(); window.removeEventListener('keydown', handler); };
+  }, [onCancel]);
+// const generateFrames = async () => {
+//   const video = frameVideoRef.current;
+
+//   if (!video) return;
+
+//   const canvas = document.createElement("canvas");
+//   canvas.width = 120;
+//   canvas.height = 200;
+
+//   const ctx = canvas.getContext("2d");
+
+//   const generatedFrames: string[] = [];
+
+//   const step = Math.max(video.duration / 10, 0.5);
+
+//   for (let t = 0; t < video.duration; t += step) {
+//     video.currentTime = t;
+
+//     await new Promise<void>((resolve) => {
+//       video.onseeked = () => resolve();
+//     });
+
+//     ctx?.drawImage(
+//       video,
+//       0,
+//       0,
+//       canvas.width,
+//       canvas.height
+//     );
+
+//     generatedFrames.push(
+//       canvas.toDataURL("image/jpeg", 0.7)
+//     );
+//   }
+
+//   setFrames(generatedFrames);
+// };
+
+  const handleFrameVideoLoad = async () => {
+  const v = frameVideoRef.current;
+
+  if (!v) return;
+
+  setVideoDuration(v.duration || 0);
+
+  v.currentTime = 0;
+
+  // await generateFrames();
+};
+
+  const handleScrub = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const t = parseFloat(e.target.value);
+    setFrameTime(t);
+    const v = frameVideoRef.current;
+    if (v) { v.currentTime = t; v.pause(); }
+  };
+
+  const captureFrame = () => {
+    const v = frameVideoRef.current;
+    if (!v) return;
+    const canvas = document.createElement('canvas');
+    canvas.width  = v.videoWidth  || 360;
+    canvas.height = v.videoHeight || 640;
+    canvas.getContext('2d')?.drawImage(v, 0, 0, canvas.width, canvas.height);
+    setThumbnailUrl(canvas.toDataURL('image/jpeg', 0.9));
+    setShowFramePicker(false);
+  };
+
+  const handleThumbFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const f = e.target.files?.[0];
+    if (!f) return;
+    setThumbnailUrl(URL.createObjectURL(f));
+    e.target.value = '';
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!title.trim()) return;
+    onConfirm({ title: title.trim(), description: description.trim(), category, thumbnailUrl });
+  };
+
+  return (
+    <div className="fixed inset-0 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.7)', zIndex: 9999 }} onClick={onCancel}>
+      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col"
+        style={{ maxHeight: 'calc(100dvh - 2rem)' }} onClick={e => e.stopPropagation()}>
+
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E1D8] shrink-0">
+          <h2 className="font-black text-[#1F1F1F] text-base">Upload Reel</h2>
+          <button type="button" onClick={onCancel}
+            className="w-8 h-8 rounded-full bg-[#F8EFF3] flex items-center justify-center text-[#6E6A65] hover:bg-[#E7E1D8]">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
+          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
+
+            {/* ── Video + thumbnail side by side ── */}
+            <div className="flex gap-4 items-start justify-center">
+              {/* Live video preview */}
+              <div className="shrink-0 rounded-2xl overflow-hidden"
+                style={{ width: 140, aspectRatio: '9/16', background: '#000', lineHeight: 0 }}>
+               <video
+ ref={videoRef}
+ src={previewUrl}
+ controls
+ autoPlay
+ muted
+ loop
+ playsInline
+ onLoadedMetadata={() => console.log("PREVIEW LOADED")}
+ onError={(e) => console.log("PREVIEW ERROR", e)}
+/>
+              </div>
+
+              {/* Thumbnail picker slot */}
+              <div className="shrink-0 rounded-2xl overflow-hidden border-2 border-dashed border-[#E7E1D8] hover:border-[#A8678A] cursor-pointer transition-colors flex items-center justify-center"
+                style={{ width: 140, aspectRatio: '9/16', background: '#F6F2E8', lineHeight: 0 }}
+                onClick={() => setShowFramePicker(true)}>
+                {thumbnailUrl ? (
+                  <img src={thumbnailUrl} alt="thumbnail"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }} />
+                ) : (
+                  <div className="flex flex-col items-center gap-2 p-3 text-center">
+                    <svg className="w-7 h-7 text-[#A8678A]" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m2.25 15.75 5.159-5.159a2.25 2.25 0 0 1 3.182 0l5.159 5.159m-1.5-1.5 1.409-1.409a2.25 2.25 0 0 1 3.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 0 0 1.5-1.5V6a1.5 1.5 0 0 0-1.5-1.5H3.75A1.5 1.5 0 0 0 2.25 6v12a1.5 1.5 0 0 0 1.5 1.5Z" />
+                    </svg>
+                    <span className="text-[10px] font-bold text-[#A8678A] leading-tight">Tap to pick thumbnail</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Thumbnail actions */}
+            <div className="flex items-center gap-2 flex-wrap">
+              <button type="button" onClick={() => setShowFramePicker(true)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#F8EFF3] border border-[#E7E1D8] text-[#A8678A] text-xs font-bold hover:bg-[#E7E1D8] transition-colors">
+                🎬 Pick frame from video
+              </button>
+              <button type="button" onClick={() => thumbInputRef.current?.click()}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#F6F2E8] border border-[#E7E1D8] text-[#6E6A65] text-xs font-bold hover:bg-[#E7E1D8] transition-colors">
+                🖼️ Upload image
+              </button>
+              {thumbnailUrl && (
+                <button type="button" onClick={() => setThumbnailUrl('')}
+                  className="text-xs font-bold text-red-500 hover:text-red-700 px-2 py-2">Remove</button>
+              )}
+              <input ref={thumbInputRef} type="file" accept="image/*" className="hidden" onChange={handleThumbFile} />
+            </div>
+
+            {/* ── Instagram-style frame picker ── */}
+            {showFramePicker && (
+              <div className="rounded-2xl overflow-hidden border border-[#E7E1D8]"
+                style={{ background: '#1a1a1a' }}>
+                {/* Frame preview — portrait */}
+                <div
+  className="flex items-center justify-center overflow-hidden rounded-t-2xl bg-black"
+  style={{
+    height: 380,
+  }}
+>
+<video
+  ref={frameVideoRef}
+  src={previewUrl}
+  className="w-full h-full object-contain"
+  controls
+  muted
+  playsInline
+  preload="auto"
+  onLoadedMetadata={() => {
+    console.log("VIDEO LOADED");
+    handleFrameVideoLoad();
+  }}
+  onError={(e) => {
+    console.log("VIDEO ERROR", e);
+  }}
+/>
+                </div>
+                {/* Scrubber */}
+                <div className="px-4 py-3 space-y-2">
+                  <p className="text-white/60 text-[10px] font-semibold text-center">
+                    Drag to choose thumbnail frame · {frameTime.toFixed(1)}s{videoDuration > 0 ? ` / ${videoDuration.toFixed(1)}s` : ''}
+                  </p>
+                  <input type="range" min={0} max={videoDuration || 1} step={0.05}
+                    value={frameTime} onChange={handleScrub}
+                    className="w-full h-1.5 rounded-full cursor-pointer accent-[#A8678A]" />
+                  <div className="flex gap-2 pt-1">
+                    <button type="button" onClick={() => setShowFramePicker(false)}
+                      className="flex-1 py-2 rounded-xl border border-white/20 text-white/70 text-xs font-bold hover:bg-white/10">
+                      Cancel
+                    </button>
+                    <button type="button" onClick={captureFrame}
+                      className="flex-1 py-2 rounded-xl bg-[#A8678A] text-white text-xs font-bold hover:opacity-90">
+                      Use this frame ✓
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Title */}
+            <div>
+              <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">
+                Title <span className="text-[#A8678A]">*</span>
+              </label>
+              <input value={title} onChange={e => setTitle(e.target.value)} required maxLength={80}
+                placeholder="Give your reel a catchy title..."
+                className="w-full px-4 py-2.5 bg-[#F6F2E8] border border-transparent rounded-xl text-sm text-[#1F1F1F] placeholder-[#9E9A97] focus:outline-none focus:bg-white focus:border-[#A8678A] focus:ring-2 focus:ring-[#A8678A]/20 transition-all" />
+            </div>
+
+            {/* Category */}
+            <div>
+              <label className="block text-xs font-bold text-[#1F1F1F] mb-2">Category</label>
+              <div className="flex flex-wrap gap-2">
+                {ALL_CATEGORIES.map(cat => (
+                  <button key={cat} type="button" onClick={() => setCategory(cat)}
+                    className={`px-3 py-1.5 rounded-full text-xs font-bold capitalize transition-all ${
+                      category === cat ? 'bg-[#1F1F1F] text-white' : 'bg-[#F8EFF3] text-[#A8678A] hover:bg-[#E7E1D8]'
+                    }`}>{cat}</button>
+                ))}
+              </div>
+            </div>
+
+            {/* Description */}
+            <div>
+              <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">
+                Description <span className="text-[#9E9A97] font-normal">(optional)</span>
+              </label>
+              <textarea value={description} onChange={e => setDescription(e.target.value)}
+                rows={3} maxLength={300}
+                placeholder="Describe your reel — brand, campaign, context..."
+                className="w-full px-4 py-2.5 bg-[#F6F2E8] border border-transparent rounded-xl text-sm text-[#1F1F1F] placeholder-[#9E9A97] focus:outline-none focus:bg-white focus:border-[#A8678A] focus:ring-2 focus:ring-[#A8678A]/20 transition-all resize-none" />
+              <p className="text-[10px] text-[#9E9A97] text-right mt-1">{description.length}/300</p>
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E7E1D8] bg-[#F6F2E8] shrink-0 rounded-b-3xl">
+            <button type="button" onClick={onCancel}
+              className="px-5 py-2.5 rounded-xl text-sm font-bold text-[#6E6A65] hover:bg-[#E7E1D8] transition-colors">
+              Cancel
+            </button>
+            <button type="submit"
+              className="px-6 py-2.5 rounded-xl text-sm font-black bg-[#1F1F1F] text-white hover:opacity-90 flex items-center gap-2">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+              </svg>
+              Publish Reel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── ReelCard component ────────────────────────────────────────────────────────
+interface ReelCardProps {
+  reel: Reel;
+  isPinned: boolean;
+  isOwnProfile: boolean;
+  isDragOver?: boolean;
+  onPlay: () => void;
+  onPin: () => void;
+  onDelete: () => void;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragOver?: (e: React.DragEvent) => void;
+  onDrop?: (e: React.DragEvent) => void;
+}
+
+function ReelCard({ reel, isPinned, isOwnProfile, isDragOver, onPlay, onPin, onDelete, onDragStart, onDragOver, onDrop }: ReelCardProps) {
+  return (
+    <div
+      className={`group cursor-pointer transition-all duration-200 ${isDragOver ? 'scale-95 opacity-60' : ''}`}
+      draggable={isPinned && isOwnProfile}
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      {/* Portrait thumbnail */}
+      <div
+        className={`relative rounded-2xl overflow-hidden bg-[#1F1F1F] aspect-[9/16] ${
+          isPinned ? 'ring-2 ring-[#A8678A] ring-offset-2' : ''
+        }`}
+        onClick={onPlay}
+      >
+        {reel.thumbnailUrl ? (
+          <img src={reel.thumbnailUrl} alt={reel.title}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        ) : (
+          <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#2a2a2a] to-[#1a1a1a]">
+            <svg className="w-10 h-10 text-white/20 mb-2" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+          </div>
+        )}
+
+        {/* Gradient scrim */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+
+        {/* Top-left: category chip OR pinned badge */}
+        {isPinned ? (
+          <span className="absolute top-2.5 left-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-black bg-[#A8678A] text-white">
+            📌 Pinned
+          </span>
+        ) : (
+          <span className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-[10px] font-black capitalize bg-white/90 text-[#1F1F1F]">
+            {reel.category}
+          </span>
+        )}
+
+        {/* Top-right: action buttons on hover (own profile only) */}
+        {isOwnProfile && (
+          <div className="absolute top-2.5 right-2.5 flex flex-col gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            {/* Pin / unpin */}
+            <button
+              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors text-sm ${
+                isPinned ? 'bg-[#A8678A] text-white' : 'bg-black/60 text-white hover:bg-[#A8678A]'
+              }`}
+              onClick={e => { e.stopPropagation(); onPin(); }}
+              title={isPinned ? 'Unpin reel' : 'Pin reel'}
+            >
+              📌
+            </button>
+            {/* Delete */}
+            <button
+              className="w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors"
+              onClick={e => { e.stopPropagation(); onDelete(); }}
+              aria-label="Delete reel"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
+              </svg>
+            </button>
+          </div>
+        )}
+
+        {/* "Featured by Creator" label for pinned */}
+        {isPinned && (
+          <span className="absolute bottom-9 left-2.5 right-2.5 text-center text-[9px] font-black text-white/70 uppercase tracking-widest">
+            Featured by Creator
+          </span>
+        )}
+
+        {/* Center play button */}
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-11 h-11 rounded-full bg-white/85 group-hover:bg-white group-hover:scale-110 flex items-center justify-center shadow-lg transition-all duration-200">
+            <svg className="w-5 h-5 text-[#1F1F1F] ml-0.5" fill="currentColor" viewBox="0 0 24 24">
+              <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
+            </svg>
+          </div>
+        </div>
+
+        {/* Views — bottom left */}
+        <div className="absolute bottom-2.5 left-2.5 flex items-center gap-1 text-white text-xs font-bold">
+          <svg className="w-3.5 h-3.5 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M10 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+            <path fillRule="evenodd" d="M.664 10.59a1.651 1.651 0 0 1 0-1.186A10.004 10.004 0 0 1 10 3c4.257 0 7.893 2.66 9.336 6.41.147.381.146.804 0 1.186A10.004 10.004 0 0 1 10 17c-4.257 0-7.893-2.66-9.336-6.41Z" clipRule="evenodd" />
+          </svg>
+          {fmtNum(reel.metrics.views)}
+        </div>
+
+        {/* Duration — bottom right */}
+        <span className="absolute bottom-2.5 right-2.5 px-1.5 py-0.5 rounded bg-black/60 text-white text-[10px] font-bold">
+          0:30
+        </span>
+      </div>
+
+      {/* Stats below */}
+      <div className="pt-2.5 px-0.5">
+        <p className="text-xs font-bold text-[#1F1F1F] line-clamp-2 leading-snug mb-1.5">{reel.title}</p>
+        <div className="flex items-center gap-3 text-[11px] text-[#6E6A65]">
+          <span className="flex items-center gap-1">
+            <svg className="w-3 h-3 text-[#A8678A]" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9.653 16.915l-.005-.003-.019-.01a20.759 20.759 0 01-1.162-.682 22.045 22.045 0 01-2.582-2.184C4.045 12.733 2 10.352 2 7.5a4.5 4.5 0 018-2.828A4.5 4.5 0 0118 7.5c0 2.852-2.044 5.233-3.885 6.82a22.049 22.049 0 01-3.744 2.915l-.018.01-.006.003-.001.001-.002.001a.752.752 0 01-.704 0l-.003-.001z" />
+            </svg>
+            {fmtNum(reel.metrics.likes)}
+          </span>
+          <span className="flex items-center gap-1">
+            <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 8.25h9m-9 3H12m-9.75 1.51c0 1.6 1.123 2.994 2.707 3.227 1.129.166 2.27.293 3.423.379.35.026.67.21.865.501L12 21l2.755-4.133a1.14 1.14 0 01.865-.501 48.172 48.172 0 003.423-.379c1.584-.233 2.707-1.626 2.707-3.228V6.741c0-1.602-1.123-2.995-2.707-3.228A48.394 48.394 0 0012 3c-2.392 0-4.744.175-7.043.513C3.373 3.746 2.25 5.14 2.25 6.741v6.018Z" />
+            </svg>
+            {fmtNum(reel.metrics.comments)}
+          </span>
+          <span className="ml-auto font-black text-[#1F1F1F]">
+            {(reel.metrics.engagementRate * 100).toFixed(1)}%
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 export default function CreatorProfilePage() {
   const { id } = useParams<{ id: string }>();
@@ -127,7 +731,14 @@ export default function CreatorProfilePage() {
   const { creator, loadCreator } = useCreatorStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'portfolio' | 'about' | 'reviews'>('portfolio');
+  const [activeTab, setActiveTab] = useState<'reels' | 'about' | 'reviews'>('reels');
+  const [reels, setReels] = useState<Reel[]>([]);
+  const [pinnedIds, setPinnedIds] = useState<string[]>([]);
+  const [dragOverId, setDragOverId] = useState<string | null>(null);
+  const [activeReel, setActiveReel] = useState<Reel | null>(null);
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const uploadRef = useRef<HTMLInputElement>(null);
+  const navigate = useNavigate();
 
   const profileId = id === 'me' ? currentUser?.id : id;
   const isOwnProfile = currentUser?.id === profileId || creator?.userId === currentUser?.id;
@@ -140,6 +751,120 @@ export default function CreatorProfilePage() {
       .catch((err: unknown) => setError((err as Error).message || 'Failed to load profile.'))
       .finally(() => setLoading(false));
   }, [profileId, loadCreator]);
+
+  // Seed reels from portfolio data (treat mediaUrl as thumbnail, use empty videoUrl)
+  useEffect(() => {
+    if (!creator) return;
+
+    // ── HARDCODED reel: Dot and Key Collaboration (only for creator-1 / Maya Chen) ──
+    const hardcodedReel: Reel = {
+      id: 'hardcoded-dotandkey-reel',
+      title: 'Dot and Key Collaboration',
+      description: 'A fun and authentic collaboration with Dot & Key Skincare — showcasing their sunscreen range with a real daily-use review. Achieved over 120K organic views and 9.7% engagement rate.',
+      category: 'beauty',
+      thumbnailUrl: '',          // no static thumbnail — video will show first frame
+      videoUrl: '/instareel.mp4',
+      metrics: { views: 120000, likes: 9800, comments: 1200, engagementRate: 0.097 },
+      createdAt: '2024-03-15T10:00:00Z',
+      campaignId: 'camp-1',
+    };
+
+    const portfolioReels: Reel[] = creator.portfolio.map((item) => ({
+      id: item.id,
+      title: item.title,
+      description: item.description,
+      category: item.category,
+      thumbnailUrl: item.mediaUrl,
+      videoUrl: '',
+      metrics: {
+        views: item.metrics.views,
+        likes: item.metrics.likes,
+        comments: item.metrics.comments,
+        engagementRate: item.metrics.engagementRate,
+      },
+      createdAt: item.createdAt,
+      campaignId: item.campaignId,
+    }));
+
+    // Put hardcoded reel first, then portfolio reels (deduplicated by id)
+    const deduped = portfolioReels.filter(r => r.id !== hardcodedReel.id);
+    setReels([hardcodedReel, ...deduped]);
+  }, [creator]);
+
+  const handleFileSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('video/')) {
+      alert('Please select a video file.');
+      return;
+    }
+    setPendingFile(file);
+    e.target.value = '';
+  };
+
+  const handleConfirmUpload = (meta: { title: string; description: string; category: string; thumbnailUrl: string }) => {
+    if (!pendingFile) return;
+    const blobUrl = URL.createObjectURL(pendingFile);
+    const newReel: Reel = {
+      id: `reel-${Date.now()}`,
+      title: meta.title,
+      description: meta.description || 'Uploaded reel',
+      category: meta.category,
+      thumbnailUrl: meta.thumbnailUrl,
+      videoUrl: blobUrl,
+      metrics: { views: 0, likes: 0, comments: 0, engagementRate: 0 },
+      createdAt: new Date().toISOString(),
+      campaignId: null,
+    };
+    setReels(prev => [newReel, ...prev]);
+    setPendingFile(null);
+  };
+
+  const handleDeleteReel = (reelId: string) => {
+    setReels(prev => prev.filter(r => r.id !== reelId));
+    setPinnedIds(prev => prev.filter(id => id !== reelId));
+  };
+
+  const MAX_PINS = 6;
+
+  const handleTogglePin = (reelId: string) => {
+    setPinnedIds(prev => {
+      if (prev.includes(reelId)) return prev.filter(id => id !== reelId);
+      if (prev.length >= MAX_PINS) { alert(`You can pin up to ${MAX_PINS} reels.`); return prev; }
+      return [...prev, reelId];
+    });
+  };
+
+  // Drag-and-drop reordering for pinned reels
+  const handleDragStart = (e: React.DragEvent, reelId: string) => {
+    e.dataTransfer.setData('reelId', reelId);
+  };
+  const handleDragOver = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    setDragOverId(targetId);
+  };
+  const handleDrop = (e: React.DragEvent, targetId: string) => {
+    e.preventDefault();
+    const sourceId = e.dataTransfer.getData('reelId');
+    if (sourceId === targetId) { setDragOverId(null); return; }
+    setPinnedIds(prev => {
+      const arr = [...prev];
+      const fromIdx = arr.indexOf(sourceId);
+      const toIdx = arr.indexOf(targetId);
+      if (fromIdx === -1 || toIdx === -1) return prev;
+      arr.splice(fromIdx, 1);
+      arr.splice(toIdx, 0, sourceId);
+      return arr;
+    });
+    setDragOverId(null);
+  };
+
+  // Sync pinned reels to sessionStorage so AIPortfolioGeneratorPage can read them
+  useEffect(() => {
+    const pinned = reels.filter(r => pinnedIds.includes(r.id));
+    sessionStorage.setItem('pinnedReels', JSON.stringify(pinned));
+    sessionStorage.setItem('allReels', JSON.stringify(reels));
+  }, [pinnedIds, reels]);
 
   if (loading) {
     return (
@@ -452,77 +1177,129 @@ export default function CreatorProfilePage() {
         </div>
       </div>
 
-      {/* ── PORTFOLIO TAB ──────────────────────────────────────────────── */}
+      {/* ── REELS TAB ──────────────────────────────────────────────────── */}
       <div>
         {/* Tab bar */}
-        <div className="flex gap-1 bg-white border border-[#E7E1D8] rounded-2xl p-1.5 shadow-none w-fit mb-5">
-          {(['portfolio', 'about', 'reviews'] as const).map((tab) => (
+        <div className="flex gap-1 bg-white border border-[#E7E1D8] rounded-2xl p-1.5 w-fit mb-5">
+          {(['reels', 'about', 'reviews'] as const).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
                 activeTab === tab
-                  ? 'bg-[#1F1F1F] text-white shadow-none'
+                  ? 'bg-[#1F1F1F] text-white'
                   : 'text-[#6E6A65] hover:text-[#1F1F1F] hover:bg-[#F8EFF3]'
               }`}>
-              {tab === 'portfolio' ? '🎨 Portfolio' : tab === 'about' ? '👤 About' : '⭐ Reviews'}
+              {tab === 'reels' ? '🎬 Reels' : tab === 'about' ? '👤 About' : '⭐ Reviews'}
             </button>
           ))}
         </div>
 
-        {/* Portfolio grid */}
-        {activeTab === 'portfolio' && (
-          creator.portfolio.length === 0 ? (
-            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-12 text-center shadow-card">
-              <div className="text-5xl mb-4">🎨</div>
-              <p className="text-[#1F1F1F] font-bold mb-1">No portfolio items yet</p>
-              <p className="text-[#6E6A65] text-sm mb-5">Showcase your best work to attract brands.</p>
+        {/* ── Reels grid ── */}
+        {activeTab === 'reels' && (
+          <div>
+            {/* Section header */}
+            <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
+              <p className="text-sm text-[#6E6A65] font-medium">
+                {reels.length} {reels.length === 1 ? 'reel' : 'reels'}
+                {pinnedIds.length > 0 && <span className="ml-2 text-[#A8678A] font-bold">· {pinnedIds.length} pinned</span>}
+              </p>
               {isOwnProfile && (
-                <div className="flex justify-center gap-3">
-                  <Link to="/creator/me/portfolio" className="px-5 py-2.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-2xl shadow-none hover:opacity-90">
-                    + Add Work
-                  </Link>
-                  <Link to="/creator/me/ai-templates" className="px-5 py-2.5 border border-[#E7E1D8] text-[#1F1F1F] font-bold text-xs rounded-2xl hover:bg-[#F8EFF3]">
-                    ✨ AI Templates
-                  </Link>
+                <div className="flex items-center gap-2">
+                  {/* AI Portfolio button */}
+                  <button
+                    onClick={() => navigate('/creator/me/ai-portfolio')}
+                    className="flex items-center gap-1.5 px-3 py-2 bg-[#F8EFF3] border border-[#A8678A]/30 text-[#A8678A] font-bold text-xs rounded-xl hover:bg-[#E7E1D8] transition-colors"
+                  >
+                    ✨ Create Portfolio with AI
+                  </button>
+                  <button
+                    onClick={() => uploadRef.current?.click()}
+                    className="flex items-center gap-2 px-4 py-2 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90 transition-opacity"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5" />
+                    </svg>
+                    Upload Reel
+                  </button>
+                  <input ref={uploadRef} type="file" accept="video/*" className="hidden" onChange={handleFileSelected} />
                 </div>
               )}
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-              {creator.portfolio.map((item) => (
-                <div key={item.id} className="bg-white border border-[#E7E1D8] rounded-[20px] overflow-hidden shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
-                  <div className="relative h-44 overflow-hidden bg-[#F8EFF3]">
-                    <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" />
-                    <span className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize ${CAT_COLORS[item.category] ?? 'bg-[#F8EFF3] text-[#A8678A]'}`}>
-                      {item.category}
-                    </span>
-                    {item.campaignId && (
-                      <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F8EFF3] text-[#A8678A]">
-                        📢 Campaign
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-4 flex flex-col flex-1">
-                    <h4 className="font-bold text-[#1F1F1F] text-sm leading-snug mb-1">{item.title}</h4>
-                    <p className="text-xs text-[#6E6A65] leading-relaxed line-clamp-2 mb-4 flex-1">{item.description}</p>
-                    <div className="grid grid-cols-4 gap-1 border-t border-[#E7E1D8] pt-3">
-                      {[
-                        { icon: '👁️', val: fmtNum(item.metrics.views),    label: 'Views' },
-                        { icon: '❤️', val: fmtNum(item.metrics.likes),    label: 'Likes' },
-                        { icon: '💬', val: fmtNum(item.metrics.comments), label: 'Comments' },
-                        { icon: '📈', val: `${(item.metrics.engagementRate * 100).toFixed(1)}%`, label: 'ER' },
-                      ].map(({ icon, val, label }) => (
-                        <div key={label} className="text-center">
-                          <div className="text-base">{icon}</div>
-                          <div className="text-xs font-black text-[#1F1F1F]">{val}</div>
-                          <div className="text-[10px] text-[#6E6A65]">{label}</div>
-                        </div>
-                      ))}
+
+            {reels.length === 0 ? (
+              <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-16 text-center">
+                <div className="w-16 h-16 rounded-2xl bg-[#F8EFF3] flex items-center justify-center mx-auto mb-4 text-3xl">🎬</div>
+                <p className="text-[#1F1F1F] font-bold mb-1">No reels yet</p>
+                <p className="text-[#6E6A65] text-sm mb-5">Upload your first reel to showcase your content.</p>
+                {isOwnProfile && (
+                  <button onClick={() => uploadRef.current?.click()}
+                    className="px-6 py-2.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90">
+                    + Upload Reel
+                  </button>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-6">
+
+                {/* ── PINNED REELS section ── */}
+                {pinnedIds.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="text-base">📌</span>
+                      <p className="text-xs font-black uppercase tracking-wider text-[#A8678A]">
+                        Pinned Reels ({pinnedIds.length}/{MAX_PINS})
+                      </p>
+                      {isOwnProfile && (
+                        <span className="text-[10px] text-[#9E9A97] ml-1">drag to reorder</span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                      {pinnedIds.map(pid => {
+                        const reel = reels.find(r => r.id === pid);
+                        if (!reel) return null;
+                        return (
+                          <ReelCard
+                            key={reel.id}
+                            reel={reel}
+                            isPinned={true}
+                            isOwnProfile={isOwnProfile}
+                            isDragOver={dragOverId === reel.id}
+                            onPlay={() => setActiveReel(reel)}
+                            onPin={() => handleTogglePin(reel.id)}
+                            onDelete={() => handleDeleteReel(reel.id)}
+                            onDragStart={e => handleDragStart(e, reel.id)}
+                            onDragOver={e => handleDragOver(e, reel.id)}
+                            onDrop={e => handleDrop(e, reel.id)}
+                          />
+                        );
+                      })}
                     </div>
                   </div>
+                )}
+
+                {/* ── ALL REELS section ── */}
+                <div>
+                  {pinnedIds.length > 0 && (
+                    <p className="text-xs font-black uppercase tracking-wider text-[#6E6A65] mb-3">All Reels</p>
+                  )}
+                  <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+                    {reels.map(reel => (
+                      <ReelCard
+                        key={reel.id}
+                        reel={reel}
+                        isPinned={pinnedIds.includes(reel.id)}
+                        isOwnProfile={isOwnProfile}
+                        isDragOver={false}
+                        onPlay={() => setActiveReel(reel)}
+                        onPin={() => handleTogglePin(reel.id)}
+                        onDelete={() => handleDeleteReel(reel.id)}
+                      />
+                    ))}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )
+
+              </div>
+            )}
+          </div>
         )}
 
         {/* About tab */}
@@ -556,6 +1333,21 @@ export default function CreatorProfilePage() {
           </div>
         )}
       </div>
+
+      {/* ── VIDEO MODAL ─────────────────────────────────────────────────── */}
+      {activeReel && (
+        <VideoModal reel={activeReel} onClose={() => setActiveReel(null)} />
+      )}
+
+      {/* ── UPLOAD METADATA MODAL ───────────────────────────────────────── */}
+      {pendingFile && (
+        <UploadModal
+          file={pendingFile}
+          defaultCategory={creator.contentCategories[0] ?? 'lifestyle'}
+          onConfirm={handleConfirmUpload}
+          onCancel={() => setPendingFile(null)}
+        />
+      )}
 
     </div>
   );

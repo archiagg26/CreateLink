@@ -12,6 +12,7 @@ const BrandOnboardingPage = lazy(() => import('../pages/BrandOnboardingPage'));
 const CreatorProfilePage = lazy(() => import('../pages/CreatorProfilePage'));
 const PortfolioEditorPage = lazy(() => import('../pages/PortfolioEditorPage'));
 const AITemplateGeneratorPage = lazy(() => import('../pages/AITemplateGeneratorPage'));
+const AIPortfolioGeneratorPage = lazy(() => import('../pages/AIPortfolioGeneratorPage'));
 const BrandProfilePage = lazy(() => import('../pages/BrandProfilePage'));
 const CampaignEditorPage = lazy(() => import('../pages/CampaignEditorPage'));
 const SwipeReviewPage = lazy(() => import('../pages/SwipeReviewPage'));
@@ -133,6 +134,14 @@ const router = createBrowserRouter([
                 element: (
                   <Suspense fallback={<LoadingFallback />}>
                     <PortfolioEditorPage />
+                  </Suspense>
+                ),
+              },
+              {
+                path: '/creator/me/ai-portfolio',
+                element: (
+                  <Suspense fallback={<LoadingFallback />}>
+                    <AIPortfolioGeneratorPage />
                   </Suspense>
                 ),
               },
