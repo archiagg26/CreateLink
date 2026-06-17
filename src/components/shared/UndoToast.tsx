@@ -55,13 +55,13 @@ export function UndoToast({
       role="status"
       aria-live="polite"
       aria-atomic="true"
-      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-lg bg-gray-900 px-4 py-3 text-white shadow-lg"
+      className="fixed bottom-6 right-6 z-50 flex items-center gap-3 rounded-lg bg-[#1F1F1F] px-4 py-3 text-white shadow-lg"
     >
       <span className="text-sm">{message}</span>
       <button
         type="button"
         onClick={handleUndo}
-        className="rounded bg-white px-3 py-1 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-gray-900"
+        className="rounded bg-white px-3 py-1 text-sm font-semibold text-[#1F1F1F] transition-colors hover:bg-[#F8EFF3] focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-[#1F1F1F]"
       >
         Undo
       </button>
@@ -72,7 +72,7 @@ export function UndoToast({
           onDismiss();
         }}
         aria-label="Dismiss"
-        className="ml-1 rounded p-0.5 text-gray-400 transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-1 focus:ring-offset-gray-900"
+        className="ml-1 rounded p-0.5 text-[#6E6A65] transition-colors hover:text-white focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-1 focus:ring-offset-[#1F1F1F]"
       >
         {/* Close icon */}
         <svg

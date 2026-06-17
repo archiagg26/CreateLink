@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useCreatorStore } from '../stores/creatorStore';
@@ -12,16 +12,16 @@ function fmtNum(n: number): string {
 }
 
 const CAT_COLORS: Record<string, string> = {
-  beauty:    'bg-pink-100 text-pink-600',
-  fitness:   'bg-green-100 text-green-700',
-  tech:      'bg-blue-100 text-blue-700',
-  food:      'bg-orange-100 text-orange-700',
-  travel:    'bg-cyan-100 text-cyan-700',
-  gaming:    'bg-purple-100 text-purple-700',
-  lifestyle: 'bg-amber-100 text-amber-700',
-  finance:   'bg-emerald-100 text-emerald-700',
-  education: 'bg-indigo-100 text-indigo-700',
-  fashion:   'bg-rose-100 text-rose-700',
+  beauty:    'bg-[#F8EFF3] text-[#A8678A]',
+  fitness:   'bg-[#F8EFF3] text-[#A8678A]',
+  tech:      'bg-[#F8EFF3] text-[#A8678A]',
+  food:      'bg-[#F8EFF3] text-[#A8678A]',
+  travel:    'bg-[#F8EFF3] text-[#A8678A]',
+  gaming:    'bg-[#F8EFF3] text-[#A8678A]',
+  lifestyle: 'bg-[#F8EFF3] text-[#A8678A]',
+  finance:   'bg-[#F8EFF3] text-[#A8678A]',
+  education: 'bg-[#F8EFF3] text-[#A8678A]',
+  fashion:   'bg-[#F8EFF3] text-[#A8678A]',
 };
 
 const PLATFORM_SVG: Record<string, JSX.Element> = {
@@ -111,11 +111,11 @@ function ScoreBar({ label, score, max, color }: { label: string; score: number; 
   const pct = (score / max) * 100;
   return (
     <div className="flex items-center gap-3">
-      <span className="text-sm text-slate-600 w-44 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+      <span className="text-sm text-[#6E6A65] w-44 shrink-0">{label}</span>
+      <div className="flex-1 h-2 bg-[#F6F2E8] rounded-full overflow-hidden">
         <div className={`h-full rounded-full score-bar ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-sm font-bold text-slate-700 w-16 text-right shrink-0">{score}/{max}</span>
+      <span className="text-sm font-bold text-[#1F1F1F] w-16 text-right shrink-0">{score}/{max}</span>
     </div>
   );
 }
@@ -144,20 +144,20 @@ export default function CreatorProfilePage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-32">
-        <div className="w-12 h-12 rounded-full bg-brand-gradient flex items-center justify-center text-white font-black text-lg shadow-glow animate-pulse mb-4">CL</div>
-        <div className="w-8 h-8 border-4 border-brand-400 border-t-transparent rounded-full animate-spin mb-3" />
-        <p className="text-slate-500 text-sm font-medium">Loading profile...</p>
+        <div className="w-12 h-12 rounded-full bg-[#1F1F1F] flex items-center justify-center text-white font-black text-lg mb-4">CL</div>
+        <div className="w-8 h-8 border-4 border-[#A8678A] border-t-transparent rounded-full animate-spin mb-3" />
+        <p className="text-[#6E6A65] text-sm font-medium">Loading profile...</p>
       </div>
     );
   }
 
   if (error || !creator) {
     return (
-      <div className="text-center py-24 bg-white border border-purple-100 rounded-3xl shadow-card">
+      <div className="text-center py-24 bg-white border border-[#E7E1D8] rounded-[20px] shadow-card">
         <div className="text-5xl mb-4">😕</div>
-        <p className="text-slate-700 font-bold text-lg mb-1">{error || 'Profile not found'}</p>
-        <p className="text-slate-400 text-sm mb-6">We couldn't find this creator's profile.</p>
-        <Link to="/feed" className="inline-block px-6 py-2.5 bg-brand-gradient text-white font-bold text-sm rounded-2xl shadow-glow hover:opacity-90">
+        <p className="text-[#1F1F1F] font-bold text-lg mb-1">{error || 'Profile not found'}</p>
+        <p className="text-[#6E6A65] text-sm mb-6">We couldn't find this creator's profile.</p>
+        <Link to="/feed" className="inline-block px-6 py-2.5 bg-[#1F1F1F] text-white font-bold text-sm rounded-2xl shadow-soft hover:opacity-90">
           ← Back to Feed
         </Link>
       </div>
@@ -180,26 +180,26 @@ export default function CreatorProfilePage() {
     <div className="space-y-5 pb-12 max-w-5xl mx-auto">
 
       {/* ── HERO CARD ──────────────────────────────────────────────────── */}
-      <div className="rounded-3xl overflow-hidden shadow-card border border-purple-100"
-        style={{ background: 'linear-gradient(135deg, #fdf4ff 0%, #fef3f2 40%, #fff7ed 100%)' }}>
+      <div className="rounded-[20px] overflow-hidden shadow-card border border-[#E7E1D8]"
+        style={{ background: '#F8EFF3' }}>
 
         {/* Top area: avatar + name + CTAs */}
         <div className="px-6 pt-6 pb-0 flex flex-col sm:flex-row gap-5 items-start sm:items-center">
           {/* Avatar with online dot */}
           <div className="relative shrink-0">
             <img src={creator.avatarUrl} alt={creator.displayName}
-              className="w-24 h-24 rounded-full border-4 border-white shadow-glow object-cover bg-purple-50" />
+              className="w-24 h-24 rounded-full border-4 border-white shadow-soft object-cover bg-white" />
             <span className="absolute bottom-2 right-2 w-4 h-4 rounded-full bg-emerald-400 border-2 border-white" />
           </div>
 
           {/* Name block */}
           <div className="flex-1 min-w-0">
             <div className="flex flex-wrap items-center gap-2.5 mb-1">
-              <h1 className="text-2xl font-black text-slate-900">{creator.displayName}</h1>
+              <h1 className="text-2xl font-black text-[#1F1F1F]">{creator.displayName}</h1>
               <VerificationBadge status={creator.verificationStatus} size="sm" />
             </div>
-            <p className="text-slate-500 text-sm mb-2">{creator.contentCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ')} Creator</p>
-            <p className="text-slate-400 text-xs flex items-center gap-1 mb-3">
+            <p className="text-[#6E6A65] text-sm mb-2">{creator.contentCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ')} Creator</p>
+            <p className="text-[#6E6A65] text-xs flex items-center gap-1 mb-3">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
@@ -215,7 +215,7 @@ export default function CreatorProfilePage() {
                 </span>
               ))}
               {creator.contentCategories.length > 2 && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-slate-100 text-slate-600">+2</span>
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F8EFF3] text-[#A8678A]">+2</span>
               )}
             </div>
           </div>
@@ -223,12 +223,12 @@ export default function CreatorProfilePage() {
           {/* Social icons */}
           <div className="hidden sm:flex items-center gap-2 shrink-0">
             {creator.socialAccounts.map((acc, i) => (
-              <div key={i} className="w-8 h-8 rounded-full bg-white shadow-soft border border-purple-100 flex items-center justify-center">
+              <div key={i} className="w-8 h-8 rounded-full bg-white shadow-soft border border-[#E7E1D8] flex items-center justify-center">
                 {PLATFORM_SVG[acc.platform] ?? <span className="text-xs">🔗</span>}
               </div>
             ))}
-            <div className="w-8 h-8 rounded-full bg-white shadow-soft border border-purple-100 flex items-center justify-center">
-              <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <div className="w-8 h-8 rounded-full bg-white shadow-soft border border-[#E7E1D8] flex items-center justify-center">
+              <svg className="w-4 h-4 text-[#6E6A65]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" />
               </svg>
             </div>
@@ -238,15 +238,15 @@ export default function CreatorProfilePage() {
           <div className="flex items-center gap-2 shrink-0">
             {isOwnProfile ? (
               <Link to="/creator/me/portfolio"
-                className="px-4 py-2 bg-brand-gradient text-white font-bold text-xs rounded-xl shadow-glow hover:opacity-90 transition-opacity">
+                className="px-4 py-2 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl shadow-soft hover:opacity-90 transition-opacity">
                 ✏️ Edit Profile
               </Link>
             ) : (
-              <button className="px-5 py-2 bg-brand-gradient text-white font-bold text-xs rounded-xl shadow-glow hover:opacity-90 transition-opacity">
+              <button className="px-5 py-2 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl shadow-soft hover:opacity-90 transition-opacity">
                 Contact Creator
               </button>
             )}
-            <button className="px-4 py-2 bg-white border border-purple-200 text-slate-700 font-bold text-xs rounded-xl hover:bg-brand-50 transition-colors flex items-center gap-1.5">
+            <button className="px-4 py-2 bg-white border border-[#E7E1D8] text-[#1F1F1F] font-bold text-xs rounded-xl hover:bg-[#F8EFF3] transition-colors flex items-center gap-1.5">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L12 17.25 4.5 21V5.507c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0Z" />
               </svg>
@@ -256,7 +256,7 @@ export default function CreatorProfilePage() {
         </div>
 
         {/* Mini stats row */}
-        <div className="flex flex-wrap gap-6 px-6 py-4 mt-2 border-t border-white/60">
+        <div className="flex flex-wrap gap-6 px-6 py-4 mt-2 border-t border-[#E7E1D8]">
           {[
             { icon: '🎯', value: '5+ Years', label: 'Experience' },
             { icon: '🏷️', value: '150+ Brands', label: 'Collaborated' },
@@ -265,8 +265,8 @@ export default function CreatorProfilePage() {
             <div key={label} className="flex items-center gap-2">
               <span className="text-base">{icon}</span>
               <div>
-                <p className="text-xs font-black text-slate-800">{value}</p>
-                <p className="text-[10px] text-slate-400">{label}</p>
+                <p className="text-xs font-black text-[#1F1F1F]">{value}</p>
+                <p className="text-[10px] text-[#6E6A65]">{label}</p>
               </div>
             </div>
           ))}
@@ -279,42 +279,42 @@ export default function CreatorProfilePage() {
           {
             label: 'Trust Score',
             value: String(creator.trustScore),
-            valueColor: 'text-brand-600',
-            sparkColor: '#a78bfa',
+            valueColor: 'text-[#A8678A]',
+            sparkColor: '#A8678A',
             up: true,
           },
           {
             label: 'Total Followers',
             value: fmtNum(totalFollowers),
-            valueColor: 'text-pink-500',
-            sparkColor: '#f472b6',
+            valueColor: 'text-[#1F1F1F]',
+            sparkColor: '#1F1F1F',
             up: true,
           },
           {
             label: 'Avg. Engagement',
             value: `${(creator.insights.averageEngagementRate * 100).toFixed(1)}%`,
-            valueColor: 'text-emerald-600',
-            sparkColor: '#34d399',
+            valueColor: 'text-[#1F1F1F]',
+            sparkColor: '#1F1F1F',
             up: true,
           },
           {
             label: 'Collabs Done',
             value: String(creator.insights.collaborationCount),
-            valueColor: 'text-blue-500',
-            sparkColor: '#60a5fa',
+            valueColor: 'text-[#1F1F1F]',
+            sparkColor: '#1F1F1F',
             up: false,
           },
           {
             label: 'Success Rate',
             value: `${(creator.insights.successRate * 100).toFixed(0)}%`,
-            valueColor: 'text-amber-500',
-            sparkColor: '#fbbf24',
+            valueColor: 'text-[#A8678A]',
+            sparkColor: '#A8678A',
             up: true,
           },
         ].map(({ label, value, valueColor, sparkColor, up }) => (
-          <div key={label} className="bg-white border border-purple-100 rounded-2xl p-4 shadow-soft flex flex-col gap-2">
+          <div key={label} className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 flex flex-col gap-2">
             <p className={`text-xl font-black ${valueColor}`}>{value}</p>
-            <p className="text-xs text-slate-500 font-medium leading-tight">{label}</p>
+            <p className="text-xs text-[#6E6A65] font-medium leading-tight">{label}</p>
             <Sparkline color={sparkColor} up={up} />
           </div>
         ))}
@@ -324,13 +324,13 @@ export default function CreatorProfilePage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
         {/* Trust Score Panel */}
-        <div className="bg-white border border-purple-100 rounded-3xl p-6 shadow-card flex flex-col gap-4">
+        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-brand-600" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-[#A8678A]" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
-            <h3 className="font-black text-slate-900 text-base">Creator Trust Score</h3>
-            <span className="ml-auto text-slate-400 cursor-help" title="How the score is calculated">
+            <h3 className="font-black text-[#1F1F1F] text-base">Creator Trust Score</h3>
+            <span className="ml-auto text-[#6E6A65] cursor-help" title="How the score is calculated">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
               </svg>
@@ -339,9 +339,9 @@ export default function CreatorProfilePage() {
 
           {/* Big score */}
           <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-black gradient-text">{creator.trustScore}</span>
-            <span className="text-slate-400 font-semibold text-lg">/ 100</span>
-            <span className="ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700">
+            <span className="text-5xl font-black text-[#1F1F1F]">{creator.trustScore}</span>
+            <span className="text-[#6E6A65] font-semibold text-lg">/ 100</span>
+            <span className="ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F8EFF3] text-[#A8678A]">
               ✓ Excellent
             </span>
           </div>
@@ -350,50 +350,44 @@ export default function CreatorProfilePage() {
           <div className="flex justify-center my-2">
             <div className="relative w-24 h-24">
               <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
-                <circle cx="48" cy="48" r="38" fill="none" stroke="#ede9fe" strokeWidth="10" />
-                <circle cx="48" cy="48" r="38" fill="none" stroke="url(#scoreGrad)" strokeWidth="10"
+                <circle cx="48" cy="48" r="38" fill="none" stroke="#E7E1D8" strokeWidth="10" />
+                <circle cx="48" cy="48" r="38" fill="none" stroke="#A8678A" strokeWidth="10"
                   strokeDasharray={`${(creator.trustScore / 100) * 238.76} 238.76`}
                   strokeLinecap="round" />
-                <defs>
-                  <linearGradient id="scoreGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#7c3aed" />
-                    <stop offset="100%" stopColor="#ec4899" />
-                  </linearGradient>
-                </defs>
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-black gradient-text">{creator.trustScore}</span>
+                <span className="text-lg font-black text-[#1F1F1F]">{creator.trustScore}</span>
               </div>
             </div>
           </div>
 
-          <p className="text-xs text-slate-500 leading-relaxed">
+          <p className="text-xs text-[#6E6A65] leading-relaxed">
             Based on audience quality, engagement consistency & collaboration history.
           </p>
 
-          <div className="bg-brand-50 rounded-xl px-3 py-2 text-xs text-brand-700 font-semibold">
+          <div className="bg-[#F8EFF3] rounded-xl px-3 py-2 text-xs text-[#A8678A] font-semibold">
             Top 18% of creators in {creator.contentCategories[0] ?? 'Lifestyle'} niche
           </div>
 
-          <button className="text-brand-600 text-xs font-bold flex items-center gap-1 hover:underline">
+          <button className="text-[#A8678A] text-xs font-bold flex items-center gap-1 hover:underline">
             View full breakdown →
           </button>
         </div>
 
         {/* Score Breakdown */}
-        <div className="bg-white border border-purple-100 rounded-3xl p-6 shadow-card flex flex-col gap-4">
-          <h3 className="font-black text-slate-900 text-base">Score Breakdown</h3>
+        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
+          <h3 className="font-black text-[#1F1F1F] text-base">Score Breakdown</h3>
           <div className="space-y-4">
-            <ScoreBar label="Audience Authenticity" score={86} max={100} color="bg-brand-400" />
-            <ScoreBar label="Engagement Quality"    score={75} max={100} color="bg-pink-400" />
-            <ScoreBar label="Growth Pattern"        score={70} max={100} color="bg-amber-400" />
-            <ScoreBar label="Collaboration Success" score={Math.round(creator.insights.successRate * 100)} max={100} color="bg-emerald-400" />
+            <ScoreBar label="Audience Authenticity" score={86} max={100} color="bg-[#1F1F1F]" />
+            <ScoreBar label="Engagement Quality"    score={75} max={100} color="bg-[#1F1F1F]" />
+            <ScoreBar label="Growth Pattern"        score={70} max={100} color="bg-[#1F1F1F]" />
+            <ScoreBar label="Collaboration Success" score={Math.round(creator.insights.successRate * 100)} max={100} color="bg-[#A8678A]" />
           </div>
         </div>
 
         {/* Audience Demographics */}
-        <div className="bg-white border border-purple-100 rounded-3xl p-6 shadow-card flex flex-col gap-4">
-          <h3 className="font-black text-slate-900 text-base">Audience Demographics</h3>
+        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
+          <h3 className="font-black text-[#1F1F1F] text-base">Audience Demographics</h3>
 
           <div className="flex items-center gap-4">
             <DonutChart
@@ -405,15 +399,15 @@ export default function CreatorProfilePage() {
             {/* Age legend */}
             <div className="space-y-2 flex-1">
               {[
-                { label: '18-24', color: 'bg-pink-400',   pct: dem.ageGroups['18-24'] },
-                { label: '25-34', color: 'bg-brand-400',  pct: dem.ageGroups['25-34'] },
-                { label: '35-44', color: 'bg-amber-400',  pct: dem.ageGroups['35-44'] },
-                { label: '45+',   color: 'bg-emerald-400',pct: dem.ageGroups['45+'] },
+                { label: '18-24', color: 'bg-[#A8678A]',   pct: dem.ageGroups['18-24'] },
+                { label: '25-34', color: 'bg-[#1F1F1F]',  pct: dem.ageGroups['25-34'] },
+                { label: '35-44', color: 'bg-[#6E6A65]',  pct: dem.ageGroups['35-44'] },
+                { label: '45+',   color: 'bg-[#E7E1D8]',pct: dem.ageGroups['45+'] },
               ].map(({ label, color, pct }) => (
                 <div key={label} className="flex items-center gap-2">
                   <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${color}`} />
-                  <span className="text-xs text-slate-600 w-10">{label}</span>
-                  <span className="text-xs font-black text-slate-800">
+                  <span className="text-xs text-[#6E6A65] w-10">{label}</span>
+                  <span className="text-xs font-black text-[#1F1F1F]">
                     {typeof pct === 'number' ? `${(pct * 100).toFixed(0)}%` : '—'}
                   </span>
                 </div>
@@ -423,10 +417,10 @@ export default function CreatorProfilePage() {
 
           {/* Top countries */}
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">Top Countries</p>
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#6E6A65] mb-1.5">Top Countries</p>
             <div className="flex flex-wrap gap-1.5">
               {dem.topCountries.slice(0, 3).map(c => (
-                <span key={c} className="px-2.5 py-0.5 rounded-full bg-brand-50 text-brand-700 border border-brand-200 text-[11px] font-semibold">
+                <span key={c} className="px-2.5 py-0.5 rounded-full bg-[#F8EFF3] text-[#A8678A] border border-[#E7E1D8] text-[11px] font-semibold">
                   {c}
                 </span>
               ))}
@@ -436,22 +430,22 @@ export default function CreatorProfilePage() {
       </div>
 
       {/* ── RECENT COLLABORATIONS ───────────────────────────────────────── */}
-      <div className="bg-white border border-purple-100 rounded-3xl p-6 shadow-card">
+      <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card">
         <div className="flex items-center justify-between mb-5">
-          <h3 className="font-black text-slate-900 text-base">Recent Collaborations</h3>
-          <button className="text-brand-600 text-xs font-bold hover:underline flex items-center gap-1">
+          <h3 className="font-black text-[#1F1F1F] text-base">Recent Collaborations</h3>
+          <button className="text-[#A8678A] text-xs font-bold hover:underline flex items-center gap-1">
             View all collaborations →
           </button>
         </div>
         <div className="flex flex-wrap gap-4">
           {recentCollabs.map(({ name, logo, date, bg }) => (
-            <div key={name} className="flex items-center gap-3 bg-slate-50 rounded-2xl px-4 py-3 border border-purple-50 hover:border-brand-200 transition-colors">
+            <div key={name} className="flex items-center gap-3 bg-[#F8EFF3] rounded-2xl px-4 py-3 border border-[#E7E1D8] hover:border-[#A8678A] transition-colors">
               <div className={`w-10 h-10 rounded-full ${bg} flex items-center justify-center shrink-0 overflow-hidden`}>
                 <img src={logo} alt={name} className="w-full h-full object-cover" />
               </div>
               <div>
-                <p className="text-sm font-bold text-slate-800">{name}</p>
-                <p className="text-[10px] text-slate-400">{date}</p>
+                <p className="text-sm font-bold text-[#1F1F1F]">{name}</p>
+                <p className="text-[10px] text-[#6E6A65]">{date}</p>
               </div>
             </div>
           ))}
@@ -461,13 +455,13 @@ export default function CreatorProfilePage() {
       {/* ── PORTFOLIO TAB ──────────────────────────────────────────────── */}
       <div>
         {/* Tab bar */}
-        <div className="flex gap-1 bg-white border border-purple-100 rounded-2xl p-1.5 shadow-soft w-fit mb-5">
+        <div className="flex gap-1 bg-white border border-[#E7E1D8] rounded-2xl p-1.5 shadow-none w-fit mb-5">
           {(['portfolio', 'about', 'reviews'] as const).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
                 activeTab === tab
-                  ? 'bg-brand-gradient text-white shadow-glow'
-                  : 'text-slate-500 hover:text-brand-600 hover:bg-brand-50'
+                  ? 'bg-[#1F1F1F] text-white shadow-none'
+                  : 'text-[#6E6A65] hover:text-[#1F1F1F] hover:bg-[#F8EFF3]'
               }`}>
               {tab === 'portfolio' ? '🎨 Portfolio' : tab === 'about' ? '👤 About' : '⭐ Reviews'}
             </button>
@@ -477,16 +471,16 @@ export default function CreatorProfilePage() {
         {/* Portfolio grid */}
         {activeTab === 'portfolio' && (
           creator.portfolio.length === 0 ? (
-            <div className="bg-white border border-purple-100 rounded-3xl p-12 text-center shadow-card">
+            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-12 text-center shadow-card">
               <div className="text-5xl mb-4">🎨</div>
-              <p className="text-slate-700 font-bold mb-1">No portfolio items yet</p>
-              <p className="text-slate-400 text-sm mb-5">Showcase your best work to attract brands.</p>
+              <p className="text-[#1F1F1F] font-bold mb-1">No portfolio items yet</p>
+              <p className="text-[#6E6A65] text-sm mb-5">Showcase your best work to attract brands.</p>
               {isOwnProfile && (
                 <div className="flex justify-center gap-3">
-                  <Link to="/creator/me/portfolio" className="px-5 py-2.5 bg-brand-gradient text-white font-bold text-xs rounded-2xl shadow-glow hover:opacity-90">
+                  <Link to="/creator/me/portfolio" className="px-5 py-2.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-2xl shadow-none hover:opacity-90">
                     + Add Work
                   </Link>
-                  <Link to="/creator/me/ai-templates" className="px-5 py-2.5 border-2 border-brand-200 text-brand-700 font-bold text-xs rounded-2xl hover:bg-brand-50">
+                  <Link to="/creator/me/ai-templates" className="px-5 py-2.5 border border-[#E7E1D8] text-[#1F1F1F] font-bold text-xs rounded-2xl hover:bg-[#F8EFF3]">
                     ✨ AI Templates
                   </Link>
                 </div>
@@ -495,22 +489,22 @@ export default function CreatorProfilePage() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
               {creator.portfolio.map((item) => (
-                <div key={item.id} className="bg-white border border-purple-100 rounded-3xl overflow-hidden shadow-card hover:shadow-glow hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
-                  <div className="relative h-44 overflow-hidden bg-purple-50">
+                <div key={item.id} className="bg-white border border-[#E7E1D8] rounded-[20px] overflow-hidden shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200 flex flex-col">
+                  <div className="relative h-44 overflow-hidden bg-[#F8EFF3]">
                     <img src={item.mediaUrl} alt={item.title} className="w-full h-full object-cover" />
-                    <span className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize ${CAT_COLORS[item.category] ?? 'bg-slate-100 text-slate-600'}`}>
+                    <span className={`absolute top-3 left-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize ${CAT_COLORS[item.category] ?? 'bg-[#F8EFF3] text-[#A8678A]'}`}>
                       {item.category}
                     </span>
                     {item.campaignId && (
-                      <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-brand-100 text-brand-700">
+                      <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F8EFF3] text-[#A8678A]">
                         📢 Campaign
                       </span>
                     )}
                   </div>
                   <div className="p-4 flex flex-col flex-1">
-                    <h4 className="font-bold text-slate-900 text-sm leading-snug mb-1">{item.title}</h4>
-                    <p className="text-xs text-slate-500 leading-relaxed line-clamp-2 mb-4 flex-1">{item.description}</p>
-                    <div className="grid grid-cols-4 gap-1 border-t border-purple-50 pt-3">
+                    <h4 className="font-bold text-[#1F1F1F] text-sm leading-snug mb-1">{item.title}</h4>
+                    <p className="text-xs text-[#6E6A65] leading-relaxed line-clamp-2 mb-4 flex-1">{item.description}</p>
+                    <div className="grid grid-cols-4 gap-1 border-t border-[#E7E1D8] pt-3">
                       {[
                         { icon: '👁️', val: fmtNum(item.metrics.views),    label: 'Views' },
                         { icon: '❤️', val: fmtNum(item.metrics.likes),    label: 'Likes' },
@@ -519,8 +513,8 @@ export default function CreatorProfilePage() {
                       ].map(({ icon, val, label }) => (
                         <div key={label} className="text-center">
                           <div className="text-base">{icon}</div>
-                          <div className="text-xs font-black text-slate-800">{val}</div>
-                          <div className="text-[10px] text-slate-400">{label}</div>
+                          <div className="text-xs font-black text-[#1F1F1F]">{val}</div>
+                          <div className="text-[10px] text-[#6E6A65]">{label}</div>
                         </div>
                       ))}
                     </div>
@@ -533,16 +527,16 @@ export default function CreatorProfilePage() {
 
         {/* About tab */}
         {activeTab === 'about' && (
-          <div className="bg-white border border-purple-100 rounded-3xl p-6 shadow-card space-y-4">
+          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card space-y-4">
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Bio</p>
-              <p className="text-sm text-slate-600 leading-relaxed">{creator.bio}</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-2">Bio</p>
+              <p className="text-sm text-[#6E6A65] leading-relaxed">{creator.bio}</p>
             </div>
             <div>
-              <p className="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2">Connected Platforms</p>
+              <p className="text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-2">Connected Platforms</p>
               <div className="flex flex-wrap gap-3">
                 {creator.socialAccounts.map((acc, i) => (
-                  <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold ${acc.connected ? 'bg-brand-50 border-brand-200 text-brand-700' : 'bg-slate-50 border-slate-200 text-slate-500'}`}>
+                  <div key={i} className={`flex items-center gap-2 px-3 py-2 rounded-xl border text-xs font-semibold ${acc.connected ? 'bg-[#F8EFF3] border-[#A8678A] text-[#A8678A]' : 'bg-white border-[#E7E1D8] text-[#6E6A65]'}`}>
                     {PLATFORM_SVG[acc.platform]}
                     <span className="capitalize">{acc.platform}</span>
                     <span className="font-black">{fmtNum(acc.followerCount)}</span>
@@ -555,10 +549,10 @@ export default function CreatorProfilePage() {
 
         {/* Reviews tab */}
         {activeTab === 'reviews' && (
-          <div className="bg-white border border-purple-100 rounded-3xl p-12 text-center shadow-card">
+          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-12 text-center shadow-card">
             <div className="text-5xl mb-4">⭐</div>
-            <p className="text-slate-700 font-bold">No reviews yet</p>
-            <p className="text-slate-400 text-sm mt-1">Reviews from brand collaborations will appear here.</p>
+            <p className="text-[#1F1F1F] font-bold">No reviews yet</p>
+            <p className="text-[#6E6A65] text-sm mt-1">Reviews from brand collaborations will appear here.</p>
           </div>
         )}
       </div>

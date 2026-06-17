@@ -33,23 +33,23 @@ export function AppLayout() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#f8f7ff] flex font-sans">
+    <div className="min-h-screen bg-[#F6F2E8] flex font-sans">
 
       {/* ─── Sidebar ─── */}
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-52 bg-white border-r border-purple-100 shadow-soft flex flex-col
+        fixed inset-y-0 left-0 z-50 w-52 bg-white border-r border-[#E7E1D8] flex flex-col
         transition-transform duration-300
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:static lg:flex
       `}>
         {/* Logo */}
-        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-purple-50">
-          <div className="w-9 h-9 rounded-xl bg-brand-gradient flex items-center justify-center font-black text-white text-base shadow-glow shrink-0">
+        <div className="flex items-center gap-2.5 px-5 py-5 border-b border-[#E7E1D8]">
+          <div className="w-9 h-9 rounded-xl bg-[#1F1F1F] flex items-center justify-center font-black text-white text-base shrink-0">
             CL
           </div>
           <span className="text-base font-extrabold">
-            <span className="gradient-text">Creator</span>
-            <span className="text-slate-700">Link</span>
+            <span className="text-[#A8678A]">Creator</span>
+            <span className="text-[#1F1F1F]">Link</span>
           </span>
         </div>
 
@@ -60,13 +60,13 @@ export function AppLayout() {
               onClick={() => setSidebarOpen(false)}
               className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                 isActive(to)
-                  ? 'bg-brand-50 text-brand-700'
-                  : 'text-slate-500 hover:bg-purple-50 hover:text-brand-600'
+                  ? 'bg-[#F8EFF3] text-[#A8678A]'
+                  : 'text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A]'
               }`}>
               <span className="w-5 h-5 shrink-0">{icon}</span>
               <span className="flex-1">{label}</span>
               {badge != null && badge > 0 && (
-                <span className="w-5 h-5 rounded-full bg-brand-500 text-white text-[10px] font-black flex items-center justify-center">
+                <span className="w-5 h-5 rounded-full bg-[#A8678A] text-white text-[10px] font-black flex items-center justify-center">
                   {badge}
                 </span>
               )}
@@ -75,12 +75,12 @@ export function AppLayout() {
         </nav>
 
         {/* Find creator CTA */}
-        <div className="mx-3 mb-4 bg-gradient-to-br from-brand-50 to-pink-50 border border-brand-100 rounded-2xl p-4">
-          <p className="text-xs font-bold text-slate-700 leading-snug mb-3">
+        <div className="mx-3 mb-4 bg-[#F8EFF3] border border-[#E7E1D8] rounded-2xl p-4">
+          <p className="text-xs font-bold text-[#1F1F1F] leading-snug mb-3">
             Find the perfect creator for your next campaign
           </p>
           <Link to="/campaigns"
-            className="block text-center w-full py-2 bg-brand-gradient text-white text-xs font-black rounded-xl shadow-glow hover:opacity-90 transition-opacity">
+            className="block text-center w-full py-2 bg-[#1F1F1F] text-white text-xs font-black rounded-xl hover:opacity-90 transition-opacity">
             Create Campaign
           </Link>
           {/* Mini illustration */}
@@ -88,9 +88,9 @@ export function AppLayout() {
         </div>
 
         {/* Switch role + current user */}
-        <div className="border-t border-purple-50 px-3 py-3 space-y-1">
+        <div className="border-t border-[#E7E1D8] px-3 py-3 space-y-1">
           <button
-            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:bg-purple-50 hover:text-brand-600 transition-colors"
+            className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors"
             onClick={() => alert('Role switching coming soon!')}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
@@ -99,16 +99,16 @@ export function AppLayout() {
             Switch to {currentUser?.role === 'creator' ? 'Brand' : 'Creator'}
           </button>
           <div className="flex items-center gap-2 px-3 py-2">
-            <div className="w-7 h-7 rounded-full bg-brand-gradient text-white flex items-center justify-center text-[11px] font-black shrink-0">
+            <div className="w-7 h-7 rounded-full bg-[#A8678A] text-white flex items-center justify-center text-[11px] font-black shrink-0">
               {currentUser?.email?.[0]?.toUpperCase() ?? 'U'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-xs font-bold text-slate-700 truncate">
+              <p className="text-xs font-bold text-[#1F1F1F] truncate">
                 {currentUser?.email?.split('@')[0] ?? 'User'}
               </p>
-              <p className="text-[10px] text-slate-400 capitalize">{currentUser?.role}</p>
+              <p className="text-[10px] text-[#6E6A65] capitalize">{currentUser?.role}</p>
             </div>
-            <button onClick={handleLogout} className="text-slate-400 hover:text-pink-500 transition-colors" title="Sign out">
+            <button onClick={handleLogout} className="text-[#6E6A65] hover:text-[#A8678A] transition-colors" title="Sign out">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
               </svg>
@@ -125,10 +125,10 @@ export function AppLayout() {
       {/* ─── Right side: topbar + content ─── */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Topbar */}
-        <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-purple-100 shadow-soft">
+        <header className="sticky top-0 z-30 bg-white border-b border-[#E7E1D8]">
           <div className="flex items-center gap-3 px-4 sm:px-6 h-14">
             {/* Mobile hamburger */}
-            <button className="lg:hidden p-1.5 rounded-xl text-slate-500 hover:bg-brand-50"
+            <button className="lg:hidden p-1.5 rounded-xl text-[#6E6A65] hover:bg-[#F8EFF3]"
               onClick={() => setSidebarOpen(true)}>
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -137,31 +137,31 @@ export function AppLayout() {
 
             {/* Search bar */}
             <div className="flex-1 max-w-md relative">
-              <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#6E6A65]" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
               </svg>
               <input
                 type="text"
                 placeholder="Search creators, niches or keywords..."
-                className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-purple-100 rounded-2xl text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-300 focus:border-brand-300 transition-all"
+                className="w-full pl-9 pr-4 py-2 bg-white border border-[#E7E1D8] rounded-2xl text-sm text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] transition-all"
               />
             </div>
 
             <div className="flex items-center gap-2 ml-auto">
               {/* Notification bell */}
-              <Link to="/notifications" className="relative p-2 rounded-xl hover:bg-brand-50 transition-colors text-slate-500 hover:text-brand-600">
+              <Link to="/notifications" className="relative p-2 rounded-xl hover:bg-[#F8EFF3] transition-colors text-[#6E6A65] hover:text-[#A8678A]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
                 </svg>
                 {unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-pink-500 text-white text-[8px] font-black flex items-center justify-center ring-2 ring-white">
+                  <span className="absolute top-1 right-1 w-3.5 h-3.5 rounded-full bg-[#A8678A] text-white text-[8px] font-black flex items-center justify-center ring-2 ring-white">
                     {unreadCount}
                   </span>
                 )}
               </Link>
 
               {/* Messages */}
-              <button className="p-2 rounded-xl hover:bg-brand-50 transition-colors text-slate-500 hover:text-brand-600">
+              <button className="p-2 rounded-xl hover:bg-[#F8EFF3] transition-colors text-[#6E6A65] hover:text-[#A8678A]">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                 </svg>
@@ -169,24 +169,24 @@ export function AppLayout() {
 
               {/* Avatar */}
               <div className="relative group cursor-pointer">
-                <div className="w-8 h-8 rounded-full bg-brand-gradient text-white flex items-center justify-center text-xs font-black ring-2 ring-white shadow-soft">
+                <div className="w-8 h-8 rounded-full bg-[#A8678A] text-white flex items-center justify-center text-xs font-black ring-2 ring-white">
                   {currentUser?.email?.[0]?.toUpperCase() ?? 'U'}
                 </div>
-                <svg className="absolute -right-1 -bottom-1 w-3.5 h-3.5 text-slate-400 bg-white rounded-full" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="absolute -right-1 -bottom-1 w-3.5 h-3.5 text-[#6E6A65] bg-white rounded-full" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clipRule="evenodd" />
                 </svg>
                 {/* dropdown */}
-                <div className="absolute top-10 right-0 w-48 bg-white border border-purple-100 rounded-2xl shadow-card py-2 hidden group-hover:block z-50">
-                  <div className="px-4 py-2 border-b border-purple-50">
-                    <p className="text-xs font-bold text-slate-800 truncate">{currentUser?.email}</p>
-                    <p className="text-[10px] text-slate-400 capitalize">{currentUser?.role}</p>
+                <div className="absolute top-10 right-0 w-48 bg-white border border-[#E7E1D8] rounded-[20px] shadow-card py-2 hidden group-hover:block z-50">
+                  <div className="px-4 py-2 border-b border-[#E7E1D8]">
+                    <p className="text-xs font-bold text-[#1F1F1F] truncate">{currentUser?.email}</p>
+                    <p className="text-[10px] text-[#6E6A65] capitalize">{currentUser?.role}</p>
                   </div>
                   <Link to={getProfilePath()}
-                    className="block px-4 py-2.5 text-xs font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-700">
+                    className="block px-4 py-2.5 text-xs font-semibold text-[#1F1F1F] hover:bg-[#F8EFF3] hover:text-[#A8678A]">
                     View Profile
                   </Link>
                   <button onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2.5 text-xs font-semibold text-pink-600 hover:bg-pink-50 border-t border-purple-50">
+                    className="block w-full text-left px-4 py-2.5 text-xs font-semibold text-[#A8678A] hover:bg-[#F8EFF3] border-t border-[#E7E1D8]">
                     Sign Out
                   </button>
                 </div>

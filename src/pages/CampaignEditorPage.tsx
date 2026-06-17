@@ -100,8 +100,8 @@ export default function CampaignEditorPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p className="text-slate-400 text-sm">Loading campaign details...</p>
+        <div className="w-10 h-10 border-4 border-[#A8678A] border-t-transparent rounded-full animate-spin mb-4"></div>
+        <p className="text-[#6E6A65] text-sm">Loading campaign details...</p>
       </div>
     );
   }
@@ -110,28 +110,27 @@ export default function CampaignEditorPage() {
   const isRestricted = brand && brand.brandScore < 40 && !brand.isNewToPlatform;
 
   return (
-    <div className="max-w-3xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-      {/* Glow */}
-      <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-500/5 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="max-w-3xl mx-auto bg-white border border-[#E7E1D8] rounded-[20px] p-6 sm:p-10 shadow-card relative overflow-hidden">
+      {/* Glow removed */}
 
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-extrabold text-[#1F1F1F]">
           {isEdit ? 'Edit Campaign' : 'Create Collaboration Campaign'}
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-[#6E6A65] text-sm mt-1">
           Publish campaign requirements and connect with matches in the network.
         </p>
       </div>
 
       {isRestricted ? (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 p-6 rounded-2xl">
+        <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] p-6 rounded-[20px]">
           <h3 className="font-bold text-lg mb-2">Publishing Restricted</h3>
           <p className="text-sm leading-relaxed mb-4">
             Your Brand Score is currently <span className="font-bold">{brand?.brandScore}</span>, which is below the platform minimum of 40. New campaign publishing has been restricted pending moderator review.
           </p>
           <button
             onClick={() => navigate(`/brand/${brand?.id}`)}
-            className="px-5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-slate-200 text-xs font-semibold hover:bg-slate-700 transition-colors"
+            className="px-5 py-2.5 rounded-xl bg-white border border-[#E7E1D8] text-[#1F1F1F] text-xs font-semibold hover:bg-[#F8EFF3] transition-colors"
           >
             Back to Profile
           </button>
@@ -139,43 +138,43 @@ export default function CampaignEditorPage() {
       ) : (
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-5 py-3 rounded-2xl text-xs font-semibold">
+            <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] px-5 py-3 rounded-2xl text-xs font-semibold">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Campaign Title</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Campaign Title</label>
             <input
               type="text"
               placeholder="e.g. Summer Skincare Content Partnership"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+              className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Description</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Description</label>
             <textarea
               placeholder="Describe the campaign objectives, deliverables, and expectations..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+              className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] resize-none"
               required
             ></textarea>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Requirements</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Requirements</label>
             <textarea
               placeholder="List specific follower criteria, location requirements, or content guidelines..."
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
               rows={3}
-              className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50 resize-none"
+              className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] resize-none"
               required
             ></textarea>
           </div>
@@ -183,11 +182,11 @@ export default function CampaignEditorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Compensation Type */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Compensation</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Compensation</label>
               <select
                 value={compensationType}
                 onChange={(e) => setCompensationType(e.target.value as CompensationType)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
               >
                 <option value="paid">Paid Collaboration</option>
                 <option value="gifted">Gifted / Barter</option>
@@ -198,7 +197,7 @@ export default function CampaignEditorPage() {
 
             {/* Compensation Amount */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">
                 Value / Amount ($)
               </label>
               <input
@@ -206,7 +205,7 @@ export default function CampaignEditorPage() {
                 placeholder="e.g. 500"
                 value={compensationAmount}
                 onChange={(e) => setCompensationAmount(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                 disabled={compensationType === 'gifted'}
               />
             </div>
@@ -215,12 +214,12 @@ export default function CampaignEditorPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Deadline */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Application Deadline</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Application Deadline</label>
               <input
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                 required
               />
             </div>
@@ -228,7 +227,7 @@ export default function CampaignEditorPage() {
 
           {/* Category Tags */}
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">Niche Categories</label>
+            <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-3">Niche Categories</label>
             <div className="flex flex-wrap gap-2">
               {CATEGORIES.map((cat) => {
                 const selected = selectedCategories.includes(cat);
@@ -239,8 +238,8 @@ export default function CampaignEditorPage() {
                     onClick={() => handleToggleCategory(cat)}
                     className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold uppercase tracking-wider border transition-all duration-200 ${
                       selected
-                        ? 'bg-purple-650/20 border-purple-500 text-purple-300 shadow-md shadow-purple-500/10'
-                        : 'bg-slate-950 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                        ? 'bg-[#F8EFF3] border-[#A8678A] text-[#A8678A] shadow-none'
+                        : 'bg-white border-[#E7E1D8] text-[#6E6A65] hover:border-[#A8678A] hover:text-[#1F1F1F]'
                     }`}
                   >
                     {cat}
@@ -251,17 +250,17 @@ export default function CampaignEditorPage() {
           </div>
 
           {/* Form Actions */}
-          <div className="flex justify-end gap-3 pt-6 border-t border-slate-800/85">
+          <div className="flex justify-end gap-3 pt-6 border-t border-[#E7E1D8]">
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 font-semibold transition-all duration-200 text-sm"
+              className="px-5 py-2.5 rounded-xl bg-white border border-[#E7E1D8] hover:bg-[#F8EFF3] text-[#1F1F1F] font-semibold transition-all duration-200 text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-indigo-600 font-bold hover:brightness-110 shadow-lg shadow-purple-500/15 transition-all duration-200 text-sm"
+              className="px-6 py-2.5 rounded-xl bg-[#1F1F1F] text-white font-bold hover:opacity-90 shadow-soft transition-all duration-200 text-sm"
             >
               {isEdit ? 'Update Campaign' : 'Publish Campaign'}
             </button>

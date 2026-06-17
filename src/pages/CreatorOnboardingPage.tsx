@@ -91,10 +91,9 @@ export default function CreatorOnboardingPage() {
   };
 
   return (
-    <div className="min-h-[80vh] flex items-center justify-center text-slate-100 py-12">
-      <div className="max-w-2xl w-full bg-slate-900 border border-slate-800 rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden">
-        {/* Glow */}
-        <div className="absolute -top-10 -right-10 w-60 h-60 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div className="min-h-[80vh] flex items-center justify-center text-[#1F1F1F] py-12 bg-[#F6F2E8]">
+      <div className="max-w-2xl w-full bg-white border border-[#E7E1D8] rounded-[20px] p-8 sm:p-12 shadow-card relative overflow-hidden">
+        {/* Glow removed */}
 
         {/* Step Indicator */}
         <div className="flex items-center justify-between mb-8 relative z-10">
@@ -103,10 +102,10 @@ export default function CreatorOnboardingPage() {
               <div
                 className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm transition-all duration-300 ${
                   step === s
-                    ? 'bg-gradient-to-tr from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/20'
+                    ? 'bg-[#1F1F1F] text-white shadow-soft'
                     : step > s
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                    : 'bg-slate-950 text-slate-500 border border-slate-800'
+                    ? 'bg-[#F8EFF3] text-[#A8678A] border border-[#E7E1D8]'
+                    : 'bg-white text-[#6E6A65] border border-[#E7E1D8]'
                 }`}
               >
                 {step > s ? '✓' : s}
@@ -114,7 +113,7 @@ export default function CreatorOnboardingPage() {
               {s < 3 && (
                 <div
                   className={`h-0.5 mx-4 flex-1 transition-all duration-300 ${
-                    step > s ? 'bg-emerald-500/30' : 'bg-slate-800'
+                    step > s ? 'bg-[#A8678A]' : 'bg-[#E7E1D8]'
                   }`}
                 ></div>
               )}
@@ -126,36 +125,36 @@ export default function CreatorOnboardingPage() {
         <div className="relative z-10">
           {step === 1 && (
             <div>
-              <h2 className="text-3xl font-extrabold mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-extrabold mb-2 text-[#1F1F1F]">
                 Create Your Profile
               </h2>
-              <p className="text-slate-400 mb-8">Tell us about yourself and select your niche categories.</p>
+              <p className="text-[#6E6A65] mb-8">Tell us about yourself and select your niche categories.</p>
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-300">Display Name</label>
+                  <label className="block text-sm font-semibold mb-2 text-[#1F1F1F]">Display Name</label>
                   <input
                     type="text"
                     placeholder="e.g. Creative Nomad"
                     value={displayName}
                     onChange={(e) => setDisplayName(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-2 text-slate-300">Bio / About</label>
+                  <label className="block text-sm font-semibold mb-2 text-[#1F1F1F]">Bio / About</label>
                   <textarea
                     placeholder="Tell brands what makes your content unique..."
                     value={bio}
                     onChange={(e) => setBio(e.target.value)}
                     rows={3}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-slate-100 placeholder-slate-600 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-3 text-[#1F1F1F] placeholder-[#6E6A65] focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] resize-none"
                   ></textarea>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-semibold mb-3 text-slate-300">Content Categories</label>
+                  <label className="block text-sm font-semibold mb-3 text-[#1F1F1F]">Content Categories</label>
                   <div className="flex flex-wrap gap-2.5">
                     {CATEGORIES.map((cat) => {
                       const selected = selectedCategories.includes(cat);
@@ -166,8 +165,8 @@ export default function CreatorOnboardingPage() {
                           onClick={() => handleToggleCategory(cat)}
                           className={`px-4 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider border transition-all duration-200 ${
                             selected
-                              ? 'bg-indigo-600/20 border-indigo-500 text-indigo-300 shadow-md shadow-indigo-500/10'
-                              : 'bg-slate-950 border-slate-800/80 text-slate-400 hover:border-slate-700 hover:text-slate-200'
+                              ? 'bg-[#F8EFF3] border-[#A8678A] text-[#A8678A] shadow-soft'
+                              : 'bg-white border-[#E7E1D8] text-[#6E6A65] hover:border-[#A8678A] hover:text-[#1F1F1F]'
                           }`}
                         >
                           {cat}
@@ -183,7 +182,7 @@ export default function CreatorOnboardingPage() {
                   type="button"
                   onClick={() => setStep(2)}
                   disabled={!displayName || selectedCategories.length === 0}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:brightness-110 transition-all duration-200"
+                  className="px-6 py-3 rounded-xl bg-[#1F1F1F] text-white font-bold disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all duration-200"
                 >
                   Continue to Socials
                 </button>
@@ -193,15 +192,15 @@ export default function CreatorOnboardingPage() {
 
           {step === 2 && (
             <div>
-              <h2 className="text-3xl font-extrabold mb-2 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-extrabold mb-2 text-[#1F1F1F]">
                 Link Social Accounts
               </h2>
-              <p className="text-slate-400 mb-8">Enter your social handles and follower counts to link them (mocked).</p>
+              <p className="text-[#6E6A65] mb-8">Enter your social handles and follower counts to link them (mocked).</p>
 
               <div className="space-y-6">
                 {socialAccounts.map((account) => (
-                  <div key={account.platform} className="bg-slate-950/40 border border-slate-800/60 p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4">
-                    <span className="text-sm font-bold uppercase tracking-wider text-indigo-400 w-24">
+                  <div key={account.platform} className="bg-[#F8EFF3] border border-[#E7E1D8] p-5 rounded-2xl flex flex-col sm:flex-row sm:items-center gap-4">
+                    <span className="text-sm font-bold uppercase tracking-wider text-[#A8678A] w-24">
                       {account.platform}
                     </span>
                     <input
@@ -209,14 +208,14 @@ export default function CreatorOnboardingPage() {
                       placeholder={`@handle`}
                       value={account.handle}
                       onChange={(e) => handleSocialChange(account.platform, 'handle', e.target.value)}
-                      className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-slate-100 placeholder-slate-700 text-sm focus:outline-none"
+                      className="flex-1 bg-white border border-[#E7E1D8] rounded-xl px-4 py-2 text-[#1F1F1F] placeholder-[#6E6A65] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                     />
                     <input
                       type="number"
                       placeholder="Followers"
                       value={account.followerCount || ''}
                       onChange={(e) => handleSocialChange(account.platform, 'followerCount', e.target.value)}
-                      className="w-32 bg-slate-950 border border-slate-800 rounded-xl px-4 py-2 text-slate-100 placeholder-slate-700 text-sm focus:outline-none"
+                      className="w-32 bg-white border border-[#E7E1D8] rounded-xl px-4 py-2 text-[#1F1F1F] placeholder-[#6E6A65] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                     />
                   </div>
                 ))}
@@ -226,14 +225,14 @@ export default function CreatorOnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(1)}
-                  className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700 transition-all duration-200"
+                  className="px-6 py-3 rounded-xl bg-white border border-[#E7E1D8] text-[#1F1F1F] font-bold hover:bg-[#F8EFF3] transition-all duration-200"
                 >
                   Back
                 </button>
                 <button
                   type="button"
                   onClick={() => setStep(3)}
-                  className="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-bold hover:brightness-110 transition-all duration-200"
+                  className="px-6 py-3 rounded-xl bg-[#1F1F1F] text-white font-bold hover:opacity-90 transition-all duration-200"
                 >
                   Continue to Templates
                 </button>
@@ -243,10 +242,10 @@ export default function CreatorOnboardingPage() {
 
           {step === 3 && (
             <div className="text-center py-4">
-              <h2 className="text-3xl font-extrabold mb-3 bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+              <h2 className="text-3xl font-extrabold mb-3 text-[#1F1F1F]">
                 Setup Portfolio Structure
               </h2>
-              <p className="text-slate-400 mb-8 max-w-lg mx-auto">
+              <p className="text-[#6E6A65] mb-8 max-w-lg mx-auto">
                 Would you like to generate AI portfolio templates based on your content category style? You can choose or customize them later.
               </p>
 
@@ -254,7 +253,7 @@ export default function CreatorOnboardingPage() {
                 <button
                   type="button"
                   onClick={() => handleComplete(true)}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-bold shadow-lg shadow-indigo-500/20 hover:brightness-110 transition-all duration-200 flex items-center justify-center gap-2"
+                  className="w-full py-4 rounded-xl bg-[#1F1F1F] text-white font-bold shadow-soft hover:opacity-90 transition-all duration-200 flex items-center justify-center gap-2"
                 >
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904 9 21l8.982-11.795H13.62l1.317-7.705L6 13.205h5.132L9.813 15.904Z" />
@@ -265,7 +264,7 @@ export default function CreatorOnboardingPage() {
                 <button
                   type="button"
                   onClick={() => handleComplete(false)}
-                  className="w-full py-3.5 rounded-xl bg-slate-800 border border-slate-700 font-semibold hover:bg-slate-700 transition-all duration-200"
+                  className="w-full py-3.5 rounded-xl bg-white border border-[#E7E1D8] text-[#1F1F1F] font-semibold hover:bg-[#F8EFF3] transition-all duration-200"
                 >
                   Create Empty Portfolio
                 </button>
@@ -275,7 +274,7 @@ export default function CreatorOnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setStep(2)}
-                  className="px-6 py-3 rounded-xl bg-slate-800 border border-slate-700 font-bold hover:bg-slate-700 transition-all duration-200"
+                  className="px-6 py-3 rounded-xl bg-white border border-[#E7E1D8] text-[#1F1F1F] font-bold hover:bg-[#F8EFF3] transition-all duration-200"
                 >
                   Back
                 </button>

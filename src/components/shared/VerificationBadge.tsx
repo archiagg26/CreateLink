@@ -13,9 +13,9 @@ const SIZE = {
 };
 
 const CONFIG: Record<VerificationStatus, { label: string; style: string; emoji: string }> = {
-  verified:   { label: 'Verified',   style: 'bg-emerald-100 text-emerald-700', emoji: '✅' },
-  pending:    { label: 'Pending',    style: 'bg-amber-100 text-amber-700',     emoji: '⏳' },
-  unverified: { label: 'Unverified', style: 'bg-slate-100 text-slate-500',     emoji: '○' },
+  verified:   { label: 'Verified',   style: 'bg-emerald-50 text-emerald-700', emoji: '✅' },
+  pending:    { label: 'Pending',    style: 'bg-amber-50 text-amber-700',     emoji: '⏳' },
+  unverified: { label: 'Unverified', style: 'bg-[#F6F2E8] text-[#6E6A65]',   emoji: '○' },
 };
 
 export function VerificationBadge({ status, size = 'md', showLabel = true }: VerificationBadgeProps) {

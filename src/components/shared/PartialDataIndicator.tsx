@@ -95,7 +95,7 @@ const PartialDataIndicator: React.FC<PartialDataIndicatorProps> = ({
 
       {/* Progress bar */}
       <div
-        className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200"
+        className="h-1.5 w-full overflow-hidden rounded-full bg-[#E7E1D8]"
         aria-hidden="true"
       >
         <div

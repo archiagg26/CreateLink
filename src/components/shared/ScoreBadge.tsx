@@ -7,10 +7,10 @@ interface ScoreBadgeProps {
 }
 
 function getStyle(score: number) {
-  if (score >= 90) return 'bg-brand-100 text-brand-800 ring-1 ring-brand-300';    // purple — excellent
-  if (score >= 70) return 'bg-emerald-100 text-emerald-800 ring-1 ring-emerald-300'; // green — good
-  if (score >= 40) return 'bg-amber-100 text-amber-800 ring-1 ring-amber-300';    // amber — fair
-  return 'bg-rose-100 text-rose-700 ring-1 ring-rose-300';                        // rose — poor
+  if (score >= 90) return 'bg-[#F8EFF3] text-[#A8678A] ring-1 ring-[#E7E1D8]';
+  if (score >= 70) return 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200';
+  if (score >= 40) return 'bg-amber-50 text-amber-700 ring-1 ring-amber-200';
+  return 'bg-rose-50 text-rose-700 ring-1 ring-rose-200';
 }
 
 const sizes = {

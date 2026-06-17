@@ -59,16 +59,16 @@ const MediaIcon: React.FC<MediaIconProps> = ({ url, className = 'w-5 h-5' }) => 
 // ─── Category badge ───────────────────────────────────────────────────────────
 
 const CATEGORY_COLORS: Record<ContentCategory, string> = {
-  beauty: 'bg-pink-100 text-pink-800',
-  fitness: 'bg-green-100 text-green-800',
-  tech: 'bg-blue-100 text-blue-800',
-  food: 'bg-orange-100 text-orange-800',
-  travel: 'bg-cyan-100 text-cyan-800',
-  gaming: 'bg-purple-100 text-purple-800',
-  lifestyle: 'bg-indigo-100 text-indigo-800',
-  finance: 'bg-emerald-100 text-emerald-800',
-  education: 'bg-yellow-100 text-yellow-800',
-  fashion: 'bg-rose-100 text-rose-800',
+  beauty: 'bg-[#F8EFF3] text-[#A8678A]',
+  fitness: 'bg-[#F8EFF3] text-[#A8678A]',
+  tech: 'bg-[#F8EFF3] text-[#A8678A]',
+  food: 'bg-[#F8EFF3] text-[#A8678A]',
+  travel: 'bg-[#F8EFF3] text-[#A8678A]',
+  gaming: 'bg-[#F8EFF3] text-[#A8678A]',
+  lifestyle: 'bg-[#F8EFF3] text-[#A8678A]',
+  finance: 'bg-[#F8EFF3] text-[#A8678A]',
+  education: 'bg-[#F8EFF3] text-[#A8678A]',
+  fashion: 'bg-[#F8EFF3] text-[#A8678A]',
 };
 
 // ─── Metric item ──────────────────────────────────────────────────────────────
@@ -80,8 +80,8 @@ interface MetricItemProps {
 
 const MetricItem: React.FC<MetricItemProps> = ({ label, value }) => (
   <div className="flex flex-col items-center">
-    <span className="text-sm font-semibold text-gray-800">{value}</span>
-    <span className="text-xs text-gray-500">{label}</span>
+    <span className="text-sm font-semibold text-[#1F1F1F]">{value}</span>
+    <span className="text-xs text-[#6E6A65]">{label}</span>
   </div>
 );
 
@@ -133,7 +133,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
   onDelete,
   readonly = false,
 }) => {
-  const categoryColor = CATEGORY_COLORS[item.category] ?? 'bg-gray-100 text-gray-800';
+  const categoryColor = CATEGORY_COLORS[item.category] ?? 'bg-[#F8EFF3] text-[#A8678A]';
   const mediaType = getMediaType(item.mediaUrl);
   const mediaLabel = mediaType === 'image' ? 'Image'
     : mediaType === 'video' ? 'Video'
@@ -142,7 +142,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
 
   return (
     <article
-      className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow"
+      className="bg-white rounded-[20px] border border-[#E7E1D8] overflow-hidden hover:shadow-card transition-shadow"
       aria-label={`Portfolio item: ${item.title}`}
     >
       {/* ── Header row ─────────────────────────────────────────────────── */}
@@ -150,7 +150,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
         <div className="flex items-start justify-between gap-2">
           {/* Title + category */}
           <div className="flex-1 min-w-0">
-            <h3 className="text-base font-semibold text-gray-900 truncate">
+            <h3 className="text-base font-semibold text-[#1F1F1F] truncate">
               {item.title}
             </h3>
             <div className="flex flex-wrap items-center gap-2 mt-1">
@@ -163,7 +163,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
 
               {/* Campaign tag */}
               {item.campaignId && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-violet-100 text-violet-800 px-2 py-0.5 text-xs font-medium">
+                <span className="inline-flex items-center gap-1 rounded-full bg-[#F8EFF3] text-[#A8678A] px-2 py-0.5 text-xs font-medium">
                   <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
@@ -181,7 +181,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
                 <button
                   type="button"
                   onClick={onEdit}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-100 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#1F1F1F] focus:outline-none focus:ring-2 focus:ring-[#A8678A] transition-colors"
                   aria-label={`Edit portfolio item: ${item.title}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -195,7 +195,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
                 <button
                   type="button"
                   onClick={onDelete}
-                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-red-600 hover:bg-red-50 hover:text-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                  className="inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-rose-600 hover:bg-rose-50 hover:text-rose-700 focus:outline-none focus:ring-2 focus:ring-rose-400 transition-colors"
                   aria-label={`Delete portfolio item: ${item.title}`}
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -211,7 +211,7 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
 
         {/* Description */}
         {item.description && (
-          <p className="mt-2 text-sm text-gray-600 line-clamp-2">
+          <p className="mt-2 text-sm text-[#6E6A65] line-clamp-2">
             {item.description}
           </p>
         )}
@@ -219,12 +219,12 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
 
       {/* ── Media link ─────────────────────────────────────────────────── */}
       {item.mediaUrl && (
-        <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
+        <div className="px-4 py-2 border-t border-[#E7E1D8] bg-[#F6F2E8]">
           <a
             href={item.mediaUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800 hover:underline focus:outline-none focus:ring-2 focus:ring-indigo-500 rounded transition-colors"
+            className="inline-flex items-center gap-2 text-sm text-[#A8678A] hover:text-[#BF90A9] hover:underline focus:outline-none focus:ring-2 focus:ring-[#A8678A] rounded transition-colors"
             aria-label={`View ${mediaLabel} for ${item.title} (opens in new tab)`}
           >
             <MediaIcon url={item.mediaUrl} className="w-4 h-4 shrink-0" />
@@ -238,8 +238,8 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
       )}
 
       {/* ── Metrics ────────────────────────────────────────────────────── */}
-      <div className="px-4 py-3 border-t border-gray-100">
-        <p className="text-xs font-medium text-gray-400 uppercase tracking-wide mb-2">
+      <div className="px-4 py-3 border-t border-[#E7E1D8]">
+        <p className="text-xs font-medium text-[#6E6A65] uppercase tracking-wide mb-2">
           Performance
         </p>
         <div className="grid grid-cols-5 gap-2 text-center">
@@ -255,10 +255,10 @@ const PortfolioItem: React.FC<PortfolioItemProps> = ({
       </div>
 
       {/* ── Footer: date ───────────────────────────────────────────────── */}
-      <div className="px-4 py-2 border-t border-gray-100 bg-gray-50">
+      <div className="px-4 py-2 border-t border-[#E7E1D8] bg-[#F6F2E8]">
         <time
           dateTime={item.createdAt}
-          className="text-xs text-gray-400"
+          className="text-xs text-[#6E6A65]"
         >
           Added {new Date(item.createdAt).toLocaleDateString(undefined, {
             year: 'numeric',

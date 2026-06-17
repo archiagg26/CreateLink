@@ -196,62 +196,62 @@ export default function PortfolioEditorPage() {
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h2 className="text-3xl font-extrabold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+          <h2 className="text-3xl font-extrabold text-[#1F1F1F]">
             Portfolio Editor
           </h2>
-          <p className="text-slate-400 text-sm mt-1">Add or edit showcase content for your creator profile.</p>
+          <p className="text-[#6E6A65] text-sm mt-1">Add or edit showcase content for your creator profile.</p>
         </div>
         <button
           onClick={() => navigate(`/creator/${creator?.id}`)}
-          className="px-4.5 py-2.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-bold text-slate-200 hover:bg-slate-700 transition-colors"
+          className="px-4.5 py-2.5 rounded-xl bg-white border border-[#E7E1D8] text-xs font-bold text-[#1F1F1F] hover:bg-[#F8EFF3] transition-colors"
         >
           View Public Profile
         </button>
       </div>
 
       {error && (
-        <div className="bg-rose-500/10 border border-rose-500/20 text-rose-400 px-5 py-3 rounded-2xl text-sm font-semibold">
+        <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] px-5 py-3 rounded-2xl text-sm font-semibold">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Editor Form Panel */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 h-fit lg:col-span-1">
-          <h3 className="text-lg font-bold mb-6 text-slate-300">
+        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 sm:p-8 h-fit lg:col-span-1 shadow-card">
+          <h3 className="text-lg font-bold mb-6 text-[#1F1F1F]">
             {editingId ? 'Edit Showcase Item' : 'New Showcase Item'}
           </h3>
 
           <form onSubmit={handleSaveItem} className="space-y-5">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Title</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Title</label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-2.5 text-[#1F1F1F] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Description</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Description</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={3}
-                className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 resize-none"
+                className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-2.5 text-[#1F1F1F] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] resize-none"
                 required
               ></textarea>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Category</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Category</label>
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value as ContentCategory)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none"
+                  className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-2.5 text-[#1F1F1F] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat} value={cat}>
@@ -262,13 +262,13 @@ export default function PortfolioEditorPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Size (MB)</label>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Size (MB)</label>
                 <input
                   type="number"
                   step="0.1"
                   value={fileSizeStr}
                   onChange={(e) => setFileSizeStr(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-slate-100 text-sm focus:outline-none"
+                  className="w-full bg-white border border-[#E7E1D8] rounded-xl px-4 py-2.5 text-[#1F1F1F] text-sm focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   required
                 />
               </div>
@@ -276,66 +276,66 @@ export default function PortfolioEditorPage() {
 
             {/* Media Upload Dropzone */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Media File (Max 50MB)</label>
-              <div className="border border-dashed border-slate-800 rounded-xl p-4 bg-slate-950/40 relative">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-2">Media File (Max 50MB)</label>
+              <div className="border border-dashed border-[#E7E1D8] rounded-xl p-4 bg-[#F8EFF3] relative">
                 <input
                   type="file"
                   onChange={handleFileUploadSimulated}
                   className="absolute inset-0 opacity-0 cursor-pointer"
                 />
-                <div className="text-center text-xs text-slate-500">
+                <div className="text-center text-xs text-[#6E6A65]">
                   {mediaUrl ? 'File selected' : 'Upload attachment file'}
                 </div>
               </div>
             </div>
 
             {/* Metrics inputs */}
-            <div className="space-y-3 pt-3 border-t border-slate-800/80">
-              <span className="block text-xs font-bold uppercase tracking-wider text-slate-400">Metrics</span>
+            <div className="space-y-3 pt-3 border-t border-[#E7E1D8]">
+              <span className="block text-xs font-bold uppercase tracking-wider text-[#6E6A65]">Metrics</span>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-[10px] uppercase text-slate-500 mb-1">Views</label>
+                  <label className="block text-[10px] uppercase text-[#6E6A65] mb-1">Views</label>
                   <input
                     type="number"
                     value={views}
                     onChange={(e) => setViews(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-lg px-3 py-1.5 text-[#1F1F1F] text-xs focus:outline-none focus:ring-1 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase text-slate-500 mb-1">Likes</label>
+                  <label className="block text-[10px] uppercase text-[#6E6A65] mb-1">Likes</label>
                   <input
                     type="number"
                     value={likes}
                     onChange={(e) => setLikes(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-lg px-3 py-1.5 text-[#1F1F1F] text-xs focus:outline-none focus:ring-1 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase text-slate-500 mb-1">Comments</label>
+                  <label className="block text-[10px] uppercase text-[#6E6A65] mb-1">Comments</label>
                   <input
                     type="number"
                     value={comments}
                     onChange={(e) => setComments(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-lg px-3 py-1.5 text-[#1F1F1F] text-xs focus:outline-none focus:ring-1 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] uppercase text-slate-500 mb-1">Shares</label>
+                  <label className="block text-[10px] uppercase text-[#6E6A65] mb-1">Shares</label>
                   <input
                     type="number"
                     value={shares}
                     onChange={(e) => setShares(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-1.5 text-slate-100 text-xs focus:outline-none"
+                    className="w-full bg-white border border-[#E7E1D8] rounded-lg px-3 py-1.5 text-[#1F1F1F] text-xs focus:outline-none focus:ring-1 focus:ring-[#A8678A] focus:border-[#A8678A]"
                   />
                 </div>
               </div>
             </div>
 
-            <div className="flex gap-2 pt-4 border-t border-slate-800/80">
+            <div className="flex gap-2 pt-4 border-t border-[#E7E1D8]">
               <button
                 type="submit"
-                className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-600 font-bold hover:brightness-110 shadow-lg shadow-indigo-500/15 transition-all text-xs"
+                className="flex-1 py-2.5 rounded-xl bg-[#1F1F1F] text-white font-bold hover:opacity-90 shadow-soft transition-all text-xs"
               >
                 {editingId ? 'Update Item' : 'Add to Portfolio'}
               </button>
@@ -343,7 +343,7 @@ export default function PortfolioEditorPage() {
                 <button
                   type="button"
                   onClick={resetForm}
-                  className="px-4 py-2.5 rounded-xl bg-slate-805 border border-slate-800 text-slate-400 hover:text-slate-200 text-xs font-semibold"
+                  className="px-4 py-2.5 rounded-xl bg-white border border-[#E7E1D8] text-[#1F1F1F] hover:bg-[#F8EFF3] text-xs font-semibold transition-colors"
                 >
                   Cancel
                 </button>
@@ -353,45 +353,45 @@ export default function PortfolioEditorPage() {
         </div>
 
         {/* Current Showcase Items Panel */}
-        <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 lg:col-span-2">
-          <h3 className="text-lg font-bold mb-6 text-slate-300">Your Portfolio Showcase</h3>
+        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 sm:p-8 lg:col-span-2 shadow-card">
+          <h3 className="text-lg font-bold mb-6 text-[#1F1F1F]">Your Portfolio Showcase</h3>
 
           {creator?.portfolio.length === 0 ? (
-            <div className="text-center py-16 text-slate-500 text-sm">
+            <div className="text-center py-16 text-[#6E6A65] text-sm">
               Your portfolio is empty. Use the form on the left to add items.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {creator?.portfolio.map((item) => (
-                <div key={item.id} className="bg-slate-950 border border-slate-800/60 p-5 rounded-2xl relative flex flex-col justify-between group">
+                <div key={item.id} className="bg-white border border-[#E7E1D8] p-5 rounded-2xl relative flex flex-col justify-between hover:shadow-soft hover:border-[#A8678A] transition-all group">
                   <div>
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-bold text-slate-200 max-w-[180px] truncate">{item.title}</h4>
-                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-slate-900 text-indigo-400">
+                      <h4 className="font-bold text-[#1F1F1F] max-w-[180px] truncate">{item.title}</h4>
+                      <span className="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase bg-[#F8EFF3] text-[#A8678A]">
                         {item.category}
                       </span>
                     </div>
-                    <p className="text-slate-400 text-xs line-clamp-2 mb-3">{item.description}</p>
-                    <div className="text-[10px] text-slate-500 mb-4">
+                    <p className="text-[#6E6A65] text-xs line-clamp-2 mb-3">{item.description}</p>
+                    <div className="text-[10px] text-[#6E6A65] mb-4">
                       File Size: {(item.fileSizeBytes / (1024 * 1024)).toFixed(1)} MB
                     </div>
                   </div>
 
-                  <div className="flex justify-between items-center border-t border-slate-900 pt-3 mt-auto">
-                    <span className="text-xs text-indigo-400 font-bold">
+                  <div className="flex justify-between items-center border-t border-[#E7E1D8] pt-3 mt-auto">
+                    <span className="text-xs text-[#1F1F1F] font-bold">
                       {(item.metrics.engagementRate * 100).toFixed(1)}% Engagement
                     </span>
 
                     <div className="flex gap-2">
                       <button
                         onClick={() => handleEdit(item)}
-                        className="text-xs font-semibold text-slate-400 hover:text-slate-200"
+                        className="text-xs font-semibold text-[#6E6A65] hover:text-[#1F1F1F] transition-colors"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => handleDelete(item.id)}
-                        className="text-xs font-semibold text-rose-500 hover:text-rose-400"
+                        className="text-xs font-semibold text-[#A8678A] hover:underline transition-colors"
                       >
                         Delete
                       </button>

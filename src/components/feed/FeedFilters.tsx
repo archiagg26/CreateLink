@@ -16,7 +16,7 @@ const COMPENSATION_TYPES: { value: CompensationType | 'All'; label: string }[] =
 ];
 
 const selectClass =
-  'w-full bg-white border border-purple-200 rounded-2xl px-4 py-2.5 text-slate-700 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 transition-all shadow-soft appearance-none cursor-pointer';
+  'w-full bg-white border border-[#E7E1D8] rounded-2xl px-4 py-2.5 text-[#1F1F1F] text-sm font-medium focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] transition-all shadow-soft appearance-none cursor-pointer';
 
 export function FeedFilters() {
   const { filters, setFilters } = useFeedStore();
@@ -40,7 +40,7 @@ export function FeedFilters() {
     <div className="flex flex-col md:flex-row md:items-end gap-4">
       {/* Category */}
       <div className="flex-1 relative">
-        <label htmlFor="filter-category" className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+        <label htmlFor="filter-category" className="block text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-1.5">
           Category
         </label>
         <select id="filter-category" value={filters.category || 'All'} onChange={handleCategoryChange} className={selectClass}>
@@ -54,7 +54,7 @@ export function FeedFilters() {
 
       {/* Compensation */}
       <div className="flex-1 relative">
-        <label htmlFor="filter-compensation" className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+        <label htmlFor="filter-compensation" className="block text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-1.5">
           Compensation
         </label>
         <select id="filter-compensation" value={filters.compensationType || 'All'} onChange={handleCompensationChange} className={selectClass}>
@@ -66,7 +66,7 @@ export function FeedFilters() {
 
       {/* Deadline */}
       <div className="flex-1 relative">
-        <label htmlFor="filter-deadline" className="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+        <label htmlFor="filter-deadline" className="block text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-1.5">
           Apply Before
         </label>
         <input

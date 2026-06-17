@@ -18,10 +18,10 @@ export default function NotificationsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-3xl font-extrabold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+        <h2 className="text-3xl font-extrabold text-[#1F1F1F]">
           Notifications Feed
         </h2>
-        <p className="text-slate-400 text-sm mt-1">
+        <p className="text-[#6E6A65] text-sm mt-1">
           Review updates regarding your applications, trust scores, and campaigns.
         </p>
       </div>

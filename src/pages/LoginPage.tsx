@@ -27,14 +27,10 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex items-stretch bg-[#f8f7ff]">
       {/* Left decorative panel — hidden on mobile */}
-      <div className="hidden lg:flex lg:w-1/2 bg-brand-gradient items-center justify-center relative overflow-hidden">
-        {/* Background blobs */}
-        <div className="absolute top-[-60px] left-[-60px] w-80 h-80 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-[-40px] right-[-40px] w-72 h-72 bg-pink-400/20 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-orange-400/10 rounded-full blur-3xl" />
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1F1F1F] items-center justify-center relative overflow-hidden">
 
         <div className="relative z-10 text-white text-center px-12 max-w-md">
-          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center mx-auto mb-6 text-3xl font-black shadow-glow">
+          <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center mx-auto mb-6 text-3xl font-black">
             CL
           </div>
           <h1 className="text-4xl font-black mb-4 leading-tight">
@@ -50,7 +46,7 @@ export default function LoginPage() {
               { label: 'Brands', value: '8K+' },
               { label: 'Collabs', value: '200K+' },
             ].map(({ label, value }) => (
-              <div key={label} className="bg-white/15 backdrop-blur-sm rounded-2xl py-3 px-2">
+              <div key={label} className="bg-white/5 rounded-2xl py-3 px-2">
                 <div className="text-2xl font-black">{value}</div>
                 <div className="text-white/70 text-xs mt-1">{label}</div>
               </div>
@@ -64,49 +60,49 @@ export default function LoginPage() {
         <div className="w-full max-w-md">
           {/* Logo for mobile */}
           <div className="flex items-center gap-3 mb-8 lg:hidden">
-            <div className="w-10 h-10 rounded-xl bg-brand-gradient flex items-center justify-center font-black text-white text-lg">
+            <div className="w-10 h-10 rounded-xl bg-[#1F1F1F] flex items-center justify-center font-black text-white text-lg">
               CL
             </div>
             <span className="text-xl font-extrabold">
-              <span className="gradient-text">Creator</span>
-              <span className="text-slate-700">Link</span>
+              <span className="text-[#A8678A]">Creator</span>
+              <span className="text-[#1F1F1F]">Link</span>
             </span>
           </div>
 
-          <h2 className="text-2xl font-black text-slate-800 mb-1">Welcome back 👋</h2>
-          <p className="text-slate-500 text-sm mb-8">Log in to your CreatorLink account</p>
+          <h2 className="text-2xl font-black text-[#1F1F1F] mb-1">Welcome back 👋</h2>
+          <p className="text-[#6E6A65] text-sm mb-8">Log in to your CreatorLink account</p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#6E6A65] mb-2">
                 Email Address
               </label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-purple-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 text-slate-800 placeholder-slate-400 transition-all text-sm shadow-soft"
+                className="w-full px-4 py-3 bg-white border border-[#E7E1D8] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] text-[#1F1F1F] placeholder-[#6E6A65] transition-all text-sm"
                 placeholder="you@example.com"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#6E6A65] mb-2">
                 Password
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full px-4 py-3 bg-white border border-purple-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-brand-400 focus:border-brand-400 text-slate-800 placeholder-slate-400 transition-all text-sm shadow-soft"
+                className="w-full px-4 py-3 bg-white border border-[#E7E1D8] rounded-2xl focus:outline-none focus:ring-2 focus:ring-[#A8678A] focus:border-[#A8678A] text-[#1F1F1F] placeholder-[#6E6A65] transition-all text-sm"
                 placeholder="••••••••"
                 required
               />
             </div>
 
             {error && (
-              <div className="bg-pink-50 border border-pink-200 text-pink-700 px-4 py-3 rounded-2xl text-sm font-semibold text-center">
+              <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] px-4 py-3 rounded-2xl text-sm font-semibold text-center">
                 {error}
               </div>
             )}
@@ -114,7 +110,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-brand-gradient text-white font-bold py-3.5 rounded-2xl hover:opacity-90 shadow-glow transition-all text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full bg-[#1F1F1F] text-white font-bold py-3.5 rounded-2xl hover:opacity-90 transition-all text-sm disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -129,13 +125,13 @@ export default function LoginPage() {
           </form>
 
           {/* Quick login hint */}
-          <div className="mt-5 bg-purple-50 border border-purple-200 rounded-2xl px-4 py-3 text-xs text-slate-600">
-            <span className="font-bold text-brand-600">Demo credentials pre-filled</span> — just click Log In to explore ✨
+          <div className="mt-5 bg-[#F8EFF3] border border-[#E7E1D8] rounded-2xl px-4 py-3 text-xs text-[#6E6A65]">
+            <span className="font-bold text-[#A8678A]">Demo credentials pre-filled</span> — just click Log In to explore ✨
           </div>
 
-          <p className="mt-6 text-sm text-center text-slate-500">
+          <p className="mt-6 text-sm text-center text-[#6E6A65]">
             No account?{' '}
-            <Link to="/register" className="font-bold gradient-text hover:opacity-80">
+            <Link to="/register" className="font-bold text-[#A8678A] hover:opacity-80">
               Create one free →
             </Link>
           </p>
