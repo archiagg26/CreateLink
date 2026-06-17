@@ -16,6 +16,7 @@ const BrandProfilePage = lazy(() => import('../pages/BrandProfilePage'));
 const CampaignEditorPage = lazy(() => import('../pages/CampaignEditorPage'));
 const SwipeReviewPage = lazy(() => import('../pages/SwipeReviewPage'));
 const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
+const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 const VerificationFlowPage = lazy(() => import('../pages/VerificationFlowPage'));
 
 function LoadingFallback() {
@@ -88,6 +89,14 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingFallback />}>
                 <NotificationsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/messages',
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <MessagesPage />
               </Suspense>
             ),
           },

@@ -8,8 +8,6 @@ import { getStore } from '../services/store';
 import FeedFilters from '../components/feed/FeedFilters';
 import FeedCard from '../components/feed/FeedCard';
 import ApplicationForm from '../components/application/ApplicationForm';
-import ScoreBadge from '../components/shared/ScoreBadge';
-import VerificationBadge from '../components/shared/VerificationBadge';
 import type { FeedPost, Campaign } from '../types/index';
 
 export default function FeedPage() {
@@ -53,14 +51,6 @@ export default function FeedPage() {
   const isVerified = verificationStatus === 'verified';
   const isPending  = verificationStatus === 'pending';
 
-  const displayName = currentUser?.role === 'creator'
-    ? creator?.displayName || 'Creator Name'
-    : brand?.companyName || 'Brand Name';
-
-  const displayBio = currentUser?.role === 'creator'
-    ? creator?.bio || 'Content Creator'
-    : brand?.description || 'Collaborator Brand';
-
   return (
     <div className="relative">
       {/* Success toast */}
@@ -73,62 +63,8 @@ export default function FeedPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-        {/* ── LEFT: Profile Card ── */}
-        <div className="lg:col-span-3 space-y-4">
-          <div className="bg-white border border-[#E7E1D8] rounded-[20px] overflow-hidden shadow-card">
-            {/* Gradient cover */}
-            <div className="h-20 bg-[#F8EFF3] relative">
-              <div className="absolute inset-0 opacity-30"
-                style={{ backgroundImage: 'radial-gradient(circle at 30% 50%, #E7E1D8 1px, transparent 1px), radial-gradient(circle at 70% 80%, #E7E1D8 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-            </div>
-
-            <div className="px-4 pb-5 text-center relative">
-              {/* Avatar */}
-              <div className="w-16 h-16 rounded-full bg-[#1F1F1F] text-white border-4 border-white flex items-center justify-center text-2xl font-black uppercase shadow-none mx-auto -mt-8 mb-3">
-                {currentUser?.email ? currentUser.email[0].toUpperCase() : 'U'}
-              </div>
-
-              <Link
-                to={currentUser ? (currentUser.role === 'creator' ? `/creator/${currentUser.id}` : `/brand/${currentUser.id}`) : '#'}
-                className="block text-base font-bold text-[#1F1F1F] hover:text-[#A8678A] transition-colors"
-              >
-                {displayName}
-              </Link>
-              <p className="text-xs text-[#6E6A65] mt-1 line-clamp-2 leading-relaxed">{displayBio}</p>
-
-              {/* Stats row */}
-              <div className="mt-4 pt-4 border-t border-[#E7E1D8] space-y-2.5 text-left">
-                {currentUser?.role === 'creator' && creator && (
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#6E6A65] font-medium">Trust Score</span>
-                    <ScoreBadge score={creator.trustScore} label="Trust" size="sm" />
-                  </div>
-                )}
-                {currentUser?.role === 'brand' && brand && (
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-[#6E6A65] font-medium">Brand Score</span>
-                    <ScoreBadge score={brand.brandScore} label="Score" size="sm" />
-                  </div>
-                )}
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-[#6E6A65] font-medium">Status</span>
-                  <VerificationBadge status={verificationStatus || 'unverified'} size="sm" />
-                </div>
-              </div>
-
-              {/* Profile CTA */}
-              <Link
-                to={currentUser ? (currentUser.role === 'creator' ? `/creator/${currentUser.id}` : `/brand/${currentUser.id}`) : '#'}
-                className="mt-4 block w-full text-center py-2 rounded-2xl border border-[#A8678A] text-[#A8678A] text-xs font-bold hover:bg-[#F8EFF3] transition-colors"
-              >
-                View Full Profile
-              </Link>
-            </div>
-          </div>
-        </div>
-
         {/* ── CENTER: Feed ── */}
-        <div className="lg:col-span-6 space-y-4">
+        <div className="lg:col-span-9 space-y-4">
           {/* Post prompt */}
           <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 shadow-card flex items-center gap-3">
             <div className="w-9 h-9 rounded-full bg-[#1F1F1F] text-white flex items-center justify-center text-sm font-black uppercase shrink-0">
@@ -173,11 +109,11 @@ export default function FeedPage() {
           )}
         </div>
 
-        {/* ── RIGHT: Widgets ── */}
-        <div className="lg:col-span-3 space-y-4">
+        {/* ── RIGHT: Widgets (single enriched Recommended panel) ── */}
+        <div className="lg:col-span-3 flex flex-col gap-4">
           {/* Verification widget */}
           {!isVerified && (
-            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 shadow-card">
+            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 shadow-card shrink-0">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-xl">⚡</span>
                 <h4 className="font-bold text-[#1F1F1F] text-sm">
@@ -198,69 +134,62 @@ export default function FeedPage() {
             </div>
           )}
 
-          {/* Recommendations */}
-          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 shadow-card">
-            <h4 className="font-bold text-[#1F1F1F] text-sm mb-4 flex items-center gap-2">
-              <span>{currentUser?.role === 'creator' ? '🏷️' : '🌟'}</span>
-              {currentUser?.role === 'creator' ? 'Recommended Brands' : 'Recommended Creators'}
-            </h4>
+          {/* Recommended panel (expanded) */}
+          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex-1 overflow-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h4 className="font-bold text-[#1F1F1F] text-sm flex items-center gap-2">
+                <span>{currentUser?.role === 'creator' ? '🏷️' : '🌟'}</span>
+                {currentUser?.role === 'creator' ? 'Recommended Brands' : 'Recommended Creators'}
+              </h4>
+              <div className="text-xs text-[#6E6A65]">{(currentUser?.role === 'creator' ? recBrands.length : recCreators.length)} suggestions</div>
+            </div>
 
             <div className="space-y-4">
               {currentUser?.role === 'creator' ? (
                 recBrands.map((b) => (
-                  <div key={b.id} className="flex gap-3 items-center">
+                  <div key={b.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#F8EFF3] transition-colors">
                     <img src={b.logoUrl} alt={b.companyName}
-                      className="w-9 h-9 rounded-xl border border-[#E7E1D8] bg-[#F8EFF3] shrink-0 object-cover" />
+                      className="w-12 h-12 rounded-xl border border-[#E7E1D8] bg-[#F8EFF3] shrink-0 object-cover" />
                     <div className="min-w-0 flex-1">
-                      <Link to={`/brand/${b.id}`}
-                        className="text-xs font-bold text-[#1F1F1F] hover:text-[#A8678A] block truncate">
-                        {b.companyName}
-                      </Link>
-                      <span className="text-[10px] text-[#6E6A65] capitalize">{b.industry}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <Link to={`/brand/${b.id}`} className="text-sm font-bold text-[#1F1F1F] hover:text-[#A8678A] truncate">{b.companyName}</Link>
+                        <div className="text-[12px] text-[#6E6A65] font-bold">{b.brandScore ?? '—'}</div>
+                      </div>
+                      <div className="text-[12px] text-[#6E6A65] mt-1">{b.industry}</div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-[#6E6A65]">
+                        <span className="px-2 py-1 bg-white/50 border border-[#E7E1D8] rounded-full">{b.completedCollaborations ?? 0} collabs</span>
+                        <span className={`px-2 py-1 rounded-full ${b.verificationStatus === 'verified' ? 'bg-[#F8EFF3] text-[#A8678A]' : 'bg-transparent border border-white/0'}`}>{b.verificationStatus}</span>
+                        <span className="px-2 py-1 bg-white/50 border border-[#E7E1D8] rounded-full">{(b.campaigns?.length ?? 0)} campaigns</span>
+                      </div>
                     </div>
-                    <button className="text-[10px] font-bold text-[#A8678A] border border-[#A8678A] rounded-xl px-2 py-1 hover:bg-[#F8EFF3] transition-colors shrink-0">
-                      Follow
-                    </button>
+                    <div className="flex flex-col items-end gap-2">
+                      <button className="text-[11px] font-bold text-[#A8678A] border border-[#A8678A] rounded-xl px-3 py-1 hover:bg-[#F8EFF3] transition-colors shrink-0">Follow</button>
+                    </div>
                   </div>
                 ))
               ) : (
                 recCreators.map((c) => (
-                  <div key={c.id} className="flex gap-3 items-center">
+                  <div key={c.id} className="flex items-start gap-3 p-3 rounded-xl hover:bg-[#F8EFF3] transition-colors">
                     <img src={c.avatarUrl} alt={c.displayName}
-                      className="w-9 h-9 rounded-full border border-[#E7E1D8] bg-[#F8EFF3] shrink-0 object-cover" />
+                      className="w-12 h-12 rounded-full border border-[#E7E1D8] bg-[#F8EFF3] shrink-0 object-cover" />
                     <div className="min-w-0 flex-1">
-                      <Link to={`/creator/${c.id}`}
-                        className="text-xs font-bold text-[#1F1F1F] hover:text-[#A8678A] block truncate">
-                        {c.displayName}
-                      </Link>
-                      <span className="text-[10px] text-[#6E6A65] truncate block">{c.bio}</span>
+                      <div className="flex items-center justify-between gap-2">
+                        <Link to={`/creator/${c.id}`} className="text-sm font-bold text-[#1F1F1F] hover:text-[#A8678A] truncate">{c.displayName}</Link>
+                        <div className="text-[12px] text-[#6E6A65] font-bold">{c.trustScore ?? '—'}</div>
+                      </div>
+                      <div className="text-[12px] text-[#6E6A65] mt-1">{c.contentCategories?.[0] ?? 'General'}</div>
+                      <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] text-[#6E6A65]">
+                        <span className="px-2 py-1 bg-white/50 border border-[#E7E1D8] rounded-full">{c.portfolio?.length ?? 0} portfolio</span>
+                        <span className="px-2 py-1 bg-white/50 border border-[#E7E1D8] rounded-full">{c.collaborationHistory?.length ?? 0} collabs</span>
+                        <span className={`px-2 py-1 rounded-full ${c.verificationStatus === 'verified' ? 'bg-[#F8EFF3] text-[#A8678A]' : 'bg-transparent'}`}>{c.verificationStatus}</span>
+                      </div>
                     </div>
-                    <button className="text-[10px] font-bold text-[#A8678A] border border-[#A8678A] rounded-xl px-2 py-1 hover:bg-[#F8EFF3] transition-colors shrink-0">
-                      Connect
-                    </button>
+                    <div className="flex flex-col items-end gap-2">
+                      <button className="text-[11px] font-bold text-[#A8678A] border border-[#A8678A] rounded-xl px-3 py-1 hover:bg-[#F8EFF3] transition-colors shrink-0">Connect</button>
+                    </div>
                   </div>
                 ))
               )}
-            </div>
-          </div>
-
-          {/* Fun stats card */}
-          <div className="bg-[#1F1F1F] rounded-[20px] p-4 text-white shadow-soft">
-            <h4 className="font-bold text-sm mb-3 flex items-center gap-2">
-              <span>🚀</span> Platform Stats
-            </h4>
-            <div className="grid grid-cols-2 gap-3">
-              {[
-                { label: 'Campaigns', value: '2.4K' },
-                { label: 'Creators', value: '50K+' },
-                { label: 'Brands', value: '8K+' },
-                { label: 'Collabs', value: '200K+' },
-              ].map(({ label, value }) => (
-                <div key={label} className="bg-white/10 rounded-2xl py-2.5 px-3 text-center">
-                  <div className="text-lg font-black">{value}</div>
-                  <div className="text-white/70 text-[10px] mt-0.5">{label}</div>
-                </div>
-              ))}
             </div>
           </div>
         </div>

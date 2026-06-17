@@ -180,6 +180,7 @@ export interface FeedPost {
   aiRecommendationTag: string | null;
   publishedAt: string;               // ISO 8601
   removed: boolean;
+  imageFilename?: string;            // optional: filename under src/assets (e.g. 'image1.png')
 }
 
 export interface FeedFilters {

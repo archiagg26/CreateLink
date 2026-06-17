@@ -104,6 +104,17 @@ export function FeedCard({ post, onApply, onContact }: FeedCardProps) {
         {post.body}
       </p>
 
+      {/* Optional image (full-width, below body) */}
+      {post.imageFilename && (
+        <div className="mb-4">
+          <img
+            src={new URL(`../../assets/${post.imageFilename}`, import.meta.url).href}
+            alt={post.title}
+            className="w-full rounded-lg object-cover max-h-[420px] h-auto"
+          />
+        </div>
+      )}
+
       {/* Tags */}
       <div className="flex flex-wrap items-center gap-2 mb-4">
         <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-semibold capitalize ${catColor}`}>
