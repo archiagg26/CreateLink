@@ -731,7 +731,7 @@ export default function CreatorProfilePage() {
   const { creator, loadCreator } = useCreatorStore();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState<'reels' | 'about' | 'reviews'>('reels');
+  const [activeTab, setActiveTab] = useState<'reels' | 'about' | 'reviews' | 'applied'>('reels');
   const [reels, setReels] = useState<Reel[]>([]);
   const [pinnedIds, setPinnedIds] = useState<string[]>([]);
   const [dragOverId, setDragOverId] = useState<string | null>(null);
@@ -1181,14 +1181,14 @@ export default function CreatorProfilePage() {
       <div>
         {/* Tab bar */}
         <div className="flex gap-1 bg-white border border-[#E7E1D8] rounded-2xl p-1.5 w-fit mb-5">
-          {(['reels', 'about', 'reviews'] as const).map((tab) => (
+          {(['reels', 'about', 'reviews', 'applied'] as const).map((tab) => (
             <button key={tab} onClick={() => setActiveTab(tab)}
               className={`px-5 py-2 rounded-xl text-xs font-bold capitalize transition-all ${
                 activeTab === tab
                   ? 'bg-[#1F1F1F] text-white'
                   : 'text-[#6E6A65] hover:text-[#1F1F1F] hover:bg-[#F8EFF3]'
               }`}>
-              {tab === 'reels' ? '🎬 Reels' : tab === 'about' ? '👤 About' : '⭐ Reviews'}
+              {tab === 'reels' ? '🎬 Reels' : tab === 'about' ? '👤 About' : tab === 'reviews' ? '⭐ Reviews' : '📋 Applied'}
             </button>
           ))}
         </div>
@@ -1332,6 +1332,54 @@ export default function CreatorProfilePage() {
             <p className="text-[#6E6A65] text-sm mt-1">Reviews from brand collaborations will appear here.</p>
           </div>
         )}
+
+        {/* Applied Campaigns tab */}
+        {activeTab === 'applied' && (() => {
+          const store = getStore();
+          const appliedCampaigns = creator.collaborationHistory.map(collab => {
+            const campaign = store.campaigns.get(collab.campaignId);
+            const brand    = campaign ? store.brands.get(campaign.brandId) : null;
+            return { collab, campaign, brand };
+          }).filter(x => x.campaign);
+
+          return appliedCampaigns.length === 0 ? (
+            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-12 text-center">
+              <div className="text-5xl mb-4">📋</div>
+              <p className="text-[#1F1F1F] font-bold">No applications yet</p>
+              <p className="text-[#6E6A65] text-sm mt-2">Apply to campaigns from the Feed to see them here.</p>
+              <Link to="/feed" className="inline-block mt-4 px-5 py-2.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90">
+                Browse Campaigns →
+              </Link>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {appliedCampaigns.map(({ collab, campaign, brand }) => (
+                <div key={collab.campaignId}
+                  className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 shadow-card flex items-start gap-4">
+                  {brand && (
+                    <img src={brand.logoUrl} alt={brand.companyName}
+                      className="w-12 h-12 rounded-xl border border-[#E7E1D8] bg-white p-1 shrink-0 object-contain" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[#1F1F1F] truncate">{campaign!.title}</p>
+                    {brand && (
+                      <Link to={`/brand/${brand.id}`} className="text-xs text-[#A8678A] hover:underline">{brand.companyName}</Link>
+                    )}
+                    <p className="text-[10px] text-[#6E6A65] mt-1">
+                      Applied {collab.startDate ? new Date(collab.startDate).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently'}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-[11px] font-bold capitalize ${
+                    collab.status === 'completed' ? 'bg-emerald-100 text-emerald-700'
+                    : collab.status === 'active'  ? 'bg-blue-100 text-blue-700'
+                    : collab.status === 'pending' ? 'bg-amber-100 text-amber-700'
+                    : 'bg-slate-100 text-slate-600'
+                  }`}>{collab.status}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
       </div>
 
       {/* ── VIDEO MODAL ─────────────────────────────────────────────────── */}

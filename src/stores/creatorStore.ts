@@ -18,6 +18,41 @@ export const useCreatorStore = create<CreatorStore>((set, get) => ({
     if (!creator) {
       creator = await creatorService.getCreatorByUserId(id);
     }
+    // If still not found, create a stub profile on-the-fly for new registered users
+    if (!creator) {
+      const { getStore } = await import('../services/store');
+      const store = getStore();
+      const user = store.users.get(id);
+      if (user && user.role === 'creator') {
+        const stub: Creator = {
+          id: `creator-${user.id}`,
+          userId: user.id,
+          displayName: user.email.split('@')[0],
+          bio: 'Content creator on CreatorLink.',
+          avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(user.email)}`,
+          contentCategories: ['lifestyle'],
+          socialAccounts: [],
+          trustScore: 0,
+          trustScorePartialData: true,
+          portfolio: [],
+          collaborationHistory: [],
+          insights: {
+            audienceDemographics: {
+              ageGroups: { '18-24': 0.4, '25-34': 0.4, '35-44': 0.15, '45+': 0.05 },
+              topCountries: ['India'],
+              genderSplit: { male: 0.5, female: 0.45, other: 0.05 },
+            },
+            primaryCategories: ['lifestyle'],
+            averageEngagementRate: 0,
+            collaborationCount: 0,
+            successRate: 0,
+          },
+          verificationStatus: 'unverified',
+        };
+        store.creators.set(stub.id, stub);
+        creator = stub;
+      }
+    }
     set({ creator });
   },
 

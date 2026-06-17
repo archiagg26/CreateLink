@@ -208,6 +208,18 @@ export function AppLayout() {
               </svg>
             </button>
 
+            {/* Back button — shown when not on a root page */}
+            {location.pathname !== '/feed' &&
+             !location.pathname.match(/^\/(feed|creators|campaigns|messages|bookmarks|analytics|notifications)$/) && (
+              <button onClick={() => navigate(-1)}
+                className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#1F1F1F] transition-colors shrink-0">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Back
+              </button>
+            )}
+
             {/* ── Search bar — takes all available space ── */}
             <div className="flex-1 relative">
               <svg

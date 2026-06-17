@@ -1,4 +1,4 @@
-import type { User, UserRole, Brand } from '../types/index';
+import type { User, UserRole, Brand, Creator } from '../types/index';
 import { getStore } from './store';
 import { generateId, nowISO, simulateLatency } from './mockUtils';
 import { validatePassword } from '../lib/validation';
@@ -37,7 +37,39 @@ export async function register(email: string, password: string, role: UserRole, 
     lockedUntil: null,
   };
   store.users.set(user.id, user);
-  // If registering a brand, also create a brand profile linked to this user
+
+  // ── Auto-create a Creator profile when role is 'creator' ──────────────────
+  if (role === 'creator') {
+    const displayName = profile?.displayName || email.split('@')[0];
+    const creator: Creator = {
+      id: `creator-${user.id}`,
+      userId: user.id,
+      displayName,
+      bio: profile?.bio || 'Content creator on CreatorLink.',
+      avatarUrl: `https://api.dicebear.com/7.x/avataaars/svg?seed=${encodeURIComponent(email)}`,
+      contentCategories: profile?.contentCategories ?? ['lifestyle'],
+      socialAccounts: [],
+      trustScore: 0,
+      trustScorePartialData: true,
+      portfolio: [],
+      collaborationHistory: [],
+      insights: {
+        audienceDemographics: {
+          ageGroups: { '18-24': 0.4, '25-34': 0.4, '35-44': 0.15, '45+': 0.05 },
+          topCountries: ['India'],
+          genderSplit: { male: 0.5, female: 0.45, other: 0.05 },
+        },
+        primaryCategories: profile?.contentCategories ?? ['lifestyle'],
+        averageEngagementRate: 0,
+        collaborationCount: 0,
+        successRate: 0,
+      },
+      verificationStatus: 'unverified',
+    };
+    store.creators.set(creator.id, creator);
+  }
+
+  // ── Auto-create a Brand profile when role is 'brand' ─────────────────────
   if (role === 'brand' && profile) {
     const brand: Brand = {
       id: `brand-${generateId()}`,

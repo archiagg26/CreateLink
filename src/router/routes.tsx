@@ -21,6 +21,10 @@ const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 const VerificationFlowPage = lazy(() => import('../pages/VerificationFlowPage'));
 const BrandDashboardPage = lazy(() => import('../pages/BrandDashboardPage'));
 const RoleSelectPage = lazy(() => import('../pages/RoleSelectPage'));
+const CreatorsPage = lazy(() => import('../pages/CreatorsPage'));
+const BookmarksPage = lazy(() => import('../pages/BookmarksPage'));
+const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
+const CampaignsPage = lazy(() => import('../pages/CampaignsPage'));
 
 function LoadingFallback() {
   return (
@@ -88,6 +92,38 @@ const router = createBrowserRouter([
             element: (
               <Suspense fallback={<LoadingFallback />}>
                 <FeedPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/campaigns',
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <CampaignsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/creators',
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <CreatorsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/bookmarks',
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <BookmarksPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: '/analytics',
+            element: (
+              <Suspense fallback={<LoadingFallback />}>
+                <AnalyticsPage />
               </Suspense>
             ),
           },
