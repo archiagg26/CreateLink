@@ -1,4 +1,4 @@
-﻿// placeholder
+// placeholder
 
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -114,15 +114,38 @@ export default function AIPortfolioGeneratorPage() {
     if (currentUser) loadCreator(currentUser.id);
   }, [currentUser, loadCreator]);
 
-  // Read pinned reels from sessionStorage (set by CreatorProfilePage)
+  // Read pinned reels from sessionStorage (set by CreatorProfilePage) or fallback to localStorage
   const pinnedReels: PinnedReel[] = (() => {
-    try { return JSON.parse(sessionStorage.getItem('pinnedReels') ?? '[]'); }
-    catch { return []; }
+    try {
+      const stored = sessionStorage.getItem('pinnedReels');
+      if (stored) return JSON.parse(stored);
+      if (creator?.id) {
+        const lsPinned = localStorage.getItem(`pinned-${creator.id}`);
+        const lsReels = localStorage.getItem(`reels-${creator.id}`);
+        if (lsPinned && lsReels) {
+          const parsedIds = JSON.parse(lsPinned) as string[];
+          const parsedReels = JSON.parse(lsReels) as PinnedReel[];
+          return parsedReels.filter(r => parsedIds.includes(r.id));
+        }
+      }
+      return [];
+    } catch {
+      return [];
+    }
   })();
 
   const allReels: PinnedReel[] = (() => {
-    try { return JSON.parse(sessionStorage.getItem('allReels') ?? '[]'); }
-    catch { return []; }
+    try {
+      const stored = sessionStorage.getItem('allReels');
+      if (stored) return JSON.parse(stored);
+      if (creator?.id) {
+        const lsReels = localStorage.getItem(`reels-${creator.id}`);
+        if (lsReels) return JSON.parse(lsReels);
+      }
+      return [];
+    } catch {
+      return [];
+    }
   })();
 
   const getSourceReels = (): PinnedReel[] => {
@@ -160,7 +183,7 @@ export default function AIPortfolioGeneratorPage() {
   const handlePublish = () => {
     setStep(3);
     setPublishedSuccess(true);
-    setTimeout(() => navigate(`/creator/${creator?.id}`), 2500);
+    setTimeout(() => navigate('/portfolio'), 2500);
   };
 
   const hasPinned = pinnedReels.length > 0;
@@ -179,9 +202,9 @@ export default function AIPortfolioGeneratorPage() {
             Generate a brand-ready portfolio automatically from your best reels
           </p>
         </div>
-        <button onClick={() => navigate(`/creator/${creator?.id}`)}
+        <button onClick={() => navigate('/portfolio')}
           className="px-4 py-2 text-xs font-bold text-[#6E6A65] border border-[#E7E1D8] rounded-xl hover:bg-[#F8EFF3] transition-colors">
-          ← Back to Profile
+          ← Back to Portfolios
         </button>
       </div>
 

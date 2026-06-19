@@ -1,4 +1,115 @@
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../stores/authStore';
+import { useCreatorStore } from '../stores/creatorStore';
+
 export default function PortfolioPage() {
+  const navigate = useNavigate();
+  const { currentUser } = useAuthStore();
+  const { creator, loadCreator } = useCreatorStore();
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  // Upload state hooks
+  const [pendingFile, setPendingFile] = useState<File | null>(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [uploadTitle, setUploadTitle] = useState('');
+  const [uploadDesc, setUploadDesc] = useState('');
+  const [uploadCategory, setUploadCategory] = useState('beauty');
+  const [toastMessage, setToastMessage] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (currentUser) {
+      loadCreator(currentUser.id);
+    }
+  }, [currentUser, loadCreator]);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith('video/') && !file.type.startsWith('image/')) {
+      alert('Please select a video or image file.');
+      return;
+    }
+    setPendingFile(file);
+    setUploadTitle(file.name.replace(/\.[^.]+$/, ''));
+    setUploadDesc('');
+    setUploadCategory('beauty');
+    setShowUploadModal(true);
+    e.target.value = '';
+  };
+
+  const handleConfirmUpload = () => {
+    if (!pendingFile) return;
+
+    const blobUrl = URL.createObjectURL(pendingFile);
+    const newReel = {
+      id: `reel-${Date.now()}`,
+      title: uploadTitle.trim() || pendingFile.name.replace(/\.[^.]+$/, ''),
+      description: uploadDesc.trim() || 'Uploaded portfolio item',
+      category: uploadCategory,
+      thumbnailUrl: '', // Will show first frame or fallback
+      videoUrl: pendingFile.type.startsWith('video/') ? blobUrl : '',
+      mediaUrl: pendingFile.type.startsWith('image/') ? blobUrl : '',
+      metrics: { views: 0, likes: 0, comments: 0, engagementRate: 0 },
+      createdAt: new Date().toISOString(),
+      campaignId: null,
+    };
+
+    // Load existing reels
+    const creatorId = creator?.id || `creator-${currentUser?.id || 'me'}`;
+    const savedReels = localStorage.getItem(`reels-${creatorId}`);
+    let reelsList: any[] = [];
+
+    if (savedReels) {
+      try {
+        reelsList = JSON.parse(savedReels);
+      } catch {}
+    } else {
+      // Seed defaults
+      const portfolioReels = creator?.portfolio.map((item) => ({
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category: item.category,
+        thumbnailUrl: item.mediaUrl,
+        videoUrl: '',
+        metrics: {
+          views: item.metrics.views,
+          likes: item.metrics.likes,
+          comments: item.metrics.comments,
+          engagementRate: item.metrics.engagementRate,
+        },
+        createdAt: item.createdAt,
+        campaignId: item.campaignId,
+      })) || [];
+
+      const hardcodedReel = {
+        id: 'hardcoded-dotandkey-reel',
+        title: 'Dot and Key Collaboration',
+        description: 'A fun and authentic collaboration with Dot & Key Skincare — showcasing their sunscreen range with a real daily-use review. Achieved over 120K organic views and 9.7% engagement rate.',
+        category: 'beauty',
+        thumbnailUrl: '',
+        videoUrl: '/instareel.mp4',
+        metrics: { views: 120000, likes: 9800, comments: 1200, engagementRate: 0.097 },
+        createdAt: '2024-03-15T10:00:00Z',
+        campaignId: 'camp-1',
+      };
+
+      const deduped = portfolioReels.filter((r) => r.id !== hardcodedReel.id);
+      reelsList = [hardcodedReel, ...deduped];
+    }
+
+    const updatedReels = [newReel, ...reelsList];
+    localStorage.setItem(`reels-${creatorId}`, JSON.stringify(updatedReels));
+    sessionStorage.setItem('allReels', JSON.stringify(updatedReels));
+
+    setPendingFile(null);
+    setShowUploadModal(false);
+    setToastMessage('Portfolio item uploaded successfully! 🎉');
+    setTimeout(() => setToastMessage(''), 4000);
+  };
+
   const portfolios = [
     {
       title: 'Beauty Campaigns',
@@ -27,7 +138,7 @@ export default function PortfolioPage() {
   ];
 
   return (
-    <div className="p-6 md:p-8">
+    <div className="p-6 md:p-8 relative">
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-bold text-[#1F1F1F]">
@@ -38,9 +149,48 @@ export default function PortfolioPage() {
           </p>
         </div>
 
-        <button className="bg-[#1F1F1F] text-white px-5 py-3 rounded-xl font-medium">
-          + Create Portfolio
-        </button>
+        <div className="relative">
+          <button 
+            onClick={() => setShowDropdown(!showDropdown)}
+            className="bg-[#1F1F1F] text-white px-5 py-3 rounded-xl font-semibold flex items-center gap-1.5 hover:opacity-90 transition-opacity"
+          >
+            + Create Portfolio
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleFileChange} 
+            accept="video/*,image/*" 
+            className="hidden" 
+          />
+          {showDropdown && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setShowDropdown(false)} />
+              <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-white border border-[#E7E1D8] shadow-lg py-1.5 z-20 animate-in fade-in slide-in-from-top-1 duration-150">
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    navigate('/creator/me/ai-portfolio');
+                  }}
+                  className="flex items-center gap-2.5 w-full text-left px-4 py-3 text-sm text-[#1F1F1F] font-bold hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors"
+                >
+                  <span>✨</span>
+                  <span>Generate with AI</span>
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDropdown(false);
+                    fileInputRef.current?.click();
+                  }}
+                  className="flex items-center gap-2.5 w-full text-left px-4 py-3 text-sm text-[#1F1F1F] font-bold hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors border-t border-[#F0EBE3]"
+                >
+                  <span>📁</span>
+                  <span>Upload from Media</span>
+                </button>
+              </div>
+            </>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
@@ -79,13 +229,108 @@ export default function PortfolioPage() {
                 <p>{portfolio.engagement} Avg Engagement</p>
               </div>
 
-              <button className="mt-5 w-full border border-[#A8678A] text-[#A8678A] py-2 rounded-xl font-medium">
+              <button 
+                onClick={() => navigate(`/creator/${currentUser?.id || 'me'}`)}
+                className="mt-5 w-full border border-[#A8678A] text-[#A8678A] hover:bg-[#F8EFF3] py-2 rounded-xl font-semibold transition-colors"
+              >
                 View Portfolio
               </button>
             </div>
           </div>
         ))}
       </div>
+
+      {/* Upload Details Modal */}
+      {showUploadModal && pendingFile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1F1F]/60 backdrop-blur-sm">
+          <div className="bg-white border border-[#E7E1D8] rounded-[24px] p-6 sm:p-8 max-w-md w-full shadow-card relative">
+            <button 
+              onClick={() => { setShowUploadModal(false); setPendingFile(null); }}
+              className="absolute top-4 right-4 text-[#6E6A65] hover:text-[#1F1F1F] bg-[#F8EFF3] rounded-xl p-1.5 transition-colors"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            <h3 className="text-lg font-black text-[#1F1F1F] mb-1">
+              Upload from Media
+            </h3>
+            <p className="text-xs text-[#6E6A65] mb-5">
+              Add details for "{pendingFile.name}" to publish to your portfolio.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-[#6E6A65] uppercase tracking-wider mb-1.5">Title</label>
+                <input 
+                  type="text" 
+                  value={uploadTitle}
+                  onChange={(e) => setUploadTitle(e.target.value)}
+                  placeholder="Give your portfolio item a title..."
+                  className="w-full px-4 py-3 bg-[#F8EFF3] border border-[#E7E1D8] focus:border-[#A8678A] focus:outline-none rounded-xl text-sm text-[#1F1F1F] font-semibold"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#6E6A65] uppercase tracking-wider mb-1.5">Description</label>
+                <textarea 
+                  value={uploadDesc}
+                  onChange={(e) => setUploadDesc(e.target.value)}
+                  placeholder="Describe this collaboration or showcase piece..."
+                  rows={3}
+                  className="w-full px-4 py-3 bg-[#F8EFF3] border border-[#E7E1D8] focus:border-[#A8678A] focus:outline-none rounded-xl text-sm text-[#1F1F1F] font-semibold resize-none"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-[#6E6A65] uppercase tracking-wider mb-1.5">Category</label>
+                <select 
+                  value={uploadCategory}
+                  onChange={(e) => setUploadCategory(e.target.value)}
+                  className="w-full px-4 py-3 bg-[#F8EFF3] border border-[#E7E1D8] focus:border-[#A8678A] focus:outline-none rounded-xl text-sm text-[#1F1F1F] font-semibold"
+                >
+                  <option value="beauty">Beauty</option>
+                  <option value="lifestyle">Lifestyle</option>
+                  <option value="tech">Tech</option>
+                  <option value="fitness">Fitness</option>
+                  <option value="food">Food</option>
+                  <option value="travel">Travel</option>
+                  <option value="gaming">Gaming</option>
+                  <option value="finance">Finance</option>
+                  <option value="education">Education</option>
+                  <option value="fashion">Fashion</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="flex gap-3 mt-6 border-t border-[#E7E1D8] pt-4 justify-end">
+              <button 
+                type="button" 
+                onClick={() => { setShowUploadModal(false); setPendingFile(null); }}
+                className="px-5 py-2.5 rounded-xl border border-[#A8678A] text-[#A8678A] hover:bg-[#F8EFF3] text-sm font-semibold transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                type="button" 
+                onClick={handleConfirmUpload}
+                className="px-5 py-2.5 rounded-xl bg-[#1F1F1F] text-white hover:opacity-90 text-sm font-semibold transition-colors"
+              >
+                Publish to Portfolio
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Toast message */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 z-50 bg-[#1F1F1F] text-white font-bold px-6 py-3.5 rounded-2xl shadow-card flex items-center gap-2.5 animate-bounce">
+          <span>🎉</span>
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }

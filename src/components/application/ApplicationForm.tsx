@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { Creator, Campaign, Application } from '../../types/index';
+import type { Creator, Campaign, Application, PortfolioItem } from '../../types/index';
 import * as applicationService from '../../services/applicationService';
 import AIPitchPanel from './AIPitchPanel';
 
@@ -18,6 +18,57 @@ export function ApplicationForm({ creator, campaign, onClose, onSuccess }: Appli
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
   const [error, setError] = useState('');
   const [existingApp, setExistingApp] = useState<Application | null>(null);
+
+  const [portfolioList] = useState<PortfolioItem[]>(() => {
+    const stored = localStorage.getItem(`reels-${creator.id}`) || sessionStorage.getItem('allReels');
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as any[];
+        return parsed.map(r => ({
+          id: r.id,
+          creatorId: r.creatorId || creator.id,
+          title: r.title,
+          description: r.description,
+          category: r.category,
+          mediaUrl: r.thumbnailUrl || r.mediaUrl || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800',
+          fileSizeBytes: 0,
+          campaignId: r.campaignId || null,
+          metrics: {
+            views: r.metrics?.views ?? 0,
+            likes: r.metrics?.likes ?? 0,
+            comments: r.metrics?.comments ?? 0,
+            shares: r.metrics?.shares ?? 0,
+            engagementRate: r.metrics?.engagementRate ?? 0,
+          },
+          createdAt: r.createdAt
+        }));
+      } catch (e) {
+        console.error("Failed to parse allReels source in ApplicationForm:", e);
+      }
+    }
+
+    if (creator.id === 'creator-1') {
+      const hardcodedReel: PortfolioItem = {
+        id: 'hardcoded-dotandkey-reel',
+        creatorId: creator.id,
+        title: 'Dot and Key Collaboration',
+        description: 'A fun and authentic collaboration with Dot & Key Skincare — showcasing their sunscreen range with a real daily-use review. Achieved over 120K organic views and 9.7% engagement rate.',
+        category: 'beauty',
+        mediaUrl: '',
+        fileSizeBytes: 0,
+        campaignId: 'camp-1',
+        metrics: { views: 120000, likes: 9800, comments: 1200, shares: 0, engagementRate: 0.097 },
+        createdAt: '2024-03-15T10:00:00Z',
+      };
+      const portfolioItems: PortfolioItem[] = creator.portfolio.map(item => ({
+        ...item,
+        creatorId: creator.id
+      }));
+      const deduped = portfolioItems.filter(r => r.id !== hardcodedReel.id);
+      return [hardcodedReel, ...deduped];
+    }
+    return creator.portfolio;
+  });
 
   useEffect(() => {
     const initApplication = async () => {
@@ -136,13 +187,13 @@ export function ApplicationForm({ creator, campaign, onClose, onSuccess }: Appli
         <label className="block text-xs font-semibold uppercase tracking-wider text-[#6E6A65] mb-3">
           Select Portfolio Examples (Max 3)
         </label>
-        {creator.portfolio.length === 0 ? (
+        {portfolioList.length === 0 ? (
           <div className="text-[#6E6A65] text-xs border border-dashed border-[#E7E1D8] rounded-xl p-4 text-center">
             No portfolio items found. You can add items later in the Editor.
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-2.5 max-h-[180px] overflow-y-auto pr-2">
-            {creator.portfolio.map((item) => {
+            {portfolioList.map((item) => {
               const selected = selectedItems.includes(item.id);
               const disabled = !selected && selectedItems.length >= 3;
               return (

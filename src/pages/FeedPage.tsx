@@ -1,4 +1,4 @@
-﻿// placeholder
+// placeholder
 
 // ── EXISTING IMPORTS (unchanged) ─────────────────────────────────────────────
 import { useEffect, useState, useRef } from 'react';
@@ -8,13 +8,13 @@ import { useAuthStore } from '../stores/authStore';
 import { useCreatorStore } from '../stores/creatorStore';
 import { useBrandStore } from '../stores/brandStore';
 import { getStore } from '../services/store';
-import FeedFilters from '../components/feed/FeedFilters';
 import FeedCard from '../components/feed/FeedCard';
 import ApplicationForm from '../components/application/ApplicationForm';
+import CreatorApplicationForm from '../components/application/CreatorApplicationForm';
 import type { FeedPost, Campaign } from '../types/index';
 
 // ── NEW: Creator post types ───────────────────────────────────────────────────
-type CreatorPostKind = 'hiring' | 'share_work' | 'article';
+type CreatorPostKind = 'hiring' | 'share_work';
 
 interface CreatorPost {
   id: string;
@@ -30,9 +30,23 @@ interface CreatorPost {
   isRemote?: boolean;
   deadline?: string;
   description: string;
-  // share_work / article
+  // share_work
   title?: string;
   body?: string;
+  videoUrl?: string;
+  imageUrl?: string;
+}
+
+interface Reel {
+  id: string;
+  title: string;
+  description: string;
+  category: string;
+  thumbnailUrl: string;
+  videoUrl: string;
+  metrics: { views: number; likes: number; comments: number; engagementRate: number };
+  createdAt: string;
+  campaignId: string | null;
 }
 
 function relTime(iso: string): string {
@@ -165,14 +179,58 @@ interface ShareWorkModalProps {
 function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose }: ShareWorkModalProps) {
   const [title, setTitle] = useState('');
   const [body, setBody] = useState('');
+  const [attachedFile, setAttachedFile] = useState<File | null>(null);
+  const [attachedFileBase64, setAttachedFileBase64] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  
   const PROMPTS = ['Completed a brand campaign', 'Hit a milestone', 'Launched new content', 'Achieved a metric goal'];
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    // 2.5MB limit validation
+    if (file.size > 2.5 * 1024 * 1024) {
+      setErrorMessage('File size exceeds the 2.5MB limit. Please upload a smaller image or video.');
+      setAttachedFile(null);
+      setAttachedFileBase64('');
+      return;
+    }
+    
+    setErrorMessage('');
+    setAttachedFile(file);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      setAttachedFileBase64(reader.result as string);
+    };
+    reader.onerror = (err) => {
+      console.error('File reading error:', err);
+      setErrorMessage('Failed to read media file.');
+    };
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!body.trim()) return;
+
+    const isVideo = attachedFile?.type.startsWith('video/');
+    const isImage = attachedFile?.type.startsWith('image/');
+
     onPublish({
-      id: `cp-${Date.now()}`, kind: 'share_work', authorName, authorAvatar, authorId,
-      createdAt: new Date().toISOString(), title: title.trim(), body: body.trim(), description: body.trim(),
+      id: `reel-${Date.now()}`,
+      kind: 'share_work',
+      authorName,
+      authorAvatar,
+      authorId,
+      createdAt: new Date().toISOString(),
+      title: title.trim(),
+      body: body.trim(),
+      description: body.trim(),
+      videoUrl: isVideo ? attachedFileBase64 : undefined,
+      imageUrl: isImage ? attachedFileBase64 : undefined,
     });
   };
 
@@ -206,6 +264,43 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
                 className="w-full px-4 py-2.5 bg-[#F6F2E8] border border-transparent rounded-xl text-sm text-[#1F1F1F] placeholder-[#9E9A97] focus:outline-none focus:bg-white focus:border-[#A8678A] focus:ring-2 focus:ring-[#A8678A]/20 resize-none" />
               <p className="text-[10px] text-[#9E9A97] text-right mt-1">{body.length}/800</p>
             </div>
+            <div>
+              <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">Attach Media (Reel or Image)</label>
+              <input 
+                type="file" 
+                ref={fileInputRef} 
+                onChange={handleFileChange} 
+                accept="video/*,image/*" 
+                className="hidden" 
+              />
+              {attachedFileBase64 ? (
+                <div className="relative border border-[#E7E1D8] rounded-xl p-3 bg-[#F8EFF3] flex items-center justify-between">
+                  <div className="flex items-center gap-2 min-w-0">
+                     <span className="text-xl">{attachedFile?.type.startsWith('video/') ? '🎬' : '📷'}</span>
+                     <span className="text-xs font-semibold text-[#1F1F1F] truncate max-w-[200px]">{attachedFile?.name}</span>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => { setAttachedFile(null); setAttachedFileBase64(''); }}
+                    className="text-xs text-[#A8678A] hover:underline font-bold"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="flex items-center gap-2 px-4 py-2.5 bg-[#F8EFF3] border border-[#E7E1D8] text-[#A8678A] hover:opacity-90 rounded-xl text-xs font-bold transition-opacity cursor-pointer"
+                >
+                  <span>📎</span>
+                  <span>Select Reel or Image</span>
+                </button>
+              )}
+              {errorMessage && (
+                <p className="text-red-500 text-xs font-bold mt-1.5">{errorMessage}</p>
+              )}
+            </div>
           </div>
           <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E7E1D8] bg-[#F6F2E8] shrink-0 rounded-b-3xl">
             <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl text-sm font-bold text-[#6E6A65] hover:bg-[#E7E1D8]">Cancel</button>
@@ -217,70 +312,10 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
   );
 }
 
-// ── NEW: Write Article Modal ──────────────────────────────────────────────────
-interface ArticleModalProps {
-  authorName: string; authorAvatar: string; authorId: string;
-  onPublish: (p: CreatorPost) => void; onClose: () => void;
-}
-function ArticleModal({ authorName, authorAvatar, authorId, onPublish, onClose }: ArticleModalProps) {
-  const [title, setTitle] = useState('');
-  const [body, setBody] = useState('');
-  const STARTERS = ['How I grew to 50K followers', 'How I shoot UGC content', 'My content creation workflow', 'Lessons from brand collabs'];
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!title.trim() || !body.trim()) return;
-    onPublish({
-      id: `cp-${Date.now()}`, kind: 'article', authorName, authorAvatar, authorId,
-      createdAt: new Date().toISOString(), title: title.trim(), body: body.trim(), description: body.slice(0, 200),
-    });
-  };
-
-  return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={onClose}>
-      <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg flex flex-col"
-        style={{ maxHeight: 'calc(100dvh - 2rem)' }} onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#E7E1D8] shrink-0">
-          <h2 className="font-black text-[#1F1F1F] text-base">📝 Write an Article</h2>
-          <button onClick={onClose} className="w-8 h-8 rounded-full bg-[#F8EFF3] flex items-center justify-center text-[#6E6A65] hover:bg-[#E7E1D8]">
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
-          </button>
-        </div>
-        <form onSubmit={handleSubmit} className="flex flex-col min-h-0">
-          <div className="flex-1 overflow-y-auto px-6 py-5 space-y-4">
-            <div className="flex flex-wrap gap-1.5">
-              {STARTERS.map(s => (
-                <button key={s} type="button" onClick={() => setTitle(s)}
-                  className={`px-2.5 py-1 rounded-full text-xs font-semibold transition-all ${title === s ? 'bg-[#1F1F1F] text-white' : 'bg-[#F8EFF3] text-[#A8678A] hover:bg-[#E7E1D8]'}`}>{s}</button>
-              ))}
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">Article Title *</label>
-              <input value={title} onChange={e => setTitle(e.target.value)} required placeholder="Write a compelling headline..."
-                className="w-full px-4 py-2.5 bg-[#F6F2E8] border border-transparent rounded-xl text-sm text-[#1F1F1F] placeholder-[#9E9A97] focus:outline-none focus:bg-white focus:border-[#A8678A] focus:ring-2 focus:ring-[#A8678A]/20 font-bold" />
-            </div>
-            <div>
-              <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">Content *</label>
-              <textarea value={body} onChange={e => setBody(e.target.value)} rows={8} required maxLength={3000}
-                placeholder="Share your story, tips, or insights..."
-                className="w-full px-4 py-2.5 bg-[#F6F2E8] border border-transparent rounded-xl text-sm text-[#1F1F1F] placeholder-[#9E9A97] focus:outline-none focus:bg-white focus:border-[#A8678A] focus:ring-2 focus:ring-[#A8678A]/20 resize-none" />
-              <p className="text-[10px] text-[#9E9A97] text-right mt-1">{body.length}/3000</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#E7E1D8] bg-[#F6F2E8] shrink-0 rounded-b-3xl">
-            <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-xl text-sm font-bold text-[#6E6A65] hover:bg-[#E7E1D8]">Cancel</button>
-            <button type="submit" className="px-6 py-2.5 rounded-xl text-sm font-black bg-[#1F1F1F] text-white hover:opacity-90">📝 Publish Article</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 // ── NEW: Creator Post Card ────────────────────────────────────────────────────
-function CreatorPostCard({ post }: { post: CreatorPost }) {
-  const kindLabel: Record<CreatorPostKind, string> = { hiring: 'Hiring', share_work: 'Work Update', article: 'Article' };
-  const kindIcon: Record<CreatorPostKind, string>  = { hiring: '🎬', share_work: '📷', article: '📝' };
+function CreatorPostCard({ post, onApply }: { post: CreatorPost; onApply?: (post: CreatorPost) => void }) {
+  const kindLabel: Record<CreatorPostKind, string> = { hiring: 'Hiring', share_work: 'Work Update' };
+  const kindIcon: Record<CreatorPostKind, string>  = { hiring: '🎬', share_work: '📷' };
 
   return (
     <article className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
@@ -304,7 +339,7 @@ function CreatorPostCard({ post }: { post: CreatorPost }) {
       {post.kind === 'hiring' && (
         <div>
           <h3 className="text-base font-bold text-[#1F1F1F] mb-2">
-            Need {post.roleNeeded}
+            {post.title ? post.title : `Need ${post.roleNeeded}`}
           </h3>
           {/* Meta row */}
           <div className="flex flex-wrap gap-3 text-xs text-[#6E6A65] mb-3">
@@ -339,7 +374,7 @@ function CreatorPostCard({ post }: { post: CreatorPost }) {
           )}
           <div className="border-t border-[#E7E1D8] pt-3 flex justify-end">
             <button
-              onClick={() => alert('Application flow for creator hiring posts coming soon!')}
+              onClick={() => onApply && onApply(post)}
               className="flex items-center gap-1.5 px-4 py-1.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90 transition-opacity">
               Apply Now →
             </button>
@@ -351,16 +386,17 @@ function CreatorPostCard({ post }: { post: CreatorPost }) {
       {post.kind === 'share_work' && (
         <div>
           {post.title && <h3 className="text-base font-bold text-[#1F1F1F] mb-2">{post.title}</h3>}
-          <p className="text-sm text-[#6E6A65] leading-relaxed whitespace-pre-line">{post.body}</p>
-        </div>
-      )}
-
-      {/* ARTICLE layout */}
-      {post.kind === 'article' && (
-        <div>
-          <h3 className="text-base font-bold text-[#1F1F1F] mb-2">{post.title}</h3>
-          <p className="text-sm text-[#6E6A65] leading-relaxed line-clamp-4">{post.body}</p>
-          <button className="mt-3 text-xs font-bold text-[#A8678A] hover:underline">Read more →</button>
+          <p className="text-sm text-[#6E6A65] leading-relaxed whitespace-pre-line mb-4">{post.body}</p>
+          {post.videoUrl && (
+            <div className="mb-4 rounded-xl overflow-hidden max-h-[420px] bg-black flex items-center justify-center">
+              <video src={post.videoUrl} controls className="max-h-[420px] w-auto object-contain" />
+            </div>
+          )}
+          {post.imageUrl && (
+            <div className="mb-4 rounded-xl overflow-hidden max-h-[420px]">
+              <img src={post.imageUrl} alt={post.title || 'Work update image'} className="w-full object-cover max-h-[420px] h-auto" />
+            </div>
+          )}
         </div>
       )}
     </article>
@@ -370,10 +406,23 @@ function CreatorPostCard({ post }: { post: CreatorPost }) {
 // ── MAIN COMPONENT (existing logic UNCHANGED, new features ADDED) ─────────────
 export default function FeedPage() {
   // ── EXISTING state (unchanged) ──────────────────────────────────────────────
-  const { posts, loadFeed } = useFeedStore();
+  const { posts: rawPosts, loadFeed } = useFeedStore();
   const { currentUser } = useAuthStore();
   const { creator, loadCreator } = useCreatorStore();
   const { brand, loadBrand } = useBrandStore();
+
+  const posts = rawPosts
+    .filter((p) => p.type === 'campaign')
+    .map((p) => {
+      if (p.id === 'post-7') {
+        return {
+          ...p,
+          // Make it 1 hour ago so it's newer than Aarav Mehta's post (2 hours ago)
+          publishedAt: new Date(Date.now() - 3600000).toISOString(),
+        };
+      }
+      return p;
+    });
 
   const [applyingPost, setApplyingPost] = useState<FeedPost | null>(null);
   const [successMessage, setSuccessMessage] = useState('');
@@ -396,6 +445,23 @@ export default function FeedPage() {
     setApplyingPost(post);
   };
 
+  const [applyingCreatorPost, setApplyingCreatorPost] = useState<CreatorPost | null>(null);
+
+  const handleApplyCreatorPost = (post: CreatorPost) => {
+    if (!currentUser) return;
+    if (currentUser.role !== 'creator') {
+      alert('Only content creators can apply for collaborations.');
+      return;
+    }
+    setApplyingCreatorPost(post);
+  };
+
+  const handleSuccessCreatorPost = () => {
+    setApplyingCreatorPost(null);
+    setSuccessMessage('Application submitted! 🎉');
+    setTimeout(() => setSuccessMessage(''), 4000);
+  };
+
   const handleSuccess = () => {
     setApplyingPost(null);
     setSuccessMessage('Application submitted! 🎉');
@@ -410,45 +476,122 @@ export default function FeedPage() {
   const isVerified = verificationStatus === 'verified';
   const isPending  = verificationStatus === 'pending';
 
-  // ── NEW: creator posts state ─────────────────────────────────────────────────
-  const [creatorPosts, setCreatorPosts] = useState<CreatorPost[]>([]);
-  const [modal, setModal] = useState<'hiring' | 'share_work' | 'article' | null>(null);
-  const [feedFilter, setFeedFilter] = useState<'all' | 'campaigns' | 'creator_posts' | 'hiring'>('all');
+  const [creatorPosts, setCreatorPosts] = useState<CreatorPost[]>(() => {
+    const stored = localStorage.getItem('createlink-creator-posts');
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch (e) {
+        console.error('Failed to parse creator posts:', e);
+      }
+    }
+    return [
+      {
+        id: "cp-default-1",
+        kind: "hiring",
+        authorName: "Aarav Mehta",
+        authorAvatar: "",
+        authorId: "creator-3",
+        createdAt: new Date(Date.now() - 3600000 * 2).toISOString(),
+        roleNeeded: "Video Editor",
+        budget: "₹12,000 – ₹18,000 / month",
+        location: "Mumbai",
+        isRemote: true,
+        deadline: "2026-07-15",
+        title: "🎬 Pacing is Everything! Hiring a Video Editor 🚀",
+        description: "🔥 COLLAB OPPORTUNITY: Looking for a creative editing wizard! 🔥\n\nI need a Video Editor who knows how to keep viewers hooked with snappy transitions, clean sound design, and slick motion graphics. If you're passionate about storytelling and want to co-create viral-ready content, let's team up! 🎬✨"
+      }
+    ];
+  });
+  const [modal, setModal] = useState<'hiring' | 'share_work' | null>(null);
+  const [sortBy, setSortBy] = useState<'top' | 'recent'>('top');
+  const [postTypeFilter, setPostTypeFilter] = useState<'all' | 'creator' | 'brand'>('all');
 
   const authorName   = currentUser?.role === 'creator' ? (creator?.displayName ?? 'Creator') : (brand?.companyName ?? 'Brand');
   const authorAvatar = '';
   const authorId     = currentUser?.id ?? '';
 
   const handlePublishCreatorPost = (p: CreatorPost) => {
-    setCreatorPosts(prev => [p, ...prev]);
-    setModal(null);
-    setSuccessMessage('Post published! 🎉');
-    setTimeout(() => setSuccessMessage(''), 4000);
-  };
+    if (p.kind === 'share_work') {
+      const creatorId = creator?.id || (currentUser ? `creator-${currentUser.id}` : 'creator-1');
+      const savedReels = localStorage.getItem(`reels-${creatorId}`);
+      let reelsList: Reel[] = [];
+      if (savedReels) {
+        try { reelsList = JSON.parse(savedReels); } catch {}
+      }
+      const newReel: Reel = {
+        id: p.id,
+        title: p.title || 'Work Collaboration',
+        description: p.body || p.description || '',
+        category: creator?.contentCategories?.[0] || 'lifestyle',
+        thumbnailUrl: p.imageUrl || '',
+        videoUrl: p.videoUrl || '',
+        metrics: {
+          views: Math.floor(Math.random() * 8000) + 1200,
+          likes: Math.floor(Math.random() * 800) + 120,
+          comments: Math.floor(Math.random() * 80) + 12,
+          engagementRate: 0.07 + Math.random() * 0.05,
+        },
+        createdAt: p.createdAt,
+        campaignId: null,
+      };
+      const updatedReels = [newReel, ...reelsList];
+      localStorage.setItem(`reels-${creatorId}`, JSON.stringify(updatedReels));
+      sessionStorage.setItem('allReels', JSON.stringify(updatedReels));
 
-  // ── Interleaved feed (campaign posts + creator posts) ──────────────────────
-  // We build an ordered merged list: every 2nd campaign post, insert a creator post
-  const buildMergedFeed = () => {
-    if (feedFilter === 'campaigns')     return { campaignItems: posts, creatorItems: [] };
-    if (feedFilter === 'creator_posts') return { campaignItems: [], creatorItems: creatorPosts };
-    if (feedFilter === 'hiring')        return { campaignItems: [], creatorItems: creatorPosts.filter(p => p.kind === 'hiring') };
-    return { campaignItems: posts, creatorItems: creatorPosts };
-  };
-
-  const { campaignItems, creatorItems } = buildMergedFeed();
-
-  // Merge: interleave creator posts between every 2 campaign cards
-  const mergedList: Array<{ type: 'campaign'; post: FeedPost } | { type: 'creator'; post: CreatorPost }> = [];
-  let ci = 0;
-  campaignItems.forEach((p, i) => {
-    mergedList.push({ type: 'campaign', post: p });
-    if ((i + 1) % 2 === 0 && ci < creatorItems.length) {
-      mergedList.push({ type: 'creator', post: creatorItems[ci++] });
+      setModal(null);
+      setSuccessMessage('Work successfully added to your profile! 🎉');
+      setTimeout(() => setSuccessMessage(''), 4000);
+    } else {
+      const updatedPosts = [p, ...creatorPosts];
+      setCreatorPosts(updatedPosts);
+      localStorage.setItem('createlink-creator-posts', JSON.stringify(updatedPosts));
+      setModal(null);
+      setSuccessMessage('Post published! 🎉');
+      setTimeout(() => setSuccessMessage(''), 4000);
     }
-  });
-  // append remaining creator posts after all campaigns
-  while (ci < creatorItems.length) {
-    mergedList.push({ type: 'creator', post: creatorItems[ci++] });
+  };
+
+  // ── Interleaved/Sorted feed (campaign posts + creator posts) ────────────────
+  const filteredCampaigns = postTypeFilter === 'creator'
+    ? posts.filter(p => p.authorRole === 'creator')
+    : (postTypeFilter === 'brand'
+        ? posts.filter(p => p.authorRole === 'brand')
+        : posts);
+  const filteredCreators = postTypeFilter === 'brand' ? [] : creatorPosts;
+  const mergedList: Array<{ type: 'campaign'; post: FeedPost } | { type: 'creator'; post: CreatorPost }> = [];
+
+  if (sortBy === 'top') {
+    // Default Top: interleave creator posts between every 2 campaign cards
+    let ci = 0;
+    filteredCampaigns.forEach((p, i) => {
+      mergedList.push({ type: 'campaign', post: p });
+      if ((i + 1) % 2 === 0 && ci < filteredCreators.length) {
+        mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
+      }
+    });
+    // append remaining creator posts after all campaigns
+    while (ci < filteredCreators.length) {
+      mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
+    }
+    // If there are no campaigns, push all remaining creator posts
+    if (filteredCampaigns.length === 0) {
+      filteredCreators.forEach(p => {
+        mergedList.push({ type: 'creator', post: p });
+      });
+    }
+  } else {
+    // Recent: sort all posts purely by date
+    const combined = [
+      ...filteredCampaigns.map(p => ({ type: 'campaign' as const, post: p })),
+      ...filteredCreators.map(p => ({ type: 'creator' as const, post: p }))
+    ];
+    combined.sort((a, b) => {
+      const timeA = new Date(a.type === 'campaign' ? a.post.publishedAt : a.post.createdAt).getTime();
+      const timeB = new Date(b.type === 'campaign' ? b.post.publishedAt : b.post.createdAt).getTime();
+      return timeB - timeA;
+    });
+    mergedList.push(...combined);
   }
 
   return (
@@ -468,10 +611,6 @@ export default function FeedPage() {
       )}
       {modal === 'share_work' && (
         <ShareWorkModal authorName={authorName} authorAvatar={authorAvatar} authorId={authorId}
-          onPublish={handlePublishCreatorPost} onClose={() => setModal(null)} />
-      )}
-      {modal === 'article' && (
-        <ArticleModal authorName={authorName} authorAvatar={authorAvatar} authorId={authorId}
           onPublish={handlePublishCreatorPost} onClose={() => setModal(null)} />
       )}
 
@@ -505,52 +644,61 @@ export default function FeedPage() {
                 className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors flex-1 justify-center">
                 📷 <span>Share Work</span>
               </button>
-              <div className="w-px h-5 bg-[#E7E1D8]" />
-              <button onClick={() => setModal('article')}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A] transition-colors flex-1 justify-center">
-                📝 <span>Write Article</span>
-              </button>
             </div>
           </div>
 
-          {/* ── NEW: Feed filter tabs ── */}
-          <div className="flex gap-1 bg-white border border-[#E7E1D8] rounded-2xl p-1.5 w-fit">
-            {([
-              { id: 'all',           label: 'All' },
-              { id: 'campaigns',     label: 'Campaigns' },
-              { id: 'creator_posts', label: 'Creator Posts' },
-              { id: 'hiring',        label: 'Hiring' },
-            ] as const).map(f => (
-              <button key={f.id} onClick={() => setFeedFilter(f.id)}
-                className={`px-4 py-1.5 rounded-xl text-xs font-bold transition-all ${
-                  feedFilter === f.id ? 'bg-[#1F1F1F] text-white' : 'text-[#6E6A65] hover:text-[#1F1F1F] hover:bg-[#F8EFF3]'
-                }`}>
-                {f.label}
-              </button>
-            ))}
-          </div>
+          {/* ── LinkedIn-style Sort & Filter ── */}
+          <div className="flex items-center gap-2 py-2">
+            <hr className="flex-grow border-t border-[#E7E1D8]" />
+            <div className="flex items-center gap-4 text-xs text-[#6E6A65] shrink-0">
+              {/* Show Filter */}
+              <div className="flex items-center gap-1">
+                <span>Show:</span>
+                <div className="relative inline-flex items-center">
+                  <select
+                    value={postTypeFilter}
+                    onChange={(e) => setPostTypeFilter(e.target.value as 'all' | 'creator' | 'brand')}
+                    className="appearance-none bg-transparent font-bold text-[#1F1F1F] pr-4 focus:outline-none cursor-pointer"
+                  >
+                    <option value="all">All Posts</option>
+                    <option value="creator">Creator Posts</option>
+                    <option value="brand">Brand Posts</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-0 text-[#1F1F1F] text-[10px]">▾</span>
+                </div>
+              </div>
 
-          {/* ── EXISTING Filters (unchanged) ── */}
-          {(feedFilter === 'all' || feedFilter === 'campaigns') && (
-            <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 shadow-card space-y-4">
-              <span className="block text-xs font-bold uppercase tracking-wider text-[#6E6A65]">
-                🔍 Filter Discovery Feed
-              </span>
-              <FeedFilters />
+              <div className="w-px h-3 bg-[#E7E1D8]" />
+
+              {/* Sort by */}
+              <div className="flex items-center gap-1">
+                <span>Sort by:</span>
+                <div className="relative inline-flex items-center">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as 'top' | 'recent')}
+                    className="appearance-none bg-transparent font-bold text-[#1F1F1F] pr-4 focus:outline-none cursor-pointer"
+                  >
+                    <option value="top">Top</option>
+                    <option value="recent">Recent</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-0 text-[#1F1F1F] text-[10px]">▾</span>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
 
           {/* ── MERGED FEED LIST ── */}
           {mergedList.length === 0 ? (
             <div className="text-center py-16 bg-white border border-[#E7E1D8] rounded-[20px] shadow-card flex flex-col items-center">
               <div className="text-5xl mb-4">🔍</div>
               <p className="text-[#6E6A65] text-sm font-medium">
-                {feedFilter === 'hiring' ? 'No hiring posts yet.' : feedFilter === 'creator_posts' ? 'No creator posts yet. Be the first to post!' : 'No posts match your current filters.'}
+                No posts available.
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              {mergedList.map((item, idx) =>
+              {mergedList.map((item) =>
                 item.type === 'campaign' ? (
                   /* ── EXISTING campaign card (completely unchanged) ── */
                   <FeedCard
@@ -561,7 +709,7 @@ export default function FeedPage() {
                   />
                 ) : (
                   /* ── NEW creator post card ── */
-                  <CreatorPostCard key={item.post.id} post={item.post} />
+                  <CreatorPostCard key={item.post.id} post={item.post} onApply={handleApplyCreatorPost} />
                 )
               )}
             </div>
@@ -653,6 +801,26 @@ export default function FeedPage() {
               campaign={{ id: applyingPost.campaignId || '', title: applyingPost.title } as unknown as Campaign}
               onClose={() => setApplyingPost(null)}
               onSuccess={handleSuccess}
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── NEW creator application modal ── */}
+      {applyingCreatorPost && creator && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#1F1F1F]/60 backdrop-blur-sm">
+          <div className="max-w-2xl w-full bg-white border border-[#E7E1D8] rounded-[20px] p-6 sm:p-8 shadow-card relative max-h-[90vh] overflow-y-auto">
+            <button onClick={() => setApplyingCreatorPost(null)}
+              className="absolute top-4 right-4 text-[#6E6A65] hover:text-[#1F1F1F] bg-[#F8EFF3] rounded-xl p-1.5 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <CreatorApplicationForm
+              creator={creator}
+              post={applyingCreatorPost}
+              onClose={() => setApplyingCreatorPost(null)}
+              onSuccess={handleSuccessCreatorPost}
             />
           </div>
         </div>

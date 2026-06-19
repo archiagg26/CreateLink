@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { getStore } from '../services/store';
-import type { Creator, Campaign, Application, Brand } from '../types/index';
+import type { Creator, Campaign, Application } from '../types/index';
 import { Link } from 'react-router-dom';
-import { useUIStore } from '../stores/uiStore';
 
-// Simple utility components — keep design consistent with app
+
+// Simple utility components â€” keep design consistent with app
 function ScorePill({ score }: { score: number }) {
   return (
     <div className="px-2 py-0.5 rounded-full bg-[#F8EFF3] text-[#A8678A] text-xs font-bold">
@@ -25,10 +25,10 @@ function CreatorCard({ creator }: { creator: Creator }) {
         <p className="text-xs text-[#6E6A65] truncate">{creator.bio}</p>
         <div className="mt-2 flex items-center gap-2 text-[11px] text-[#6E6A65]">
           <span>{creator.socialAccounts?.[0]?.platform ?? 'instagram'}</span>
-          <span>•</span>
+          <span>â€¢</span>
           <span>{creator.socialAccounts?.[0]?.followerCount ?? 0} followers</span>
-          <span>•</span>
-          <span>{creator.insights?.averageEngagementRate?.toFixed?.(1) ?? '—'}% ER</span>
+          <span>â€¢</span>
+          <span>{creator.insights?.averageEngagementRate?.toFixed?.(1) ?? 'â€”'}% ER</span>
         </div>
         <div className="mt-3 flex gap-2">
           <Link to={`/creator/${creator.id}`} className="px-3 py-1 text-xs bg-[#F8EFF3] text-[#A8678A] rounded-md font-bold">View</Link>
@@ -41,8 +41,7 @@ function CreatorCard({ creator }: { creator: Creator }) {
 }
 
 export default function BrandDashboardPage() {
-  const uiMode = useUIStore((s) => s.mode);
-  const switchToCreator = useUIStore((s) => s.switchToCreator);
+
   const [creators, setCreators] = useState<Creator[]>([]);
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [applications, setApplications] = useState<Application[]>([]);
@@ -134,7 +133,7 @@ export default function BrandDashboardPage() {
                   <div>
                     <h4 className="text-lg font-bold">{nextCandidate.displayName}</h4>
                     <div className="text-xs text-[#6E6A65]">{nextCandidate.bio}</div>
-                    <div className="mt-2 flex items-center gap-2 text-[11px] text-[#6E6A65]"><span>{nextCandidate.trustScore}</span><span>•</span><span>{nextCandidate.insights.averageEngagementRate}% ER</span></div>
+                    <div className="mt-2 flex items-center gap-2 text-[11px] text-[#6E6A65]"><span>{nextCandidate.trustScore}</span><span>â€¢</span><span>{nextCandidate.insights.averageEngagementRate}% ER</span></div>
                   </div>
                 </div>
                 <div className="mt-4">

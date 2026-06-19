@@ -44,7 +44,7 @@ export default function NotificationsPage() {
         <div>
           <h1 className="text-2xl font-black text-[#1F1F1F]">Notifications</h1>
           <p className="text-[#6E6A65] text-sm mt-0.5">
-            {unreadCount > 0 ? `${unreadCount} unread update${unreadCount > 1 ? 's' : ''}` : 'You're all caught up ✓'}
+            {unreadCount > 0 ? `${unreadCount} unread update${unreadCount > 1 ? 's' : ''}` : "You're all caught up ✓"}
           </p>
         </div>
         {unreadCount > 0 && (
