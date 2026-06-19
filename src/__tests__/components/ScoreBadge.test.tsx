@@ -16,12 +16,12 @@ describe('ScoreBadge', () => {
 
     it('includes an accessible aria-label with score and label', () => {
       render(<ScoreBadge score={85} label="Trust Score" />);
-      expect(screen.getByRole('img', { name: 'Trust Score: 85 out of 100' })).toBeTruthy();
+      expect(screen.getByRole('img', { name: 'Trust Score: 85/100' })).toBeTruthy();
     });
 
     it('includes a default aria-label when no label is provided', () => {
       render(<ScoreBadge score={60} />);
-      expect(screen.getByRole('img', { name: 'Score: 60 out of 100' })).toBeTruthy();
+      expect(screen.getByRole('img', { name: 'Score: 60/100' })).toBeTruthy();
     });
   });
 
@@ -29,77 +29,77 @@ describe('ScoreBadge', () => {
     it('applies red classes for score 0–39', () => {
       const { container } = render(<ScoreBadge score={25} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-red-100');
-      expect(badge.className).toContain('text-red-800');
+      expect(badge.className).toContain('bg-rose-50');
+      expect(badge.className).toContain('text-rose-700');
     });
 
     it('applies amber classes for score 40–69', () => {
       const { container } = render(<ScoreBadge score={55} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-amber-100');
-      expect(badge.className).toContain('text-amber-800');
+      expect(badge.className).toContain('bg-amber-50');
+      expect(badge.className).toContain('text-amber-700');
     });
 
     it('applies green classes for score 70–89', () => {
       const { container } = render(<ScoreBadge score={80} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-green-100');
-      expect(badge.className).toContain('text-green-800');
+      expect(badge.className).toContain('bg-emerald-50');
+      expect(badge.className).toContain('text-emerald-700');
     });
 
     it('applies blue classes for score 90–100', () => {
       const { container } = render(<ScoreBadge score={95} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-blue-100');
-      expect(badge.className).toContain('text-blue-800');
+      expect(badge.className).toContain('bg-[#F8EFF3]');
+      expect(badge.className).toContain('text-[#A8678A]');
     });
 
     it('applies red classes at boundary score 0', () => {
       const { container } = render(<ScoreBadge score={0} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-red-100');
+      expect(badge.className).toContain('bg-rose-50');
     });
 
     it('applies red classes at boundary score 39', () => {
       const { container } = render(<ScoreBadge score={39} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-red-100');
+      expect(badge.className).toContain('bg-rose-50');
     });
 
     it('applies amber classes at boundary score 40', () => {
       const { container } = render(<ScoreBadge score={40} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-amber-100');
+      expect(badge.className).toContain('bg-amber-50');
     });
 
     it('applies amber classes at boundary score 69', () => {
       const { container } = render(<ScoreBadge score={69} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-amber-100');
+      expect(badge.className).toContain('bg-amber-50');
     });
 
     it('applies green classes at boundary score 70', () => {
       const { container } = render(<ScoreBadge score={70} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-green-100');
+      expect(badge.className).toContain('bg-emerald-50');
     });
 
     it('applies green classes at boundary score 89', () => {
       const { container } = render(<ScoreBadge score={89} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-green-100');
+      expect(badge.className).toContain('bg-emerald-50');
     });
 
     it('applies blue classes at boundary score 90', () => {
       const { container } = render(<ScoreBadge score={90} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-blue-100');
+      expect(badge.className).toContain('bg-[#F8EFF3]');
     });
 
     it('applies blue classes at boundary score 100', () => {
       const { container } = render(<ScoreBadge score={100} />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('bg-blue-100');
+      expect(badge.className).toContain('bg-[#F8EFF3]');
     });
   });
 
@@ -107,7 +107,7 @@ describe('ScoreBadge', () => {
     it('applies sm size classes', () => {
       const { container } = render(<ScoreBadge score={50} size="sm" />);
       const badge = container.firstChild as HTMLElement;
-      expect(badge.className).toContain('text-xs');
+      expect(badge.className).toContain('text-[11px]');
     });
 
     it('applies md size classes (default)', () => {

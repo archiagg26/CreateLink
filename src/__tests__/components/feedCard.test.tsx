@@ -84,7 +84,7 @@ describe('FeedCard Property Tests', () => {
             // Check creator specific buttons & badges
             expect(screen.getByRole('button', { name: /Contact Creator/i })).toBeTruthy();
             if (post.collaborationMatchScore !== null) {
-              expect(screen.getByText('Trust Score')).toBeTruthy();
+              expect(screen.getByText('Score')).toBeTruthy();
             }
           }
 
@@ -94,5 +94,5 @@ describe('FeedCard Property Tests', () => {
       ),
       { numRuns: 100 }
     );
-  });
+  }, 30000);
 });

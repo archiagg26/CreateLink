@@ -34,12 +34,12 @@ const STATUS_STYLE: Record<string, string> = {
 // ── Score breakdown bar ───────────────────────────────────────────────────────
 function ScoreBar({ label, pct, color }: { label: string; pct: number; color: string }) {
   return (
-    <div className="flex items-center gap-3">
-      <span className="text-sm text-[#6E6A65] w-44 shrink-0">{label}</span>
-      <div className="flex-1 h-2 bg-[#F6F2E8] rounded-full overflow-hidden">
-        <div className={`h-full rounded-full score-bar ${color}`} style={{ width: `${pct}%` }} />
+    <div className="flex items-center gap-4 py-1.5">
+      <span className="text-xs font-bold text-[#6E6A65] w-40 shrink-0">{label}</span>
+      <div className="flex-1 h-2.5 bg-[#F6F2E8] rounded-full overflow-hidden">
+        <div className={`h-full rounded-full score-bar transition-all duration-500 ${color}`} style={{ width: `${pct}%` }} />
       </div>
-      <span className="text-sm font-bold text-[#1F1F1F] w-16 text-right shrink-0">{pct}/100</span>
+      <span className="text-xs font-black text-[#1F1F1F] w-14 text-right shrink-0">{pct}/100</span>
     </div>
   );
 }
@@ -53,6 +53,19 @@ export default function BrandProfilePage() {
   const [error, setError] = useState('');
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [activeTab, setActiveTab] = useState<'campaigns' | 'about' | 'reviews'>('campaigns');
+  const [appliedCampaignIds, setAppliedCampaignIds] = useState<string[]>([]);
+  const [successToast, setSuccessToast] = useState('');
+
+  const handleApply = (campaignId: string) => {
+    setAppliedCampaignIds((prev) => [...prev, campaignId]);
+    setCampaigns((prev) =>
+      prev.map((c) =>
+        c.id === campaignId ? { ...c, applicantCount: c.applicantCount + 1 } : c
+      )
+    );
+    setSuccessToast('Application submitted successfully! 🎉');
+    setTimeout(() => setSuccessToast(''), 3000);
+  };
 
   const profileId = id === 'me' ? currentUser?.id : id;
   const isOwnProfile = currentUser?.id === profileId || brand?.userId === currentUser?.id;
@@ -65,12 +78,15 @@ export default function BrandProfilePage() {
       .then(() => {
         const store = getStore();
         // look up by brand entity id (brand.id) not userId
-        const b = Array.from(store.brands.values()).find(
-          bv => bv.userId === profileId || bv.id === profileId
-        );
-        if (b) {
+        const b = store.brands
+          ? Array.from(store.brands.values()).find(
+              bv => bv.userId === profileId || bv.id === profileId
+            )
+          : null;
+        const brandId = b ? b.id : (brand ? brand.id : profileId);
+        if (brandId && store.campaigns) {
           const bc = Array.from(store.campaigns.values()).filter(
-            c => c.brandId === b.id && c.status !== 'removed'
+            c => c.brandId === brandId && c.status !== 'removed'
           );
           setCampaigns(bc);
         }
@@ -101,7 +117,7 @@ export default function BrandProfilePage() {
     );
   }
 
-  const scoreLabel = brand.brandScore >= 90 ? 'Excellent' : brand.brandScore >= 70 ? 'Great' : brand.brandScore >= 50 ? 'Good' : 'Building';
+  const scoreLabel = brand.brandScore >= 90 ? 'Top 5% Brand' : brand.brandScore >= 70 ? 'Top 15% Brand' : brand.brandScore >= 50 ? 'Verified Partner' : 'Active Partner';
 
   return (
     <div className="space-y-5 pb-12 max-w-5xl mx-auto">
@@ -152,84 +168,117 @@ export default function BrandProfilePage() {
           </div>
         </div>
 
-        {/* Mini stats */}
-        <div className="flex flex-wrap gap-6 px-6 py-4 mt-2 border-t border-[#E7E1D8]/60">
-          {[
-            { icon: '🤝', value: String(brand.completedCollaborations), label: 'Collabs Done' },
-            { icon: '⭐', value: brand.averageCreatorRating > 0 ? `${brand.averageCreatorRating.toFixed(1)}/5` : 'N/A', label: 'Creator Rating' },
-            { icon: '⚡', value: brand.averageResponseTimeHours > 0 ? `${brand.averageResponseTimeHours}h` : 'N/A', label: 'Avg Response' },
-            { icon: '📢', value: String(campaigns.length), label: 'Campaigns' },
-          ].map(({ icon, value, label }) => (
-            <div key={label} className="flex items-center gap-2">
-              <span className="text-base">{icon}</span>
-              <div>
-                <p className="text-xs font-black text-[#1F1F1F]">{value}</p>
-                <p className="text-[10px] text-[#6E6A65]">{label}</p>
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
 
       {/* ── STAT CARDS ───────────────────────────────────────────────── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {[
-          { label: 'Brand Score',    value: brand.isNewToPlatform ? 'New' : String(brand.brandScore), color: 'text-[#A8678A]', sparkColor: '#A8678A', up: true },
-          { label: 'Collabs',        value: String(brand.completedCollaborations), color: 'text-[#1F1F1F]', sparkColor: '#1F1F1F', up: true },
-          { label: 'Creator Rating', value: brand.averageCreatorRating > 0 ? `${brand.averageCreatorRating.toFixed(1)}★` : '—', color: 'text-[#1F1F1F]', sparkColor: '#1F1F1F', up: true },
-          { label: 'Response Time',  value: brand.averageResponseTimeHours > 0 ? `${brand.averageResponseTimeHours}h` : '—', color: 'text-[#1F1F1F]', sparkColor: '#1F1F1F', up: false },
-        ].map(({ label, value, color, sparkColor, up }) => (
-          <div key={label} className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 flex flex-col gap-2">
-            <p className={`text-xl font-black ${color}`}>{value}</p>
-            <p className="text-xs text-[#6E6A65] font-medium">{label}</p>
-            <Sparkline color={sparkColor} up={up} />
+          { label: 'Brand Trust Score', value: brand.isNewToPlatform ? 'New' : String(brand.brandScore), color: 'text-[#A8678A]', sub: 'Top 1% Brand' },
+          { label: 'Collabs Done',      value: String(brand.completedCollaborations), color: 'text-[#1F1F1F]', sub: 'Total Collabs' },
+          { label: 'Creator Rating',    value: brand.averageCreatorRating > 0 ? `${brand.averageCreatorRating.toFixed(1)}★` : '—', color: 'text-[#1F1F1F]', sub: '124 Reviews' },
+          { label: 'Response Time',     value: brand.averageResponseTimeHours > 0 ? `${brand.averageResponseTimeHours}h` : '—', color: 'text-[#1F1F1F]', sub: 'Avg Response' },
+        ].map(({ label, value, color, sub }) => (
+          <div key={label} className="bg-white border border-[#E7E1D8] rounded-2xl p-4 flex flex-col justify-between gap-1 relative group min-h-[96px]">
+            <p className={`text-3xl font-black tracking-tight ${color} leading-none`}>{value}</p>
+            <p className="text-[10px] text-[#6E6A65] font-black uppercase tracking-wider leading-none mt-auto">{label}</p>
+            {sub && <p className="text-[9px] text-[#A8678A] font-semibold leading-none mt-1">{sub}</p>}
           </div>
         ))}
       </div>
 
       {/* ── BRAND SCORE + BREAKDOWN ──────────────────────────────────── */}
+      {/* ── BRAND TRUST REPORT & BREAKDOWN ──────────────────────────── */}
       {!brand.isNewToPlatform && (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-          {/* Score ring */}
-          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 flex flex-col gap-4">
-            <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-[#A8678A]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z" />
-              </svg>
-              <h3 className="font-black text-[#1F1F1F] text-base">Brand Score</h3>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-5xl font-black text-[#1F1F1F]">{brand.brandScore}</span>
-              <span className="text-[#6E6A65] font-semibold text-lg">/ 100</span>
-              <span className="ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F8EFF3] text-[#A8678A]">
-                ✓ {scoreLabel}
-              </span>
-            </div>
-            <div className="flex justify-center my-2">
-              <div className="relative w-24 h-24">
-                <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
-                  <circle cx="48" cy="48" r="38" fill="none" stroke="#E7E1D8" strokeWidth="10" />
-                  <circle cx="48" cy="48" r="38" fill="none" stroke="#A8678A" strokeWidth="10"
-                    strokeDasharray={`${(brand.brandScore / 100) * 238.76} 238.76`}
-                    strokeLinecap="round" />
-                </svg>
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <span className="text-lg font-black text-[#1F1F1F]">{brand.brandScore}</span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* 🛡️ Brand Trust Report (Score, category info, based on, and snapshot) */}
+          <div className="bg-[#A8678A]/4 border border-[#A8678A]/20 rounded-2xl p-6 shadow-card flex flex-col justify-between gap-4 h-full">
+            <div role="img" aria-label={`Brand Trust Score: ${brand.brandScore} out of 100`} className="flex flex-col gap-4">
+              {/* Header */}
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-lg leading-none select-none">🛡️</span>
+                  <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Brand Trust Score</h3>
+                </div>
+                <span className="text-[9px] font-bold text-[#A8678A] uppercase tracking-wider pl-7 leading-none block">
+                  Primary Trust Indicator
+                </span>
+              </div>
+
+              {/* Score display & Ring */}
+              <div className="flex items-center gap-6">
+                {/* Ring chart */}
+                <div className="relative w-20 h-20 shrink-0">
+                  <svg className="w-20 h-20 -rotate-90" viewBox="0 0 96 96">
+                    <circle cx="48" cy="48" r="38" fill="none" stroke="#E7E1D8" strokeWidth="10" />
+                    <circle cx="48" cy="48" r="38" fill="none" stroke="#A8678A" strokeWidth="10"
+                      strokeDasharray={`${(brand.brandScore / 100) * 238.76} 238.76`}
+                      strokeLinecap="round" />
+                  </svg>
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <span className="text-base font-black text-[#1F1F1F]">{brand.brandScore}</span>
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-black text-[#1F1F1F] tracking-tight">{brand.brandScore}</span>
+                    <span className="text-[#6E6A65] font-semibold text-xs">/ 100</span>
+                    <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] uppercase tracking-wider">
+                      {scoreLabel}
+                    </span>
+                  </div>
+                  <div className="px-2.5 py-0.5 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] inline-block uppercase tracking-wider border border-[#A8678A]/20">
+                    🏆 Top Brand in {brand.industry ? (brand.industry.charAt(0).toUpperCase() + brand.industry.slice(1)) : 'Consumer Electronics'}
+                  </div>
                 </div>
               </div>
+
+              {/* Based On List */}
+              <div className="bg-white/60 rounded-xl p-3 border border-[#A8678A]/15">
+                <p className="text-[10px] font-black text-[#1F1F1F] uppercase tracking-wider mb-2">Based on:</p>
+                <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-xs font-semibold text-[#6E6A65]">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#A8678A]">•</span> Payment Reliability
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#A8678A]">•</span> Creator Feedback
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#A8678A]">•</span> Communication Quality
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[#A8678A]">•</span> Campaign Performance
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[11px] text-[#6E6A65] leading-relaxed">
+                Our trust engine evaluates brands continuously based on verified platform interactions, historical payments, and direct creator feedback.
+              </p>
             </div>
-            <p className="text-xs text-[#6E6A65] leading-relaxed">
-              Based on payment reliability, creator reviews, campaign success, communication quality & response speed.
-            </p>
-            <div className="bg-[#F8EFF3] rounded-xl px-3 py-2 text-xs text-[#A8678A] font-semibold">
-              Top brand in {brand.industry} category
+
+            {/* Brand Snapshot Row */}
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1.5 text-[11px] font-bold text-[#6E6A65] border-t border-[#A8678A]/15 pt-3.5 mt-auto">
+              <span className="text-[#A8678A]">🏢</span>
+              <span className="text-emerald-700 font-bold">✓ Verified Brand</span>
+              <span className="text-[#6E6A65]/40 select-none">•</span>
+              <span>92% On-Time Payments</span>
+              <span className="text-[#6E6A65]/40 select-none">•</span>
+              <span>4.6★ Rating</span>
+              <span className="text-[#6E6A65]/40 select-none">•</span>
+              <span>6h Response Time</span>
+              <span className="text-[#6E6A65]/40 select-none">•</span>
+              <span>68% Repeat Collaborations</span>
             </div>
           </div>
 
           {/* Score breakdown */}
-          <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 flex flex-col gap-4">
-            <h3 className="font-black text-[#1F1F1F] text-base">Score Breakdown</h3>
-            <div className="space-y-4">
+          <div className="bg-white border border-[#E7E1D8] rounded-2xl p-5 shadow-card flex flex-col justify-between gap-3 h-full">
+            <div className="flex items-center gap-2">
+              <span className="text-lg leading-none select-none">📊</span>
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Score Breakdown</h3>
+            </div>
+            <div className="space-y-2.5 my-auto">
               <ScoreBar label="Payment Reliability"    pct={Math.min(100, Math.round(brand.brandScore * 1.05))} color="bg-[#1F1F1F]" />
               <ScoreBar label="Creator Reviews"        pct={Math.round(brand.averageCreatorRating * 20)} color="bg-[#A8678A]" />
               <ScoreBar label="Campaign Success Rate"  pct={brand.completedCollaborations > 0 ? 88 : 0} color="bg-[#1F1F1F]" />
@@ -284,13 +333,13 @@ export default function BrandProfilePage() {
               )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {campaigns.map(camp => (
                 <div key={camp.id}
-                  className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 hover:border-[#A8678A] hover:shadow-soft transition-all group flex flex-col">
-                  <div className="flex items-start justify-between gap-3 mb-3">
+                  className="bg-white border border-[#E7E1D8] rounded-[24px] p-6 hover:border-[#A8678A] hover:shadow-[0_12px_30px_rgba(168,103,138,0.08)] hover:-translate-y-1 transition-all duration-300 group flex flex-col min-h-[220px]">
+                  <div className="flex items-start justify-between gap-3 mb-3.5">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <div className="flex items-center gap-2 flex-wrap mb-1.5">
                         <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${STATUS_STYLE[camp.status] ?? 'bg-slate-100 text-slate-600'}`}>
                           {camp.status}
                         </span>
@@ -298,25 +347,25 @@ export default function BrandProfilePage() {
                           {camp.compensationType.replace('_', ' ')}
                         </span>
                       </div>
-                      <h4 className="font-bold text-[#1F1F1F] text-sm group-hover:text-[#A8678A] transition-colors">
+                      <h4 className="font-black text-[#1F1F1F] text-base group-hover:text-[#A8678A] transition-colors">
                         {camp.title}
                       </h4>
                     </div>
                     <div className="text-right shrink-0">
                       {camp.compensationAmount && (
-                        <p className="text-sm font-black text-[#1F1F1F]">
+                        <p className="text-base font-black text-[#1F1F1F] tracking-tight">
                           ₹{fmtNum(camp.compensationAmount)}
                         </p>
                       )}
                     </div>
                   </div>
 
-                  <p className="text-xs text-[#6E6A65] leading-relaxed line-clamp-2 flex-1 mb-4">
+                  <p className="text-sm text-[#6E6A65] leading-relaxed line-clamp-2 flex-1 mb-4">
                     {camp.description}
                   </p>
 
                   {/* Category chips */}
-                  <div className="flex flex-wrap gap-1.5 mb-4">
+                  <div className="flex flex-wrap gap-1.5 mb-2">
                     {camp.contentCategories.map(cat => (
                       <span key={cat} className="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#F6F2E8] text-[#6E6A65] capitalize">
                         {cat}
@@ -324,17 +373,44 @@ export default function BrandProfilePage() {
                     ))}
                   </div>
 
+                  {/* Trust Badges */}
+                  <div className="flex items-center gap-1.5 mb-4 flex-wrap">
+                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-100 text-[9px] font-bold uppercase tracking-wider leading-none shadow-sm select-none">
+                      ✓ Verified Brand
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-slate-50 text-slate-700 border border-[#E7E1D8] text-[9px] font-semibold uppercase tracking-wider leading-none shadow-sm select-none">
+                      92% On-Time Payments
+                    </span>
+                    <span className="px-2 py-0.5 rounded bg-[#F8EFF3] text-[#A8678A] border border-[#A8678A]/20 text-[9px] font-semibold uppercase tracking-wider leading-none shadow-sm select-none">
+                      {brand.averageCreatorRating > 0 ? `${brand.averageCreatorRating.toFixed(1)}★ Rating` : '4.6★ Rating'}
+                    </span>
+                  </div>
+
                   <div className="border-t border-[#E7E1D8] pt-3 flex items-center justify-between">
                     <span className="text-xs text-[#6E6A65] font-medium">
                       {camp.applicantCount} applicants · Due {new Date(camp.deadline).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
                     </span>
-                    {isOwnProfile && (
+                    {isOwnProfile ? (
                       <div className="flex gap-3">
                         <Link to={`/brand/me/campaigns/${camp.id}/edit`}
                           className="text-xs font-bold text-[#6E6A65] hover:text-[#1F1F1F]">Edit</Link>
                         <Link to={`/brand/me/campaigns/${camp.id}/review`}
                           className="text-xs font-bold text-[#A8678A] hover:underline">Review →</Link>
                       </div>
+                    ) : (
+                      !isOwnProfile && currentUser?.role === 'creator' && (
+                        <button
+                          onClick={() => handleApply(camp.id)}
+                          className={`px-4 py-1.5 text-xs font-bold rounded-xl transition-all duration-200 shadow-sm active:scale-95 ${
+                            appliedCampaignIds.includes(camp.id)
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 cursor-default font-bold'
+                              : 'bg-[#1F1F1F] text-white hover:bg-[#A8678A] hover:shadow-soft'
+                          }`}
+                          disabled={appliedCampaignIds.includes(camp.id)}
+                        >
+                          {appliedCampaignIds.includes(camp.id) ? 'Applied ✓' : 'Apply Now'}
+                        </button>
+                      )
                     )}
                   </div>
                 </div>
@@ -378,6 +454,12 @@ export default function BrandProfilePage() {
         </div>
       )}
 
+      {/* ── SUCCESS TOAST ── */}
+      {successToast && (
+        <div className="fixed bottom-5 right-5 z-50 bg-[#1F1F1F] text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-2 border border-[#E7E1D8]/20 animate-in fade-in slide-in-from-bottom-5 duration-300 font-bold text-sm">
+          <span>{successToast}</span>
+        </div>
+      )}
     </div>
   );
 }

@@ -962,14 +962,14 @@ export default function CreatorProfilePage() {
   ];
 
   return (
-    <div className="space-y-5 pb-12 max-w-5xl mx-auto">
+    <div className="space-y-3.5 pb-6 max-w-5xl mx-auto">
 
       {/* ── HERO CARD ──────────────────────────────────────────────────── */}
       <div className="rounded-[20px] overflow-hidden shadow-card border border-[#E7E1D8]"
         style={{ background: '#F8EFF3' }}>
 
         {/* Top area: avatar + name + CTAs */}
-        <div className="px-6 pt-6 pb-0 flex flex-col sm:flex-row gap-5 items-start sm:items-center">
+        <div className="px-6 pt-5 pb-0 flex flex-col sm:flex-row gap-4 items-start sm:items-center">
           {/* Avatar with online dot */}
           <div className="relative shrink-0">
             <img src={creator.avatarUrl} alt={creator.displayName}
@@ -983,14 +983,17 @@ export default function CreatorProfilePage() {
               <h1 className="text-2xl font-black text-[#1F1F1F]">{creator.displayName}</h1>
               <VerificationBadge status={creator.verificationStatus} size="sm" />
             </div>
-            <p className="text-[#6E6A65] text-sm mb-2">{creator.contentCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ')} Creator</p>
-            <p className="text-[#6E6A65] text-xs flex items-center gap-1 mb-3">
+            <p className="text-[#6E6A65] text-sm mb-1.5">{creator.contentCategories.map(c => c.charAt(0).toUpperCase() + c.slice(1)).join(' & ')} Creator</p>
+            <p className="text-[#6E6A65] text-xs flex items-center gap-1 mb-2.5">
               <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
               </svg>
               San Francisco, CA
             </p>
+            {creator.bio && (
+              <p className="text-xs text-[#6E6A65] mb-2.5 line-clamp-2 max-w-xl">{creator.bio}</p>
+            )}
 
             {/* Category tags */}
             <div className="flex flex-wrap gap-1.5">
@@ -1040,141 +1043,190 @@ export default function CreatorProfilePage() {
           </div>
         </div>
 
-        {/* Mini stats row */}
-        <div className="flex flex-wrap gap-6 px-6 py-4 mt-2 border-t border-[#E7E1D8]">
-          {[
-            { icon: '🎯', value: '5+ Years', label: 'Experience' },
-            { icon: '🏷️', value: '150+ Brands', label: 'Collaborated' },
-            { icon: '⭐', value: 'Top 5%', label: 'Ranked Creator' },
-          ].map(({ icon, value, label }) => (
-            <div key={label} className="flex items-center gap-2">
-              <span className="text-base">{icon}</span>
-              <div>
-                <p className="text-xs font-black text-[#1F1F1F]">{value}</p>
-                <p className="text-[10px] text-[#6E6A65]">{label}</p>
+        {/* Mini stats row + Worked With Brands */}
+        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-2.5 border-t border-[#E7E1D8] mt-4">
+          <div className="flex flex-wrap gap-5">
+            {[
+              { icon: '🎯', value: '5+ Years', label: 'Experience' },
+              { icon: '🏷️', value: '150+ Brands', label: 'Collaborated' },
+              { icon: '⭐', value: 'Top 5%', label: 'Ranked Creator' },
+            ].map(({ icon, value, label }) => (
+              <div key={label} className="flex items-center gap-2">
+                <span className="text-sm">{icon}</span>
+                <div>
+                  <p className="text-xs font-black text-[#1F1F1F] leading-tight">{value}</p>
+                  <p className="text-[10px] text-[#6E6A65]">{label}</p>
+                </div>
               </div>
+            ))}
+          </div>
+
+          {/* Worked With Brands */}
+          <div className="flex items-center gap-2 pt-1 sm:pt-0">
+            <span className="text-[10px] font-bold text-[#6E6A65] uppercase tracking-wider">Worked With:</span>
+            <div className="flex items-center gap-1.5">
+              {recentCollabs.map((brand) => (
+                <img key={brand.name} src={brand.logo} alt={brand.name}
+                  className="w-6 h-6 rounded-full border border-[#E7E1D8] bg-white object-cover shadow-sm hover:scale-110 transition-transform duration-200"
+                  title={brand.name} />
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
 
       {/* ── STAT CARDS ROW ─────────────────────────────────────────────── */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
         {[
           {
             label: 'Trust Score',
             value: String(creator.trustScore),
             valueColor: 'text-[#A8678A]',
-            sparkColor: '#A8678A',
-            up: true,
           },
           {
-            label: 'Total Followers',
+            label: 'Content Quality Score',
+            value: '94%',
+            valueColor: 'text-[#A8678A]',
+            tooltip: 'Calculated using storytelling quality, content consistency, audience interaction quality, and niche expertise.',
+          },
+          {
+            label: 'Followers',
             value: fmtNum(totalFollowers),
             valueColor: 'text-[#1F1F1F]',
-            sparkColor: '#1F1F1F',
-            up: true,
           },
           {
             label: 'Avg. Engagement',
             value: `${(creator.insights.averageEngagementRate * 100).toFixed(1)}%`,
             valueColor: 'text-[#1F1F1F]',
-            sparkColor: '#1F1F1F',
-            up: true,
           },
           {
             label: 'Collabs Done',
             value: String(creator.insights.collaborationCount),
             valueColor: 'text-[#1F1F1F]',
-            sparkColor: '#1F1F1F',
-            up: false,
           },
           {
             label: 'Success Rate',
             value: `${(creator.insights.successRate * 100).toFixed(0)}%`,
             valueColor: 'text-[#A8678A]',
-            sparkColor: '#A8678A',
-            up: true,
           },
-        ].map(({ label, value, valueColor, sparkColor, up }) => (
-          <div key={label} className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 flex flex-col gap-2">
-            <p className={`text-xl font-black ${valueColor}`}>{value}</p>
-            <p className="text-xs text-[#6E6A65] font-medium leading-tight">{label}</p>
-            <Sparkline color={sparkColor} up={up} />
+        ].map(({ label, value, valueColor, tooltip }) => (
+          <div key={label} className="bg-white border border-[#E7E1D8] rounded-2xl p-4 flex flex-col justify-between gap-2.5 relative group min-h-[92px]">
+            <p className={`text-3xl font-black tracking-tight ${valueColor} leading-none`}>{value}</p>
+            <div className="flex items-center gap-1 mt-auto">
+              <p className="text-[10px] text-[#6E6A65] font-black uppercase tracking-wider leading-none">{label}</p>
+              {tooltip && (
+                <div className="relative inline-block">
+                  <span className="text-[10px] text-[#A8678A] cursor-help font-bold">ⓘ</span>
+                  <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 bg-[#1F1F1F] text-white text-[10px] p-2.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 shadow-lg z-20 leading-relaxed font-normal normal-case">
+                    {tooltip}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       </div>
 
-      {/* ── TRUST SCORE + SCORE BREAKDOWN + AUDIENCE DEMOGRAPHICS ───────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* ── 2x2 COMPACT INTEL GRID ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
-        {/* Trust Score Panel */}
-        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
-          <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-[#A8678A]" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-            </svg>
-            <h3 className="font-black text-[#1F1F1F] text-base">Creator Trust Score</h3>
-            <span className="ml-auto text-[#6E6A65] cursor-help" title="How the score is calculated">
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
-              </svg>
+        {/* 1. Creator Trust Score Panel */}
+        <div className="bg-white border border-[#E7E1D8] rounded-2xl p-5 shadow-card flex flex-col justify-between gap-4 h-full">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <span className="text-lg leading-none select-none">🛡️</span>
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Creator Trust Score</h3>
+              <span className="ml-auto text-[#6E6A65] cursor-help" title="How the score is calculated">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 5.25h.008v.008H12v-.008Z" />
+                </svg>
+              </span>
+            </div>
+            <span className="text-[9px] font-bold text-[#A8678A] uppercase tracking-wider pl-7 leading-none">
+              Professional Reputation Score
             </span>
           </div>
 
-          {/* Big score */}
-          <div className="flex items-baseline gap-2">
-            <span className="text-5xl font-black text-[#1F1F1F]">{creator.trustScore}</span>
-            <span className="text-[#6E6A65] font-semibold text-lg">/ 100</span>
-            <span className="ml-2 px-2.5 py-0.5 rounded-full text-xs font-bold bg-[#F8EFF3] text-[#A8678A]">
-              ✓ Excellent
-            </span>
-          </div>
+          <div className="flex items-center justify-between gap-4" role="img" aria-label={`Trust Score: ${creator.trustScore} out of 100`}>
+            <div className="space-y-2">
+              <div className="flex items-baseline gap-1.5">
+                <span className="text-4xl font-black text-[#1F1F1F] tracking-tight">{creator.trustScore}</span>
+                <span className="text-[#6E6A65] font-semibold text-sm">/ 100</span>
+                <span className="ml-1.5 px-2 py-0.5 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] uppercase tracking-wider">
+                  Excellent
+                </span>
+              </div>
+              <p className="text-[11px] text-[#6E6A65] leading-snug">
+                Based on audience quality, engagement & collaboration history.
+              </p>
+            </div>
 
-          {/* Ring chart (CSS only) */}
-          <div className="flex justify-center my-2">
-            <div className="relative w-24 h-24">
-              <svg className="w-24 h-24 -rotate-90" viewBox="0 0 96 96">
+            {/* Ring chart */}
+            <div className="relative w-20 h-20 shrink-0">
+              <svg className="w-20 h-20 -rotate-90" viewBox="0 0 96 96">
                 <circle cx="48" cy="48" r="38" fill="none" stroke="#E7E1D8" strokeWidth="10" />
                 <circle cx="48" cy="48" r="38" fill="none" stroke="#A8678A" strokeWidth="10"
                   strokeDasharray={`${(creator.trustScore / 100) * 238.76} 238.76`}
                   strokeLinecap="round" />
               </svg>
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-lg font-black text-[#1F1F1F]">{creator.trustScore}</span>
+                <span className="text-base font-black text-[#1F1F1F]">{creator.trustScore}</span>
               </div>
             </div>
           </div>
 
-          <p className="text-xs text-[#6E6A65] leading-relaxed">
-            Based on audience quality, engagement consistency & collaboration history.
+          <div className="bg-[#F8EFF3] rounded-xl px-3 py-2 text-[10px] font-black uppercase tracking-wider text-[#A8678A] text-center mt-auto">
+            🏆 Top 18% in {creator.contentCategories[0] ?? 'Lifestyle'} Niche
+          </div>
+        </div>
+
+        {/* 2. Score Breakdown Panel */}
+        <div className="bg-white border border-[#E7E1D8] rounded-2xl p-5 shadow-card flex flex-col justify-between gap-4 h-full">
+          <div className="flex items-center gap-2">
+            <span className="text-lg leading-none select-none">📊</span>
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Score Breakdown</h3>
+          </div>
+          {(() => {
+            const factors = creator.id === 'creator-1' || creator.trustScore === 82
+              ? [
+                  { factor: 'Audience Authenticity', impact: '+22' },
+                  { factor: 'Engagement Quality', impact: '+18' },
+                  { factor: 'Growth Consistency', impact: '+12' },
+                  { factor: 'Collaboration Success', impact: '+30' },
+                ]
+              : [
+                  { factor: 'Audience Authenticity', impact: `+${Math.round(creator.trustScore * 0.27)}` },
+                  { factor: 'Engagement Quality', impact: `+${Math.round(creator.trustScore * 0.22)}` },
+                  { factor: 'Growth Consistency', impact: `+${Math.round(creator.trustScore * 0.15)}` },
+                  { factor: 'Collaboration Success', impact: `+${creator.trustScore - Math.round(creator.trustScore * 0.27) - Math.round(creator.trustScore * 0.22) - Math.round(creator.trustScore * 0.15)}` },
+                ];
+            return (
+              <div className="space-y-2 flex-1">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-[#6E6A65] leading-none">Contributing Factors</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {factors.map((item) => (
+                    <div key={item.factor} className="bg-[#F6F2E8]/40 border border-[#E7E1D8]/40 rounded-xl p-3 flex flex-col justify-between min-h-[64px] transition-all duration-200 hover:bg-white hover:border-[#A8678A]/30">
+                      <span className="text-[9px] font-bold uppercase tracking-wider text-[#6E6A65] leading-tight mb-1">{item.factor}</span>
+                      <span className="text-base font-black text-[#A8678A] leading-none">{item.impact}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            );
+          })()}
+          <p className="text-[10px] text-[#6E6A65] leading-normal italic border-t border-[#E7E1D8]/60 pt-2.5">
+            "Calculated using audience quality, content consistency, engagement health, and collaboration history."
           </p>
-
-          <div className="bg-[#F8EFF3] rounded-xl px-3 py-2 text-xs text-[#A8678A] font-semibold">
-            Top 18% of creators in {creator.contentCategories[0] ?? 'Lifestyle'} niche
-          </div>
-
-          <button className="text-[#A8678A] text-xs font-bold flex items-center gap-1 hover:underline">
-            View full breakdown →
-          </button>
         </div>
 
-        {/* Score Breakdown */}
-        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
-          <h3 className="font-black text-[#1F1F1F] text-base">Score Breakdown</h3>
-          <div className="space-y-4">
-            <ScoreBar label="Audience Authenticity" score={86} max={100} color="bg-[#1F1F1F]" />
-            <ScoreBar label="Engagement Quality"    score={75} max={100} color="bg-[#1F1F1F]" />
-            <ScoreBar label="Growth Pattern"        score={70} max={100} color="bg-[#1F1F1F]" />
-            <ScoreBar label="Collaboration Success" score={Math.round(creator.insights.successRate * 100)} max={100} color="bg-[#A8678A]" />
+        {/* 3. Audience Demographics */}
+        <div className="bg-white border border-[#E7E1D8] rounded-2xl p-5 shadow-card flex flex-col justify-between gap-4 h-full">
+          <div className="flex items-center gap-2">
+            <span className="text-lg leading-none select-none">👥</span>
+            <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Audience Demographics</h3>
           </div>
-        </div>
 
-        {/* Audience Demographics */}
-        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card flex flex-col gap-4">
-          <h3 className="font-black text-[#1F1F1F] text-base">Audience Demographics</h3>
-
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 flex-1">
             <DonutChart
               female={dem.genderSplit.female}
               male={dem.genderSplit.male}
@@ -1182,7 +1234,7 @@ export default function CreatorProfilePage() {
             />
 
             {/* Age legend */}
-            <div className="space-y-2 flex-1">
+            <div className="space-y-1.5 flex-1">
               {[
                 { label: '18-24', color: 'bg-[#A8678A]',   pct: dem.ageGroups['18-24'] },
                 { label: '25-34', color: 'bg-[#1F1F1F]',  pct: dem.ageGroups['25-34'] },
@@ -1190,9 +1242,9 @@ export default function CreatorProfilePage() {
                 { label: '45+',   color: 'bg-[#E7E1D8]',pct: dem.ageGroups['45+'] },
               ].map(({ label, color, pct }) => (
                 <div key={label} className="flex items-center gap-2">
-                  <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${color}`} />
-                  <span className="text-xs text-[#6E6A65] w-10">{label}</span>
-                  <span className="text-xs font-black text-[#1F1F1F]">
+                  <span className={`w-2 h-2 rounded-full shrink-0 ${color}`} />
+                  <span className="text-xs text-[#6E6A65] w-10 leading-none">{label}</span>
+                  <span className="text-xs font-black text-[#1F1F1F] leading-none">
                     {typeof pct === 'number' ? `${(pct * 100).toFixed(0)}%` : '—'}
                   </span>
                 </div>
@@ -1201,41 +1253,48 @@ export default function CreatorProfilePage() {
           </div>
 
           {/* Top countries */}
-          <div>
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#6E6A65] mb-1.5">Top Countries</p>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="mt-auto">
+            <p className="text-[9px] font-black uppercase tracking-widest text-[#6E6A65] mb-1.5 leading-none">Top Countries</p>
+            <div className="flex items-center gap-1.5">
               {dem.topCountries.slice(0, 3).map(c => (
-                <span key={c} className="px-2.5 py-0.5 rounded-full bg-[#F8EFF3] text-[#A8678A] border border-[#E7E1D8] text-[11px] font-semibold">
+                <span key={c} className="px-2.5 py-1 rounded-lg bg-[#F8EFF3] text-[#A8678A] border border-[#E7E1D8] text-[10px] font-bold uppercase tracking-wider leading-none shadow-sm">
                   {c}
                 </span>
               ))}
             </div>
           </div>
         </div>
+
+        {/* 4. AI Creator DNA Card (2x2 Grid placement, Compact Summary) */}
+        <div className="bg-white border border-[#E7E1D8] rounded-2xl p-5 shadow-card relative overflow-hidden flex flex-col justify-between gap-4 h-full">
+          <div className="absolute top-0 right-0 w-28 h-24 bg-gradient-to-br from-[#A8678A]/10 to-transparent rounded-bl-full pointer-events-none" />
+          
+          <div className="flex items-center justify-between gap-2 z-10 w-full">
+            <div className="flex items-center gap-2">
+              <span className="text-lg leading-none select-none">🧬</span>
+              <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">AI Creator DNA</h3>
+            </div>
+            <span className="px-2.5 py-1 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] border border-[#A8678A]/30 flex items-center gap-1 shadow-sm shrink-0 uppercase tracking-wider">
+              ✨ AI Generated
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 gap-2 z-10 flex-1">
+            {[
+              { label: 'Content Style', value: 'Educational Storytelling' },
+              { label: 'Audience Trust', value: 'High', valueClass: 'text-emerald-600 font-bold' },
+              { label: 'Brand Safety', value: '95%', valueClass: 'text-[#A8678A] font-bold' },
+              { label: 'Top Niches', value: 'Beauty • Lifestyle • Wellness' },
+            ].map((f) => (
+              <div key={f.label} className="bg-[#F6F2E8]/40 border border-[#E7E1D8]/50 rounded-xl p-3 flex flex-col justify-center h-full transition-all duration-200 hover:bg-white hover:border-[#A8678A]/35 hover:shadow-soft">
+                <span className="block text-[8px] font-black uppercase tracking-widest text-[#6E6A65] mb-1 leading-none">{f.label}</span>
+                <span className={`block text-xs font-bold text-[#1F1F1F] leading-tight break-words ${f.valueClass ?? ''}`}>{f.value}</span>
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
-      {/* ── RECENT COLLABORATIONS ───────────────────────────────────────── */}
-      <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 shadow-card">
-        <div className="flex items-center justify-between mb-5">
-          <h3 className="font-black text-[#1F1F1F] text-base">Recent Collaborations</h3>
-          <button className="text-[#A8678A] text-xs font-bold hover:underline flex items-center gap-1">
-            View all collaborations →
-          </button>
-        </div>
-        <div className="flex flex-wrap gap-4">
-          {recentCollabs.map(({ name, logo, date, bg }) => (
-            <div key={name} className="flex items-center gap-3 bg-[#F8EFF3] rounded-2xl px-4 py-3 border border-[#E7E1D8] hover:border-[#A8678A] transition-colors">
-              <div className={`w-10 h-10 rounded-full ${bg} flex items-center justify-center shrink-0 overflow-hidden`}>
-                <img src={logo} alt={name} className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-[#1F1F1F]">{name}</p>
-                <p className="text-[10px] text-[#6E6A65]">{date}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* ── REELS TAB ──────────────────────────────────────────────────── */}
       <div>

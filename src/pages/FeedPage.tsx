@@ -422,6 +422,11 @@ export default function FeedPage() {
         };
       }
       return p;
+    })
+    .sort((a, b) => {
+      const scoreDiff = (b.collaborationMatchScore ?? 0) - (a.collaborationMatchScore ?? 0);
+      if (scoreDiff !== 0) return scoreDiff;
+      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
     });
 
   const [applyingPost, setApplyingPost] = useState<FeedPost | null>(null);
@@ -562,19 +567,29 @@ export default function FeedPage() {
   const mergedList: Array<{ type: 'campaign'; post: FeedPost } | { type: 'creator'; post: CreatorPost }> = [];
 
   if (sortBy === 'top') {
-    // Default Top: interleave creator posts between every 2 campaign cards
+    // Default Top: highest-match campaign first, first creator post (hiring) second, then interleave
     let ci = 0;
-    filteredCampaigns.forEach((p, i) => {
+    
+    if (filteredCampaigns.length > 0) {
+      mergedList.push({ type: 'campaign', post: filteredCampaigns[0] });
+    }
+    
+    if (filteredCreators.length > 0) {
+      mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
+    }
+    
+    const remainingCampaigns = filteredCampaigns.slice(1);
+    remainingCampaigns.forEach((p, i) => {
       mergedList.push({ type: 'campaign', post: p });
       if ((i + 1) % 2 === 0 && ci < filteredCreators.length) {
         mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
       }
     });
-    // append remaining creator posts after all campaigns
+    
     while (ci < filteredCreators.length) {
       mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
     }
-    // If there are no campaigns, push all remaining creator posts
+    
     if (filteredCampaigns.length === 0) {
       filteredCreators.forEach(p => {
         mergedList.push({ type: 'creator', post: p });
@@ -593,6 +608,8 @@ export default function FeedPage() {
     });
     mergedList.push(...combined);
   }
+
+  console.log('mergedList check:', mergedList.map(x => x.type === 'campaign' ? x.post.title : (x.post.title || x.post.roleNeeded)));
 
   return (
     <div className="relative">

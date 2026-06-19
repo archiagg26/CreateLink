@@ -16,7 +16,14 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const forced = params.get('role');
-    if (forced === 'brand' || forced === 'creator') setRole(forced as any);
+    if (forced === 'brand' || forced === 'creator') {
+      setRole(forced as any);
+      if (forced === 'brand') {
+        setEmail('brand@techcorp.com');
+      } else {
+        setEmail('maya@example.com');
+      }
+    }
   }, [location.search]);
 
   const handleSubmit = async (e: React.FormEvent) => {

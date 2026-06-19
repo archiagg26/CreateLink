@@ -69,6 +69,8 @@ describe('BrandProfilePage Property Tests', () => {
         brandArbitrary,
         async (brandData) => {
           activeBrand = brandData;
+          localStorage.clear();
+          sessionStorage.clear();
           // Set isNewToPlatform according to completedCollaborations count constraint
           activeBrand.isNewToPlatform = brandData.completedCollaborations < 3;
 
@@ -112,7 +114,7 @@ describe('BrandProfilePage Property Tests', () => {
             if (activeBrand.isNewToPlatform) {
               expect(screen.getByText('New to Platform')).toBeTruthy();
             } else {
-              expect(screen.getByLabelText(`Brand Score: ${brandData.brandScore} out of 100`)).toBeTruthy();
+              expect(screen.getByLabelText(`Brand Trust Score: ${brandData.brandScore} out of 100`)).toBeTruthy();
             }
 
             // Verification badge
@@ -121,15 +123,27 @@ describe('BrandProfilePage Property Tests', () => {
             // Campaign history title
             expect(screen.getByText('Summer Skincare Campaign')).toBeTruthy();
 
-            // Numeric stats
-            const collabsContainer = screen.getByText('Completed Collaborations').parentElement;
-            expect(collabsContainer?.textContent).toContain(String(brandData.completedCollaborations));
+            // Numeric stats (from the metrics row cards or stat cards)
+            const collabsCard = screen.getAllByText('Collabs Done')
+              .map((el) => el.parentElement)
+              .find((parent) => parent?.textContent?.includes(String(brandData.completedCollaborations)));
+            expect(collabsCard).toBeTruthy();
 
-            const ratingContainer = screen.getByText('Average Creator Rating').parentElement;
-            expect(ratingContainer?.textContent).toContain(`${brandData.averageCreatorRating.toFixed(1)} / 5.0`);
+            const ratingCard = screen.getAllByText('Creator Rating')
+              .map((el) => el.parentElement)
+              .find((parent) => {
+                const expectedText = brandData.averageCreatorRating > 0 ? `${brandData.averageCreatorRating.toFixed(1)}` : '—';
+                return parent?.textContent?.includes(expectedText);
+              });
+            expect(ratingCard).toBeTruthy();
 
-            const responseContainer = screen.getByText('Response Speed').parentElement;
-            expect(responseContainer?.textContent).toContain(`${brandData.averageResponseTimeHours} hours`);
+            const responseCard = screen.getAllByText('Response Time')
+              .map((el) => el.parentElement)
+              .find((parent) => {
+                const expectedText = brandData.averageResponseTimeHours > 0 ? `${brandData.averageResponseTimeHours}` : '—';
+                return parent?.textContent?.includes(expectedText);
+              });
+            expect(responseCard).toBeTruthy();
           } finally {
             const localUnmount = unmount as unknown as () => void;
             if (localUnmount) {

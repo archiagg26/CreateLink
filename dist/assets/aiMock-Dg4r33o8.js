@@ -1,4 +1,4 @@
-import{c as e,o as t}from"./index-DkvTwRFx.js";async function n(t,n){await e(800,3e3);let r=t.contentCategories.filter(e=>n.contentCategories.includes(e)),i=t.portfolio.slice().sort((e,t)=>t.metrics.engagementRate-e.metrics.engagementRate)[0],a=r.length>0?r.join(` & `):t.contentCategories[0]??`content`;return`Hi ${n.title} team,
+import{c as e,o as t}from"./index-CwDzzUz4.js";async function n(t,n){await e(800,3e3);let r=t.contentCategories.filter(e=>n.contentCategories.includes(e)),i=t.portfolio.slice().sort((e,t)=>t.metrics.engagementRate-e.metrics.engagementRate)[0],a=r.length>0?r.join(` & `):t.contentCategories[0]??`content`;return`Hi ${n.title} team,
 
 I'm ${t.displayName}, a ${a} creator with a Creator Trust Score of ${t.trustScore}/100.${i?` My recent work on "${i.title}" achieved a ${(i.metrics.engagementRate*100).toFixed(1)}% engagement rate, demonstrating my audience's strong connection with ${i.category} content.`:` I am passionate about creating authentic content that resonates with engaged communities.`}
 
