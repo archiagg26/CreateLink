@@ -25,6 +25,7 @@ const CreatorsPage = lazy(() => import('../pages/CreatorsPage'));
 const BookmarksPage = lazy(() => import('../pages/BookmarksPage'));
 const AnalyticsPage = lazy(() => import('../pages/AnalyticsPage'));
 const CampaignsPage = lazy(() => import('../pages/CampaignsPage'));
+const PortfolioPage = lazy(() => import('../pages/PortfolioPage'));
 
 function LoadingFallback() {
   return (
@@ -127,6 +128,14 @@ const router = createBrowserRouter([
               </Suspense>
             ),
           },
+          {
+  path: '/portfolio',
+  element: (
+    <Suspense fallback={<LoadingFallback />}>
+      <PortfolioPage />
+    </Suspense>
+  ),
+},
           {
             path: '/notifications',
             element: (
@@ -256,6 +265,7 @@ const router = createBrowserRouter([
                     <BrandDashboardPage />
                   </Suspense>
                 ),
+                
               },
             ],
           },

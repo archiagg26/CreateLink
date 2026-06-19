@@ -41,6 +41,7 @@ export function AppLayout() {
     { to: '/creators',      icon: <PeopleIcon />,   label: 'Creators' },
     { to: '/campaigns',     icon: <CampaignIcon />, label: 'Campaigns' },
     { to: '/messages',      icon: <MessageIcon />,  label: 'Messages', badge: unreadCount },
+    { to: '/portfolio',     icon: <BookmarkIcon />, label: 'Portfolio' },
     { to: '/bookmarks',     icon: <BookmarkIcon />, label: 'Bookmarks' },
     { to: '/analytics',     icon: <AnalyticsIcon />,label: 'Analytics' },
   ];
