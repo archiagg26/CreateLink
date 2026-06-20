@@ -20,6 +20,7 @@ const NotificationsPage = lazy(() => import('../pages/NotificationsPage'));
 const MessagesPage = lazy(() => import('../pages/MessagesPage'));
 const VerificationFlowPage = lazy(() => import('../pages/VerificationFlowPage'));
 const BrandDashboardPage = lazy(() => import('../pages/BrandDashboardPage'));
+const BrandProPage = lazy(() => import('../pages/BrandProPage'));
 const RoleSelectPage = lazy(() => import('../pages/RoleSelectPage'));
 const CreatorsPage = lazy(() => import('../pages/CreatorsPage'));
 const BookmarksPage = lazy(() => import('../pages/BookmarksPage'));
@@ -266,6 +267,14 @@ const router = createBrowserRouter([
                   </Suspense>
                 ),
                 
+              },
+              {
+                path: '/brand-pro',
+                element: (
+                  <Suspense fallback={<LoadingFallback />}>
+                    <BrandProPage />
+                  </Suspense>
+                ),
               },
             ],
           },

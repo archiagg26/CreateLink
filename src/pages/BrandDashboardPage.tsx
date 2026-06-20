@@ -7,7 +7,17 @@ import { Link } from 'react-router-dom';
 // Simple utility components â€” keep design consistent with app
 function ScorePill({ score }: { score: number }) {
   return (
-    <div className="px-2 py-0.5 rounded-full bg-[#F8EFF3] text-[#A8678A] text-xs font-bold">
+    <div
+      className="
+        px-2.5 py-1
+        rounded-full
+        bg-[#A8678A]
+        text-white
+        text-xs
+        font-bold
+        shadow-sm
+      "
+    >
       {score}
     </div>
   );
@@ -15,7 +25,18 @@ function ScorePill({ score }: { score: number }) {
 
 function CreatorCard({ creator }: { creator: Creator }) {
   return (
-    <div className="bg-white border border-[#E7E1D8] rounded-xl p-4 shadow-sm flex gap-3">
+    <div className="
+  bg-white
+  border border-[#E7E1D8]
+  rounded-2xl
+  p-4
+  shadow-sm
+  flex gap-3
+  transition-all duration-300
+  hover:border-[#A8678A]
+  hover:shadow-lg
+  hover:-translate-y-1
+">
       <img src={creator.avatarUrl} alt={creator.displayName} className="w-14 h-14 rounded-full object-cover" />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
@@ -123,7 +144,16 @@ export default function BrandDashboardPage() {
 
       {/* Center: Review + Campaigns */}
       <div className="col-span-12 lg:col-span-5">
-        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-4 min-h-[56vh] flex flex-col items-center justify-center">
+        <div className="
+  bg-gradient-to-br
+  from-white
+  to-[#FCF6FA]
+  border border-[#E7E1D8]
+  rounded-[24px]
+  p-6
+  min-h-[72vh]
+  shadow-sm
+">
           <h3 className="text-sm font-bold mb-3">Creator Review</h3>
           {nextCandidate ? (
             <div className="w-full max-w-md">

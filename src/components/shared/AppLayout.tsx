@@ -35,7 +35,10 @@ export function AppLayout() {
     { to: '/creators',        icon: <PeopleIcon />,   label: 'Discover Creators' },
     { to: '/campaigns',       icon: <CampaignIcon />, label: 'Campaigns' },
     { to: '/messages',        icon: <MessageIcon />,  label: 'Messages', badge: unreadCount },
+    { to: '/bookmarks',       icon: <BookmarkIcon />, label: 'Bookmarks' },
     { to: '/analytics',       icon: <AnalyticsIcon />,label: 'Analytics' },
+    { isDivider: true, id: 'div-1' },
+    { to: '/brand-pro',       icon: <span className="text-lg leading-none flex items-center justify-center">⭐</span>, label: 'Brand Pro' },
   ] : [
     { to: '/feed',          icon: <DiscoverIcon />, label: 'Discover' },
     { to: '/creators',      icon: <PeopleIcon />,   label: 'Creators' },
@@ -103,36 +106,42 @@ export function AppLayout() {
 
         {/* Navigation - scrollable */}
         <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-          {navItems.map(({ to, icon, label, badge }) => (
-            <Link key={to} to={to}
-              onClick={() => setSidebarOpen(false)}
-              className={`flex items-center ${
-                sidebarCollapsed ? 'justify-center' : 'gap-3'
-              } px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                isActive(to)
-                  ? 'bg-[#F8EFF3] text-[#A8678A]'
-                  : 'text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A]'
-              }`}
-              title={sidebarCollapsed ? label : undefined}
-            >
-              <span className="w-5 h-5 shrink-0">{icon}</span>
-              {!sidebarCollapsed && (
-                <>
-                  <span className="flex-1">{label}</span>
-                  {badge != null && badge > 0 && (
-                    <span className="w-5 h-5 rounded-full bg-[#A8678A] text-white text-[10px] font-black flex items-center justify-center">
-                      {badge}
-                    </span>
-                  )}
-                </>
-              )}
-              {sidebarCollapsed && badge != null && badge > 0 && (
-                <span className="absolute w-5 h-5 -top-1 -right-1 rounded-full bg-[#A8678A] text-white text-[10px] font-black flex items-center justify-center">
-                  {badge}
-                </span>
-              )}
-            </Link>
-          ))}
+          {navItems.map((item: any) => {
+            if (item.isDivider) {
+              return <div key={item.id} className="h-px bg-[#E7E1D8] my-3 mx-2" />;
+            }
+            const { to, icon, label, badge } = item;
+            return (
+              <Link key={to} to={to}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center ${
+                  sidebarCollapsed ? 'justify-center' : 'gap-3'
+                } px-3 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+                  isActive(to)
+                    ? 'bg-[#F8EFF3] text-[#A8678A]'
+                    : 'text-[#6E6A65] hover:bg-[#F8EFF3] hover:text-[#A8678A]'
+                }`}
+                title={sidebarCollapsed ? label : undefined}
+              >
+                <span className="w-5 h-5 shrink-0 flex items-center justify-center">{icon}</span>
+                {!sidebarCollapsed && (
+                  <>
+                    <span className="flex-1">{label}</span>
+                    {badge != null && badge > 0 && (
+                      <span className="w-5 h-5 rounded-full bg-[#A8678A] text-white text-[10px] font-black flex items-center justify-center">
+                        {badge}
+                      </span>
+                    )}
+                  </>
+                )}
+                {sidebarCollapsed && badge != null && badge > 0 && (
+                  <span className="absolute w-5 h-5 -top-1 -right-1 rounded-full bg-[#A8678A] text-white text-[10px] font-black flex items-center justify-center">
+                    {badge}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* Bottom Section - fixed */}
