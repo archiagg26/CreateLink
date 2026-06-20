@@ -1,0 +1,62 @@
+.creatorlink-apply-btn {
+    position: relative;
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    padding: 0.6rem 1.3rem;
+    background: #1f1f1f;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    color: white;
+    font-weight: 700;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.creatorlink-apply-btn:hover {
+    transform: scale(1.04);
+    border-color: rgba(255, 255, 255, 0.5);
+}
+
+.creatorlink-apply-btn:hover .apply-icon {
+    transform: translateX(4px);
+}
+
+.creatorlink-apply-btn:hover::before {
+    animation: shine 1.5s ease-out infinite;
+}
+
+.creatorlink-apply-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100px;
+    width: 100px;
+    height: 100%;
+    opacity: 0.5;
+    background-image: linear-gradient(120deg,
+            transparent 30%,
+            rgba(255, 255, 255, 0.8),
+            transparent 70%);
+}
+
+.apply-icon {
+    transition: all 0.3s ease;
+}
+
+@keyframes shine {
+    0% {
+        left: -100px;
+    }
+
+    60% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}

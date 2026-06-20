@@ -183,13 +183,13 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
   const [attachedFileBase64, setAttachedFileBase64] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const PROMPTS = ['Completed a brand campaign', 'Hit a milestone', 'Launched new content', 'Achieved a metric goal'];
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    
+
     // 2.5MB limit validation
     if (file.size > 2.5 * 1024 * 1024) {
       setErrorMessage('File size exceeds the 2.5MB limit. Please upload a smaller image or video.');
@@ -197,7 +197,7 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
       setAttachedFileBase64('');
       return;
     }
-    
+
     setErrorMessage('');
     setAttachedFile(file);
 
@@ -266,21 +266,21 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
             </div>
             <div>
               <label className="block text-xs font-bold text-[#1F1F1F] mb-1.5">Attach Media (Reel or Image)</label>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                onChange={handleFileChange} 
-                accept="video/*,image/*" 
-                className="hidden" 
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept="video/*,image/*"
+                className="hidden"
               />
               {attachedFileBase64 ? (
                 <div className="relative border border-[#E7E1D8] rounded-xl p-3 bg-[#F8EFF3] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                     <span className="text-xl">{attachedFile?.type.startsWith('video/') ? '🎬' : '📷'}</span>
-                     <span className="text-xs font-semibold text-[#1F1F1F] truncate max-w-[200px]">{attachedFile?.name}</span>
+                    <span className="text-xl">{attachedFile?.type.startsWith('video/') ? '🎬' : '📷'}</span>
+                    <span className="text-xs font-semibold text-[#1F1F1F] truncate max-w-[200px]">{attachedFile?.name}</span>
                   </div>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => { setAttachedFile(null); setAttachedFileBase64(''); }}
                     className="text-xs text-[#A8678A] hover:underline font-bold"
                   >
@@ -315,7 +315,7 @@ function ShareWorkModal({ authorName, authorAvatar, authorId, onPublish, onClose
 // ── NEW: Creator Post Card ────────────────────────────────────────────────────
 function CreatorPostCard({ post, onApply }: { post: CreatorPost; onApply?: (post: CreatorPost) => void }) {
   const kindLabel: Record<CreatorPostKind, string> = { hiring: 'Hiring', share_work: 'Work Update' };
-  const kindIcon: Record<CreatorPostKind, string>  = { hiring: '🎬', share_work: '📷' };
+  const kindIcon: Record<CreatorPostKind, string> = { hiring: '🎬', share_work: '📷' };
 
   return (
     <article className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 shadow-card hover:shadow-soft hover:-translate-y-0.5 transition-all duration-200">
@@ -422,11 +422,6 @@ export default function FeedPage() {
         };
       }
       return p;
-    })
-    .sort((a, b) => {
-      const scoreDiff = (b.collaborationMatchScore ?? 0) - (a.collaborationMatchScore ?? 0);
-      if (scoreDiff !== 0) return scoreDiff;
-      return new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime();
     });
 
   const [applyingPost, setApplyingPost] = useState<FeedPost | null>(null);
@@ -475,11 +470,11 @@ export default function FeedPage() {
 
   const store = getStore();
   const recCreators = Array.from(store.creators.values()).filter((c) => c.id !== currentUser?.id).slice(0, 3);
-  const recBrands   = Array.from(store.brands.values()).filter((b) => b.id !== currentUser?.id).slice(0, 3);
+  const recBrands = Array.from(store.brands.values()).filter((b) => b.id !== currentUser?.id).slice(0, 3);
 
   const verificationStatus = currentUser?.role === 'creator' ? creator?.verificationStatus : brand?.verificationStatus;
   const isVerified = verificationStatus === 'verified';
-  const isPending  = verificationStatus === 'pending';
+  const isPending = verificationStatus === 'pending';
 
   const [creatorPosts, setCreatorPosts] = useState<CreatorPost[]>(() => {
     const stored = localStorage.getItem('createlink-creator-posts');
@@ -512,9 +507,9 @@ export default function FeedPage() {
   const [sortBy, setSortBy] = useState<'top' | 'recent'>('top');
   const [postTypeFilter, setPostTypeFilter] = useState<'all' | 'creator' | 'brand'>('all');
 
-  const authorName   = currentUser?.role === 'creator' ? (creator?.displayName ?? 'Creator') : (brand?.companyName ?? 'Brand');
+  const authorName = currentUser?.role === 'creator' ? (creator?.displayName ?? 'Creator') : (brand?.companyName ?? 'Brand');
   const authorAvatar = '';
-  const authorId     = currentUser?.id ?? '';
+  const authorId = currentUser?.id ?? '';
 
   const handlePublishCreatorPost = (p: CreatorPost) => {
     if (p.kind === 'share_work') {
@@ -522,7 +517,7 @@ export default function FeedPage() {
       const savedReels = localStorage.getItem(`reels-${creatorId}`);
       let reelsList: Reel[] = [];
       if (savedReels) {
-        try { reelsList = JSON.parse(savedReels); } catch {}
+        try { reelsList = JSON.parse(savedReels); } catch { }
       }
       const newReel: Reel = {
         id: p.id,
@@ -561,35 +556,25 @@ export default function FeedPage() {
   const filteredCampaigns = postTypeFilter === 'creator'
     ? posts.filter(p => p.authorRole === 'creator')
     : (postTypeFilter === 'brand'
-        ? posts.filter(p => p.authorRole === 'brand')
-        : posts);
+      ? posts.filter(p => p.authorRole === 'brand')
+      : posts);
   const filteredCreators = postTypeFilter === 'brand' ? [] : creatorPosts;
   const mergedList: Array<{ type: 'campaign'; post: FeedPost } | { type: 'creator'; post: CreatorPost }> = [];
 
   if (sortBy === 'top') {
-    // Default Top: highest-match campaign first, first creator post (hiring) second, then interleave
+    // Default Top: interleave creator posts between every 2 campaign cards
     let ci = 0;
-    
-    if (filteredCampaigns.length > 0) {
-      mergedList.push({ type: 'campaign', post: filteredCampaigns[0] });
-    }
-    
-    if (filteredCreators.length > 0) {
-      mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
-    }
-    
-    const remainingCampaigns = filteredCampaigns.slice(1);
-    remainingCampaigns.forEach((p, i) => {
+    filteredCampaigns.forEach((p, i) => {
       mergedList.push({ type: 'campaign', post: p });
       if ((i + 1) % 2 === 0 && ci < filteredCreators.length) {
         mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
       }
     });
-    
+    // append remaining creator posts after all campaigns
     while (ci < filteredCreators.length) {
       mergedList.push({ type: 'creator', post: filteredCreators[ci++] });
     }
-    
+    // If there are no campaigns, push all remaining creator posts
     if (filteredCampaigns.length === 0) {
       filteredCreators.forEach(p => {
         mergedList.push({ type: 'creator', post: p });
@@ -608,8 +593,6 @@ export default function FeedPage() {
     });
     mergedList.push(...combined);
   }
-
-  console.log('mergedList check:', mergedList.map(x => x.type === 'campaign' ? x.post.title : (x.post.title || x.post.roleNeeded)));
 
   return (
     <div className="relative">

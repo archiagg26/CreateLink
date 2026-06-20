@@ -13,16 +13,16 @@ interface FeedCardProps {
 }
 
 const CATEGORY_COLORS: Record<string, string> = {
-  beauty:    'bg-[#F8EFF3] text-[#A8678A]',
-  fitness:   'bg-[#F8EFF3] text-[#A8678A]',
-  tech:      'bg-[#F8EFF3] text-[#A8678A]',
-  food:      'bg-[#F8EFF3] text-[#A8678A]',
-  travel:    'bg-[#F8EFF3] text-[#A8678A]',
-  gaming:    'bg-[#F8EFF3] text-[#A8678A]',
+  beauty: 'bg-[#F8EFF3] text-[#A8678A]',
+  fitness: 'bg-[#F8EFF3] text-[#A8678A]',
+  tech: 'bg-[#F8EFF3] text-[#A8678A]',
+  food: 'bg-[#F8EFF3] text-[#A8678A]',
+  travel: 'bg-[#F8EFF3] text-[#A8678A]',
+  gaming: 'bg-[#F8EFF3] text-[#A8678A]',
   lifestyle: 'bg-[#F8EFF3] text-[#A8678A]',
-  finance:   'bg-[#F8EFF3] text-[#A8678A]',
+  finance: 'bg-[#F8EFF3] text-[#A8678A]',
   education: 'bg-[#F8EFF3] text-[#A8678A]',
-  fashion:   'bg-[#F8EFF3] text-[#A8678A]',
+  fashion: 'bg-[#F8EFF3] text-[#A8678A]',
 };
 
 export function FeedCard({ post, onApply, onContact }: FeedCardProps) {
@@ -42,15 +42,15 @@ export function FeedCard({ post, onApply, onContact }: FeedCardProps) {
   };
 
   const creatorAuthor = post.authorRole === 'creator' ? store.creators.get(post.authorId) : null;
-  const brandAuthor   = post.authorRole === 'brand'   ? store.brands.get(post.authorId)   : null;
+  const brandAuthor = post.authorRole === 'brand' ? store.brands.get(post.authorId) : null;
 
-  const authorName   = creatorAuthor?.displayName ?? brandAuthor?.companyName ?? 'Partner';
+  const authorName = creatorAuthor?.displayName ?? brandAuthor?.companyName ?? 'Partner';
   const authorAvatar = creatorAuthor?.avatarUrl ?? brandAuthor?.logoUrl ?? 'https://api.dicebear.com/7.x/initials/svg?seed=Partner';
-  const authorSub    = creatorAuthor?.bio ?? brandAuthor?.industry ?? 'Collaboration Opportunity';
+  const authorSub = creatorAuthor?.bio ?? brandAuthor?.industry ?? 'Collaboration Opportunity';
   const verificationStatus = creatorAuthor?.verificationStatus ?? brandAuthor?.verificationStatus ?? 'unverified';
 
   const timeString = new Date(post.publishedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-  const catColor   = CATEGORY_COLORS[post.category] ?? 'bg-[#F8EFF3] text-[#A8678A]';
+  const catColor = CATEGORY_COLORS[post.category] ?? 'bg-[#F8EFF3] text-[#A8678A]';
 
   return (
     <article
@@ -114,9 +114,8 @@ export function FeedCard({ post, onApply, onContact }: FeedCardProps) {
       <div className="border-t border-[#E7E1D8] pt-3 flex items-center justify-between gap-2">
         {/* Save button — toggles bookmark */}
         <button type="button" onClick={handleSave}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-            saved ? 'text-[#A8678A] bg-[#F8EFF3]' : 'text-[#6E6A65] hover:text-[#A8678A] hover:bg-[#F8EFF3]'
-          }`}>
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${saved ? 'text-[#A8678A] bg-[#F8EFF3]' : 'text-[#6E6A65] hover:text-[#A8678A] hover:bg-[#F8EFF3]'
+            }`}>
           <svg className="w-4 h-4" fill={saved ? 'currentColor' : 'none'} stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
           </svg>
@@ -125,12 +124,57 @@ export function FeedCard({ post, onApply, onContact }: FeedCardProps) {
 
         <div className="flex gap-2">
           {isCampaign && onApply && (
-            <button type="button" onClick={() => onApply(post)}
-              className="flex items-center gap-1.5 px-4 py-1.5 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl shadow-soft hover:opacity-90 transition-all">
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+            <button
+              type="button"
+              onClick={() => onApply(post)}
+              className="
+      relative overflow-hidden
+      flex items-center gap-2
+      px-5 py-2
+      bg-[#1F1F1F]
+      hover:bg-[#A8678A]
+      text-white
+      font-bold text-xs
+      rounded-full
+      border border-white/20
+      shadow-lg
+      transition-all duration-300
+      hover:scale-105
+      hover:border-white/50
+      group
+    "
+            >
+              <span
+                className="
+        absolute inset-0
+        -translate-x-full
+        bg-gradient-to-r
+        from-transparent
+        via-white/30
+        to-transparent
+        group-hover:translate-x-[200%]
+        transition-transform
+        duration-1000
+      "
+              />
+
+              <svg
+                className="w-3.5 h-3.5 relative z-10 transition-transform duration-300 group-hover:translate-x-1"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+                />
               </svg>
-              Apply Now
+
+              <span className="relative z-10">
+                Apply Now
+              </span>
             </button>
           )}
           {!isCampaign && onContact && (
