@@ -59,34 +59,68 @@ export function computeBrandScore(
 }
 
 // ─── Collaboration Match Score ────────────────────────────────────────────
-
+ 
 export function computeCollaborationMatchScore(inputs: MatchScoreInputs): number {
-  // Category overlap (weight 0.40)
-  const overlap = inputs.creatorCategories.filter((c) =>
-    inputs.campaignCategories.includes(c)
-  ).length;
-  const categoryScore =
-    inputs.campaignCategories.length > 0
-      ? overlap / inputs.campaignCategories.length
-      : 0;
+  const CATEGORY_AFFINITIES: Record<string, string[]> = {
+    beauty: ['fashion', 'lifestyle'],
+    fashion: ['beauty', 'lifestyle'],
+    lifestyle: ['beauty', 'fashion', 'travel', 'food'],
+    travel: ['lifestyle', 'food'],
+    food: ['lifestyle', 'travel'],
+    tech: ['gaming', 'education'],
+    gaming: ['tech'],
+    fitness: ['lifestyle', 'travel'],
+    finance: ['education'],
+    education: ['finance', 'tech'],
+  };
 
-  // Trust score proximity (weight 0.35)
+  // Niche Alignment Score (weight 0.40)
+  let totalNicheScore = 0;
+  if (inputs.campaignCategories.length > 0) {
+    inputs.campaignCategories.forEach((campCat) => {
+      if (inputs.creatorCategories.includes(campCat)) {
+        totalNicheScore += 1.0;
+      } else {
+        const affinities = CATEGORY_AFFINITIES[campCat] || [];
+        const hasAffinity = inputs.creatorCategories.some((creatorCat) =>
+          affinities.includes(creatorCat)
+        );
+        if (hasAffinity) {
+          totalNicheScore += 0.5;
+        }
+      }
+    });
+  }
+  const categoryScore = inputs.campaignCategories.length > 0
+    ? totalNicheScore / inputs.campaignCategories.length
+    : 0.5; // fallback
+
+  // Trust score proximity (weight 0.20)
   const trustDelta = inputs.creatorTrustScore - inputs.campaignMinTrustScore;
-  const trustScore =
+  const trustScoreVal =
     trustDelta >= 0
       ? Math.min(1, 1 + trustDelta / 100)
       : Math.max(0, 1 + trustDelta / 50);
 
+  // Content Quality proximity (weight 0.15)
+  const minQuality = inputs.campaignMinContentQuality ?? 85;
+  const creatorQuality = inputs.creatorContentQuality ?? Math.round(inputs.creatorTrustScore * 0.95 + 4);
+  const qualityDelta = creatorQuality - minQuality;
+  const qualityScoreVal =
+    qualityDelta >= 0
+      ? Math.min(1, 1 + qualityDelta / 100)
+      : Math.max(0, 1 + qualityDelta / 50);
+
   // Audience alignment (weight 0.25)
   const targetGroups = inputs.campaignTargetAgeGroups;
   const audienceScore =
-    targetGroups.length > 0
+    targetGroups && targetGroups.length > 0
       ? targetGroups.reduce(
           (sum, g) => sum + (inputs.audienceAgeGroups[g] ?? 0),
           0
         )
       : 0.5;
 
-  const raw = categoryScore * 0.4 + trustScore * 0.35 + audienceScore * 0.25;
+  const raw = categoryScore * 0.4 + trustScoreVal * 0.2 + qualityScoreVal * 0.15 + audienceScore * 0.25;
   return Math.round(Math.min(100, Math.max(0, raw * 100)));
 }

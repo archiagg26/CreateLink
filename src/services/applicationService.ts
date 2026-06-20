@@ -31,12 +31,21 @@ export async function createApplication(
   const campaign = store.campaigns.get(campaignId);
   if (!creator || !campaign) throw new ApplicationError('not_found', 'Creator or Campaign not found.');
 
+  // Parse preferences
+  const reqStr = campaign.requirements || '';
+  const minTrustMatch = reqStr.match(/Min Trust Score:\s*(\d+)/i);
+  const campaignMinTrustScore = minTrustMatch ? parseInt(minTrustMatch[1]) : 0;
+
+  const minQualityMatch = reqStr.match(/Min Content Quality Score:\s*(\d+)/i);
+  const campaignMinContentQuality = minQualityMatch ? parseInt(minQualityMatch[1]) : 0;
+
   // Compute match score
   const matchScore = computeCollaborationMatchScore({
     creatorCategories: creator.contentCategories,
     campaignCategories: campaign.contentCategories,
     creatorTrustScore: creator.trustScore,
-    campaignMinTrustScore: 0,
+    campaignMinTrustScore,
+    campaignMinContentQuality,
     audienceAgeGroups: creator.insights.audienceDemographics.ageGroups,
     campaignTargetAgeGroups: [],
   });

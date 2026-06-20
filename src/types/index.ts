@@ -242,6 +242,8 @@ export interface MatchScoreInputs {
   campaignMinTrustScore: number;             // 0–100 (brand's stated requirement)
   audienceAgeGroups: Record<string, number>;
   campaignTargetAgeGroups: string[];
+  creatorContentQuality?: number;
+  campaignMinContentQuality?: number;
 }
 
 export interface PortfolioTemplateSection {

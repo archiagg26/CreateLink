@@ -189,8 +189,9 @@ export function AppLayout() {
 
       {/* ─── Right column: topbar + page content ─── */}
       <div
-        className="flex flex-col min-w-0 flex-1 transition-all duration-300"
-        style={{ marginLeft: sw }}
+        className={`flex flex-col min-w-0 flex-1 transition-all duration-300 ${
+          sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-[256px]'
+        }`}
       >
         {/* ══ TOPBAR ══════════════════════════════════════════════════════ */}
        <header

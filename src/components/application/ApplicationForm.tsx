@@ -19,6 +19,14 @@ export function ApplicationForm({ creator, campaign, onClose, onSuccess }: Appli
   const [error, setError] = useState('');
   const [existingApp, setExistingApp] = useState<Application | null>(null);
 
+  // Parse preferences
+  const reqStr = campaign.requirements || '';
+  const minTrustMatch = reqStr.match(/Min Trust Score:\s*(\d+)/i);
+  const minTrust = minTrustMatch ? parseInt(minTrustMatch[1]) : 0;
+  
+  const minQualityMatch = reqStr.match(/Min Content Quality Score:\s*(\d+)/i);
+  const minQuality = minQualityMatch ? parseInt(minQualityMatch[1]) : 0;
+
   const [portfolioList] = useState<PortfolioItem[]>(() => {
     const stored = localStorage.getItem(`reels-${creator.id}`) || sessionStorage.getItem('allReels');
     if (stored) {
@@ -172,6 +180,15 @@ export function ApplicationForm({ creator, campaign, onClose, onSuccess }: Appli
         </h3>
         <p className="text-[#6E6A65] text-xs mt-1">Review your AI-generated pitch and attach work samples.</p>
       </div>
+
+      {minTrust > 0 && (
+        <div className="bg-[#F6F2E8]/60 border border-[#E7E1D8] text-[#6E6A65] p-4 rounded-xl text-xs font-semibold space-y-1">
+          <p className="font-bold text-[#1F1F1F]">✨ AI Matching Preferences</p>
+          <p className="text-[11px] leading-relaxed opacity-95">
+            This campaign has prioritized matching enabled. Preferred scores (Trust Score: {minTrust}+, Content Quality: {minQuality}+) will optimize your ranking in the brand's inbox, but do not prevent you from applying.
+          </p>
+        </div>
+      )}
 
       {error && (
         <div className="bg-[#F8EFF3] border border-[#A8678A] text-[#A8678A] px-4 py-3 rounded-xl text-xs font-semibold">

@@ -223,9 +223,6 @@ export default function BrandProfilePage() {
                   <div className="flex items-baseline gap-1">
                     <span className="text-3xl font-black text-[#1F1F1F] tracking-tight">{brand.brandScore}</span>
                     <span className="text-[#6E6A65] font-semibold text-xs">/ 100</span>
-                    <span className="ml-2 px-2 py-0.5 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] uppercase tracking-wider">
-                      {scoreLabel}
-                    </span>
                   </div>
                   <div className="px-2.5 py-0.5 rounded-full text-[9px] font-black bg-[#F8EFF3] text-[#A8678A] inline-block uppercase tracking-wider border border-[#A8678A]/20">
                     🏆 Top Brand in {brand.industry ? (brand.industry.charAt(0).toUpperCase() + brand.industry.slice(1)) : 'Consumer Electronics'}
@@ -234,19 +231,19 @@ export default function BrandProfilePage() {
               </div>
 
               {/* Based On List */}
-              <div className="bg-white/60 rounded-xl p-3 border border-[#A8678A]/15">
-                <p className="text-[10px] font-black text-[#1F1F1F] uppercase tracking-wider mb-2">Based on:</p>
-                <div className="grid grid-cols-2 gap-y-1.5 gap-x-4 text-xs font-semibold text-[#6E6A65]">
-                  <div className="flex items-center gap-1.5">
+              <div>
+                <p className="text-[10px] font-black text-[#1F1F1F] uppercase tracking-wider mb-1.5">Based on:</p>
+                <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs font-semibold text-[#6E6A65]">
+                  <div className="flex items-center gap-1">
                     <span className="text-[#A8678A]">•</span> Payment Reliability
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <span className="text-[#A8678A]">•</span> Creator Feedback
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <span className="text-[#A8678A]">•</span> Communication Quality
                   </div>
-                  <div className="flex items-center gap-1.5">
+                  <div className="flex items-center gap-1">
                     <span className="text-[#A8678A]">•</span> Campaign Performance
                   </div>
                 </div>
@@ -278,7 +275,7 @@ export default function BrandProfilePage() {
               <span className="text-lg leading-none select-none">📊</span>
               <h3 className="text-xs font-black uppercase tracking-wider text-[#1F1F1F] leading-none">Score Breakdown</h3>
             </div>
-            <div className="space-y-2.5 my-auto">
+            <div className="space-y-2.5 flex-1 flex flex-col justify-center my-auto">
               <ScoreBar label="Payment Reliability"    pct={Math.min(100, Math.round(brand.brandScore * 1.05))} color="bg-[#1F1F1F]" />
               <ScoreBar label="Creator Reviews"        pct={Math.round(brand.averageCreatorRating * 20)} color="bg-[#A8678A]" />
               <ScoreBar label="Campaign Success Rate"  pct={brand.completedCollaborations > 0 ? 88 : 0} color="bg-[#1F1F1F]" />
@@ -425,7 +422,12 @@ export default function BrandProfilePage() {
         <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-6 space-y-5">
           <div>
             <p className="text-[11px] font-bold uppercase tracking-wider text-[#6E6A65] mb-2">Company Overview</p>
-            <p className="text-sm text-[#6E6A65] leading-relaxed">{brand.description}</p>
+            <p className="text-sm text-[#6E6A65] leading-relaxed mb-3">
+              {brand.description || 'We build smart devices that integrate seamlessly into your lifestyle.'}
+            </p>
+            <p className="text-sm text-[#6E6A65] leading-relaxed">
+              We specialize in creating premium products designed for modern creators and consumers. Our company values transparent collaborations, timely compensation, and clear communication. Over the past few years, we have partnered with hundreds of digital creators across beauty, lifestyle, and tech niches, delivering successful campaigns with mutual growth. We look forward to building long-term partnerships with creators who share our vision of premium quality and authenticity.
+            </p>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {[
@@ -447,10 +449,53 @@ export default function BrandProfilePage() {
 
       {/* ── REVIEWS TAB ──────────────────────────────────────────────── */}
       {activeTab === 'reviews' && (
-        <div className="bg-white border border-[#E7E1D8] rounded-[20px] p-12 text-center">
-          <div className="text-5xl mb-4">⭐</div>
-          <p className="text-[#1F1F1F] font-bold">No reviews yet</p>
-          <p className="text-[#6E6A65] text-sm mt-1">Creator reviews from completed collaborations will appear here.</p>
+        <div className="space-y-4">
+          {[
+            {
+              id: 'rev-1',
+              creatorName: 'Aarav Mehta',
+              role: 'Tech & Lifestyle Creator',
+              rating: 5,
+              date: 'May 12, 2026',
+              text: 'Working with this brand was an absolute breeze. The brief was crystal clear, payment was initiated within 24 hours of campaign delivery, and the communication team was extremely supportive throughout the approval process. Highly recommended!',
+              avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=Aarav'
+            },
+            {
+              id: 'rev-2',
+              creatorName: 'Neha Sharma',
+              role: 'Beauty & Wellness Influencer',
+              rating: 4.5,
+              date: 'April 28, 2026',
+              text: 'Very professional brand partnership. They gave me full creative freedom on the content as long as key features were demonstrated. Response times were quick and payment was completely on-time. Will definitely collaborate again.',
+              avatar: 'https://api.dicebear.com/7.x/initials/svg?seed=Neha'
+            }
+          ].map(review => (
+            <div key={review.id} className="bg-white border border-[#E7E1D8] rounded-[20px] p-5 hover:border-[#A8678A]/45 hover:shadow-soft transition-all">
+              <div className="flex items-center gap-3.5 mb-3.5">
+                <div className="w-10 h-10 rounded-full overflow-hidden bg-slate-100 border border-[#E7E1D8] shrink-0">
+                  <img src={review.avatar} alt={review.creatorName} className="w-full h-full object-cover" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <h4 className="font-bold text-sm text-[#1F1F1F]">{review.creatorName}</h4>
+                    <span className="text-[10px] text-[#6E6A65]">{review.date}</span>
+                  </div>
+                  <p className="text-[11px] text-[#A8678A] font-semibold">{review.role}</p>
+                </div>
+              </div>
+              
+              <div className="flex items-center gap-1 mb-2">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <span key={i} className={`text-sm ${i < Math.floor(review.rating) ? 'text-amber-500' : 'text-slate-200'}`}>★</span>
+                ))}
+                <span className="text-xs font-black text-[#1F1F1F] ml-1">{review.rating}</span>
+              </div>
+              
+              <p className="text-sm text-[#6E6A65] leading-relaxed">
+                {review.text}
+              </p>
+            </div>
+          ))}
         </div>
       )}
 
