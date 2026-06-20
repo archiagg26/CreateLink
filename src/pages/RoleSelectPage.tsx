@@ -49,7 +49,8 @@ export default function RoleSelectPage() {
   relative
   overflow-hidden
   group
-  bg-white
+  hover:bg-[#F3F0FF]
+  bg-gradient-to-br from-white to-[#F8F8FD]
   border border-[#E7E1D8]
   rounded-2xl
   p-10 min-h-[320px]
@@ -85,18 +86,18 @@ export default function RoleSelectPage() {
             <div>
               <div
                 className="
-      w-16 h-16
-      rounded-2xl
-      bg-[#F8EFF3]
-      border border-[#E7E1D8]
-      flex items-center justify-center
-      mb-6
-      transition-all duration-300
-      group-hover:scale-110
-      group-hover:bg-white
-    "
+    w-20 h-20
+    rounded-3xl
+    bg-white
+    border border-[#E7E1D8]
+    shadow-lg
+    flex items-center justify-center
+    mb-8
+    group-hover:scale-110
+    transition-all duration-300
+  "
               >
-                <CreatorSparkGrowthIcon />
+                <CreatorSparkGrowthIcon size={44} />
               </div>
 
               <h3 className="text-2xl font-bold text-[#1F1F1F]">
@@ -107,14 +108,22 @@ export default function RoleSelectPage() {
                 Discover campaigns, showcase your work, and grow your creator reputation.
               </p>
 
-              <ul className="mt-5 space-y-2 text-sm text-[#6E6A65]">
-                <li>✨ Discover paid campaigns</li>
-                <li>🎯 Build AI-powered portfolios</li>
-                <li>📈 Grow your creator reputation</li>
-              </ul>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full bg-[#F8EFF3] text-[#A8678A] text-xs font-semibold">
+                  Paid Campaigns
+                </span>
+
+                <span className="px-3 py-1 rounded-full bg-[#F8EFF3] text-[#A8678A] text-xs font-semibold">
+                  AI Portfolios
+                </span>
+
+                <span className="px-3 py-1 rounded-full bg-[#F8EFF3] text-[#A8678A] text-xs font-semibold">
+                  Trust Score
+                </span>
+              </div>
             </div>
 
-            <div className="mt-auto flex items-center justify-between">
+            <div className="mt-10 flex items-center justify-between">
               <div className="text-xs text-[#9E9A97]">Creator experience</div>
               <button
                 onClick={(e) => { e.stopPropagation(); navigate('/login?role=creator'); }}
@@ -134,7 +143,8 @@ export default function RoleSelectPage() {
   relative
   overflow-hidden
   group
-  bg-white
+  hover:bg-[#F8EFF3]
+  bg-gradient-to-br from-white to-[#FCF6FA]
   border border-[#E7E1D8]
   rounded-2xl
   p-8
@@ -170,18 +180,18 @@ export default function RoleSelectPage() {
             <div>
               <div
                 className="
-      w-16 h-16
-      rounded-2xl
-      bg-[#F8EFF3]
-      border border-[#E7E1D8]
-      flex items-center justify-center
-      mb-6
-      transition-all duration-300
-      group-hover:scale-110
-      group-hover:bg-white
-    "
+    w-20 h-20
+    rounded-[32px]
+    bg-white
+    border border-[#E7E1D8]
+    shadow-lg
+    flex items-center justify-center
+    mb-8
+    transition-all duration-300
+    group-hover:scale-105
+  "
               >
-                <BrandTrustedNetworkIcon />
+                <BrandTrustedNetworkIcon size={56} />
               </div>
 
               <h3 className="text-2xl font-bold text-[#1F1F1F]">
@@ -192,14 +202,22 @@ export default function RoleSelectPage() {
                 Find trusted creators, manage campaigns, and build successful partnerships.
               </p>
 
-              <ul className="mt-5 space-y-2 text-sm text-[#6E6A65]">
-                <li>🔍 Find trusted creators</li>
-                <li>🚀 Launch campaigns faster</li>
-                <li>🤝 Manage collaborations at scale</li>
-              </ul>
+              <div className="mt-5 flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full bg-[#F3F0FF] text-[#7B6DCC] text-xs font-semibold">
+                  Creator Discovery
+                </span>
+
+                <span className="px-3 py-1 rounded-full bg-[#F3F0FF] text-[#7B6DCC] text-xs font-semibold">
+                  Campaign Launch
+                </span>
+
+                <span className="px-3 py-1 rounded-full bg-[#F3F0FF] text-[#7B6DCC] text-xs font-semibold">
+                  Partnerships
+                </span>
+              </div>
             </div>
 
-            <div className="mt-auto flex items-center justify-between">
+            <div className="mt-10 flex items-center justify-between">
               <div className="text-xs text-[#9E9A97]">Brand experience</div>
               <button
                 onClick={(e) => { e.stopPropagation(); navigate('/login?role=brand'); }}
