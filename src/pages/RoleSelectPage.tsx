@@ -152,7 +152,8 @@ export default function RoleSelectPage() {
   hover:shadow-xl
   hover:-translate-y-1
   hover:bg-[#F8EFF3]
-  hover:border-[#A8678A]
+hover:border-[#A8678A]
+hover:shadow-[0_0_40px_rgba(168,103,138,0.25)]
   transition-all
   duration-300
   cursor-pointer
