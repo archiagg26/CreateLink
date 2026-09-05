@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../stores/authStore';
 import { useBrandStore } from '../stores/brandStore';
 import { getStore } from '../services/store';
+import { getOrCreateConversation } from '../services/messagingService';
 import VerificationBadge from '../components/shared/VerificationBadge';
 import type { Campaign } from '../types/index';
 
@@ -65,6 +66,32 @@ export default function BrandProfilePage() {
     );
     setSuccessToast('Application submitted successfully! 🎉');
     setTimeout(() => setSuccessToast(''), 3000);
+  };
+
+  const navigate = useNavigate();
+  const [contacting, setContacting] = useState(false);
+
+  const handleContactBrand = async () => {
+    if (!brand) return;
+    if (!currentUser) {
+      navigate('/login');
+      return;
+    }
+    const targetBrandUserId = brand.userId || brand.id;
+    if (targetBrandUserId === currentUser.id) {
+      alert("You cannot start a conversation with yourself.");
+      return;
+    }
+    setContacting(true);
+    try {
+      const conv = await getOrCreateConversation(currentUser.id, targetBrandUserId);
+      navigate(`/messages?conversationId=${conv.id}`);
+    } catch (err) {
+      console.warn('Failed to start chat with brand:', err);
+      navigate('/messages');
+    } finally {
+      setContacting(false);
+    }
   };
 
   const profileId = id === 'me' ? currentUser?.id : id;
@@ -155,8 +182,12 @@ export default function BrandProfilePage() {
                 + New Campaign
               </Link>
             ) : (
-              <button className="px-5 py-2 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90">
-                Contact Brand
+              <button
+                onClick={handleContactBrand}
+                disabled={contacting}
+                className="px-5 py-2 bg-[#1F1F1F] text-white font-bold text-xs rounded-xl hover:opacity-90 disabled:opacity-50"
+              >
+                {contacting ? 'Connecting...' : 'Contact Brand'}
               </button>
             )}
             <button className="px-4 py-2 bg-white border border-[#E7E1D8] text-[#1F1F1F] font-bold text-xs rounded-xl hover:bg-[#F8EFF3] flex items-center gap-1.5">

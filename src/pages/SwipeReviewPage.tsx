@@ -10,6 +10,7 @@ import * as brandService from '../services/brandService';
 import { getApplicationsForCampaign, updateApplicationStatus } from '../services/applicationService';
 import { fetchReels } from '../services/reelsService';
 import type { Reel } from '../services/reelsService';
+import { CreatorPortfolioReviewPage } from '../components/brand/CreatorPortfolioReviewPage';
 
 function ApplicantRow({
   application,
@@ -78,8 +79,8 @@ function ApplicantRow({
       </td>
       <td className="p-4">
         <div className="flex items-center gap-2">
-          <button onClick={onOpenPreview} className="px-2.5 py-1 text-[11px] font-bold bg-[#F8EFF3] text-[#A8678A] rounded border border-[#E7E1D8] hover:bg-[#A8678A]/10 transition-colors shrink-0">
-            Preview
+          <button onClick={onOpenPreview} className="px-3 py-1.5 text-xs font-bold bg-[#F8EFF3] text-[#A8678A] hover:bg-[#F3E2EC] rounded-xl border border-[#DDBFD0] transition-colors shrink-0">
+            Review Portfolio
           </button>
           <div className="flex items-center border border-[#E7E1D8] rounded bg-white overflow-hidden shrink-0">
             <button onClick={() => onUpdateStatus(application.id, 'rejected')} className="p-1 hover:bg-rose-50 text-rose-500 border-r border-[#E7E1D8] transition-colors" title="Pass (Reject)">
@@ -98,160 +99,6 @@ function ApplicantRow({
   );
 }
 
-function ApplicantDetailsModal({
-  application,
-  creator,
-  onClose,
-  onUpdateStatus,
-}: {
-  application: Application;
-  creator: Creator;
-  onClose: () => void;
-  onUpdateStatus: (appId: string, status: ApplicationStatus) => void;
-}) {
-  const [reels, setReels] = useState<Reel[]>([]);
-  const contentQualityScore = Math.min(100, Math.round(creator.trustScore * 0.95 + 4));
-
-  useEffect(() => {
-    fetchReels(creator.id).then(setReels).catch(console.warn);
-  }, [creator.id]);
-
-  const dna = getCreatorDna(creator);
-
-  return (
-    <div className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white border border-[#E7E1D8] rounded-[24px] shadow-card w-full max-w-2xl p-6 sm:p-8 relative max-h-[90vh] overflow-y-auto space-y-6 text-left">
-        <button onClick={onClose} className="absolute top-4 right-4 text-[#6E6A65] hover:text-[#1F1F1F] text-xl font-bold p-1">
-          ✕
-        </button>
-
-        <div className="flex items-center gap-4 border-b border-[#E7E1D8] pb-4">
-          <img src={creator.avatarUrl} alt={creator.displayName} className="w-16 h-16 rounded-xl object-cover border border-[#E7E1D8] bg-white" />
-          <div>
-            <h3 className="text-xl font-black text-[#1F1F1F]">{creator.displayName}</h3>
-            <p className="text-xs text-[#6E6A65] mt-1">{creator.bio}</p>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-3 gap-3 text-center">
-          <div className="p-3 bg-[#F8EFF3] rounded-xl border border-[#E7E1D8]">
-            <span className="block text-[10px] font-black text-[#6E6A65] uppercase tracking-wider">Trust Score</span>
-            <span className="text-lg font-black text-[#A8678A]">{creator.trustScore}</span>
-          </div>
-          <div className="p-3 bg-[#F8EFF3] rounded-xl border border-[#E7E1D8]">
-            <span className="block text-[10px] font-black text-[#6E6A65] uppercase tracking-wider">Quality Score</span>
-            <span className="text-lg font-black text-[#A8678A]">{contentQualityScore}</span>
-          </div>
-          <div className="p-3 bg-[#F8EFF3] rounded-xl border border-[#E7E1D8]">
-            <span className="block text-[10px] font-black text-[#6E6A65] uppercase tracking-wider">Match Score</span>
-            <span className="text-lg font-black text-[#1F1F1F]">{application.collaborationMatchScore}</span>
-          </div>
-        </div>
-
-        {/* Creator DNA */}
-        <div className="bg-[#F6F2E8]/40 border border-[#E7E1D8]/60 rounded-xl p-4">
-          <div className="flex items-center gap-1.5 mb-3">
-            <span className="text-sm">🧬</span>
-            <span className="text-xs font-black uppercase tracking-widest text-[#1F1F1F]">AI Creator DNA</span>
-          </div>
-          <div className="grid grid-cols-2 gap-4 text-xs">
-            <div>
-              <span className="block text-[9px] font-black text-[#6E6A65] uppercase tracking-wider">Style</span>
-              <span className="font-bold text-[#1F1F1F]">{dna.contentStyle}</span>
-            </div>
-            <div>
-              <span className="block text-[9px] font-black text-[#6E6A65] uppercase tracking-wider">Safety</span>
-              <span className="font-bold text-[#A8678A]">{dna.brandSafety} Brand Safe</span>
-            </div>
-            <div>
-              <span className="block text-[9px] font-black text-[#6E6A65] uppercase tracking-wider">Top Niches</span>
-              <span className="font-bold text-[#1F1F1F] block truncate">{dna.topNiches}</span>
-            </div>
-            <div>
-              <span className="block text-[9px] font-black text-[#6E6A65] uppercase tracking-wider">Trust Level</span>
-              <span className="font-bold text-emerald-600">{dna.audienceTrust}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Creator Pitch */}
-        <div className="space-y-2">
-          <span className="block text-[10px] font-black uppercase tracking-widest text-[#6E6A65]">Creator Application Pitch</span>
-          <div className="bg-[#F6F2E8]/20 border border-[#E7E1D8] p-4 rounded-xl text-xs text-[#1F1F1F] italic leading-relaxed whitespace-pre-wrap">
-            "{application.editedPitch}"
-          </div>
-        </div>
-
-        {/* Recent Reels */}
-        <div>
-          <span className="block text-[10px] font-black uppercase tracking-widest text-[#6E6A65] mb-3">Recent Uploaded Reels</span>
-          {reels.length === 0 ? (
-            <div className="text-center py-4 bg-[#FBFBFB] border border-dashed border-[#E7E1D8] rounded-xl text-xs text-[#6E6A65]">
-              No reels uploaded yet.
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-3">
-              {reels.map(r => (
-                <div key={r.id} className="bg-white border border-[#E7E1D8] p-3 rounded-xl flex flex-col justify-between shadow-soft">
-                  <div>
-                    <span className="block font-bold text-xs text-[#1F1F1F] line-clamp-1">{r.title}</span>
-                    <span className="block text-[10px] text-[#6E6A65] mt-1 line-clamp-2">{r.description}</span>
-                  </div>
-                  <div className="flex items-center justify-between mt-3 text-[10px] text-[#A8678A] font-extrabold border-t border-[#E7E1D8]/45 pt-2">
-                    <span className="capitalize">{r.category}</span>
-                    <span>{r.metrics.views >= 1000 ? `${(r.metrics.views/1000).toFixed(0)}K` : r.metrics.views} views</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Portfolio Summary */}
-        <div>
-          <span className="block text-[10px] font-black uppercase tracking-widest text-[#6E6A65] mb-3">Portfolio Highlights</span>
-          {creator.portfolio.length === 0 ? (
-            <div className="text-center py-3 bg-[#FBFBFB] border border-[#E7E1D8] rounded-xl text-xs text-[#6E6A65]">
-              No portfolio highlights.
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {creator.portfolio.map(p => (
-                <div key={p.id} className="bg-[#F8EFF3] border border-[#E7E1D8] p-3 rounded-xl flex items-center justify-between text-xs">
-                  <div>
-                    <span className="font-bold text-[#1F1F1F] block">{p.title}</span>
-                    <span className="text-[10px] text-[#6E6A65] block">{p.description}</span>
-                  </div>
-                  <span className="text-[10px] text-[#A8678A] font-extrabold text-right shrink-0 ml-3">
-                    {(p.metrics.engagementRate * 100).toFixed(1)}% ER
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Bottom Review Actions */}
-        <div className="border-t border-[#E7E1D8] pt-4 flex items-center justify-between flex-wrap gap-3">
-          <div className="text-xs font-bold text-[#6E6A65]">
-            Status: <span className="text-[#1F1F1F] uppercase">{application.status}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button onClick={() => { onUpdateStatus(application.id, 'rejected'); onClose(); }} className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-bold rounded-xl transition-colors">
-              ❌ Pass
-            </button>
-            <button onClick={() => { onUpdateStatus(application.id, 'shortlisted'); onClose(); }} className="px-4 py-2 bg-amber-50 hover:bg-amber-100 text-amber-600 border border-amber-200 text-xs font-bold rounded-xl transition-colors">
-              ❤️ Shortlist
-            </button>
-            <button onClick={() => { onUpdateStatus(application.id, 'accepted'); onClose(); }} className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 text-xs font-bold rounded-xl transition-colors">
-              ✅ Accept
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function getCreatorWithFallback(creatorId: string): Creator {
   const store = getStore();
@@ -383,6 +230,43 @@ export default function SwipeReviewPage() {
     currentCreator = getCreatorWithFallback(currentApp.creatorId);
   }
 
+  if (previewApp) {
+    const curIdx = allApplications.findIndex((a) => a.id === previewApp.app.id);
+    return (
+      <CreatorPortfolioReviewPage
+        creator={previewApp.creator}
+        application={previewApp.app}
+        campaignTitle={campaign?.title}
+        currentIndex={curIdx >= 0 ? curIdx : 0}
+        totalCount={allApplications.length}
+        onPrev={() => {
+          if (curIdx > 0) {
+            const prevApp = allApplications[curIdx - 1];
+            setPreviewApp({ app: prevApp, creator: getCreatorWithFallback(prevApp.creatorId) });
+          }
+        }}
+        onNext={() => {
+          if (curIdx < allApplications.length - 1) {
+            const nextApp = allApplications[curIdx + 1];
+            setPreviewApp({ app: nextApp, creator: getCreatorWithFallback(nextApp.creatorId) });
+          }
+        }}
+        onBack={() => setPreviewApp(null)}
+        onAction={async (action) => {
+          const mappedStatus: ApplicationStatus =
+            action === 'reject' ? 'rejected' : action === 'waitlist' ? 'shortlisted' : 'accepted';
+          await handleUpdateStatus(previewApp.app.id, mappedStatus);
+          if (curIdx < allApplications.length - 1) {
+            const nextApp = allApplications[curIdx + 1];
+            setPreviewApp({ app: nextApp, creator: getCreatorWithFallback(nextApp.creatorId) });
+          } else {
+            setPreviewApp(null);
+          }
+        }}
+      />
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto text-center relative min-h-[75vh] flex flex-col justify-between pb-8">
       {/* Undo Toast */}
@@ -504,11 +388,19 @@ export default function SwipeReviewPage() {
         ) : (
           <div className="flex-1 flex items-center justify-center min-h-[350px]">
             {currentApp && currentCreator ? (
-              <div className="w-full">
+              <div className="w-full space-y-4">
                 <SwipeCard
                   application={currentApp}
                   creator={currentCreator}
                 />
+                <button
+                  type="button"
+                  onClick={() => setPreviewApp({ app: currentApp, creator: currentCreator! })}
+                  className="mx-auto px-5 py-2.5 bg-[#F8EFF3] text-[#A8678A] hover:bg-[#F3E2EC] border border-[#DDBFD0] text-xs font-bold rounded-xl transition-all shadow-2xs flex items-center gap-2"
+                >
+                  <span>Open Full Submitted Portfolio & Media Kit</span>
+                  <span>→</span>
+                </button>
               </div>
             ) : (
               <div className="bg-white border border-[#E7E1D8] rounded-[20px] shadow-card p-10 text-center w-full py-16 max-w-lg mx-auto">
@@ -543,16 +435,6 @@ export default function SwipeReviewPage() {
             <span>&rarr; Accept (Approve)</span>
           </div>
         </div>
-      )}
-
-      {/* Applicants List Mode Details Modal */}
-      {previewApp && (
-        <ApplicantDetailsModal
-          application={previewApp.app}
-          creator={previewApp.creator}
-          onClose={() => setPreviewApp(null)}
-          onUpdateStatus={handleUpdateStatus}
-        />
       )}
     </div>
   );
